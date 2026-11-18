@@ -5429,6 +5429,220 @@ body {
   }
 }
 
+/* ==========================================================================
+   Dashboard 12-Column Grid & Layout Formatting Master Engine
+   ========================================================================== */
+
+/* 1. Main Dashboard 12-Column Grid (gap: 20px) */
+.output-bento-grid,
+.bento-grid,
+#output-bento-grid {
+  display: grid !important;
+  grid-template-columns: repeat(12, 1fr) !important;
+  gap: 20px !important;
+  width: 100% !important;
+}
+
+/* 2. All Bento Cards: 24px Padding */
+.bento-card {
+  padding: 24px !important;
+  box-sizing: border-box !important;
+}
+
+/* 3. Single-Line Card Headers with 24px Card Context */
+.card-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
+  gap: 16px !important;
+  margin-bottom: 20px !important;
+  min-height: 42px !important;
+}
+
+.card-title-group {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 4px !important;
+  min-width: 0 !important;
+  flex-shrink: 1 !important;
+}
+
+.card-title-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
+}
+
+.card-title-row h2.card-title,
+.card-title-row h3.card-title,
+.card-title {
+  margin: 0 !important;
+  font-size: 1.18rem !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  line-height: 1.25 !important;
+}
+
+.card-actions-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.badge-studio-meta {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* 4. Column Spans: 6 Columns for Logo, Colors, Typography, Instagram Mockup */
+#card-logo-studio,
+.card-logo-studio {
+  grid-column: span 6 !important;
+}
+
+#card-palette,
+.card-palette {
+  grid-column: span 6 !important;
+}
+
+#card-typography,
+.card-typography {
+  grid-column: span 6 !important;
+}
+
+#card-social,
+.card-social,
+.card-social-post {
+  grid-column: span 6 !important;
+}
+
+/* Optimize Logo Grid & Palette for 6-Column Width */
+#card-logo-studio .logo-concepts-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 12px !important;
+}
+
+#card-logo-studio .logo-concept-card {
+  padding: 12px 10px !important;
+  min-width: 0 !important;
+}
+
+#card-palette .swatches-grid {
+  gap: 8px !important;
+}
+
+#card-palette .swatch-item {
+  padding: 4px !important;
+}
+
+#card-palette .swatch-name {
+  font-size: 0.72rem !important;
+}
+
+#card-palette .swatch-psychology {
+  display: none !important;
+}
+
+/* 5. Column Spans: Full Width (1 / -1) for Calendar, Templates, Taglines, Ideas, and Remix Bar */
+#remix-control-bar,
+.remix-control-bar,
+#card-calendar,
+.card-launch-calendar,
+#card-ideas,
+.card-ideas-studio,
+#card-campaigns,
+.card-campaigns,
+#brand-hero-bar,
+.brand-hero-bar {
+  grid-column: 1 / -1 !important;
+}
+
+/* 6. Sub-Grid: Templates in a 3-Column Grid */
+#campaign-templates-grid,
+.campaign-templates-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 20px !important;
+  margin-bottom: 2rem !important;
+}
+
+/* 7. Sub-Grid: Instagram Ideas in a 3-Column Grid */
+#ideas-cards-grid,
+.ideas-cards-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 20px !important;
+  margin-top: 1rem !important;
+}
+
+/* 8. Sub-Grid: Taglines in a 2-Column Grid */
+#tagline-vault-grid,
+.tagline-vault-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 20px !important;
+}
+
+/* 9. Responsive Adjustments for Mobile & Tablet Viewports */
+@media (max-width: 1080px) {
+  #card-logo-studio,
+  .card-logo-studio,
+  #card-palette,
+  .card-palette,
+  #card-typography,
+  .card-typography,
+  #card-social,
+  .card-social,
+  .card-social-post {
+    grid-column: 1 / -1 !important;
+  }
+
+  #campaign-templates-grid,
+  .campaign-templates-grid,
+  #ideas-cards-grid,
+  .ideas-cards-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 680px) {
+  .output-bento-grid,
+  .bento-grid,
+  #output-bento-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .bento-card {
+    padding: 16px !important;
+  }
+
+  .card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  #campaign-templates-grid,
+  .campaign-templates-grid,
+  #ideas-cards-grid,
+  .ideas-cards-grid,
+  #tagline-vault-grid,
+  .tagline-vault-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
 
 
 
