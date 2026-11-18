@@ -450,6 +450,7 @@
     suggestSpinner: document.getElementById('suggest-spinner'),
     nameSuggestionsTray: document.getElementById('name-suggestions-tray'),
     btnRefreshNames: document.getElementById('btn-refresh-names'),
+    refreshBtnText: document.getElementById('refresh-btn-text'),
     btnCloseTray: document.getElementById('btn-close-tray'),
     suggestedNamesList: document.getElementById('suggested-names-list'),
     industrySelect: document.getElementById('industry-select'),
@@ -5524,7 +5525,7 @@ Guidelines:
 
   async function generateSuggestedNamesWithGemini(niche, vibe, audience) {
     const promptText = `
-You are an elite Brand Naming Strategist & Trademark Clearance Specialist.
+You are an elite Brand Naming Strategist & Identity Specialist.
 Generate EXACTLY 8 distinct, highly brandable business name ideas for:
 - Industry / Sector: "${niche}"
 - Brand Vibe / Archetype: "${vibe}" (minimalist-luxury, bold-genz, eco-organic, tech-futuristic)
@@ -5544,7 +5545,7 @@ Each of the 8 names MUST strictly follow one of the 8 distinct naming archetypes
 STRICT DIVERSITY RULE:
 - NEVER repeat the same prefix (first 3 letters) or suffix (last 3 letters) across the 8 names.
 - Each name must have a completely unique phonetic opening, cadence, and ending.
-- Each name must be legally distinctive, memorable, and trademark-friendly (avoid generic dictionary words alone).
+- Each name must be distinct, memorable, and market-ready (avoid generic dictionary words alone).
 - Provide a punchy 3-word rationale tag for each name (e.g., "Artisanal • Roasted • Slow-Crafted").
 
 Return a SINGLE valid JSON object matching this schema strictly:
@@ -5635,6 +5636,7 @@ Return a SINGLE valid JSON object matching this schema strictly:
     if (elements.suggestSpinner) elements.suggestSpinner.classList.remove('hidden');
     if (elements.suggestBtnText) elements.suggestBtnText.textContent = "Suggesting...";
     if (elements.btnRefreshNames) elements.btnRefreshNames.disabled = true;
+    if (elements.refreshBtnText) elements.refreshBtnText.textContent = "Loading...";
 
     try {
       let names = [];
@@ -5665,6 +5667,7 @@ Return a SINGLE valid JSON object matching this schema strictly:
       if (elements.suggestSpinner) elements.suggestSpinner.classList.add('hidden');
       if (elements.suggestBtnText) elements.suggestBtnText.textContent = "✨ Suggest Names";
       if (elements.btnRefreshNames) elements.btnRefreshNames.disabled = false;
+      if (elements.refreshBtnText) elements.refreshBtnText.textContent = "More Names";
     }
   }
 
@@ -7470,7 +7473,7 @@ Return JSON matching this schema:
 
     if (elements.btnGenerateMoreTaglines) elements.btnGenerateMoreTaglines.disabled = false;
     if (elements.moreTaglinesSpinner) elements.moreTaglinesSpinner.classList.add('hidden');
-    if (elements.btnMoreTaglinesText) elements.btnMoreTaglinesText.textContent = "+ Generate 4 More Taglines";
+    if (elements.btnMoreTaglinesText) elements.btnMoreTaglinesText.textContent = "+ 4 More Taglines";
   }
 
   // =========================================================================
