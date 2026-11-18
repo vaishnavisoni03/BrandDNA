@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrandDNA Studio — Sunlit Creative Brand Identity &amp; Logo Lab</title>
+  <meta name="description" content="Generate complete, high-aesthetic brand identities with 3-concept vector SVG logo studio, color psychology palettes, live WCAG contrast auditing, 7-day launch calendar, and infinite Instagram idea studio.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Cinzel:wght@600;700&family=Syne:wght@700;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient Glow Overlays (Sky Blue & Soft Lavender) -->
+  <div class="ambient-glow" aria-hidden="true">
+    <div class="glow-sky glow-peach"></div>
+    <div class="glow-lavender glow-mint"></div>
+    <div class="glow-mesh"></div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-layout">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="brand-logo">
+          <div class="logo-mark">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="14" cy="14" r="13" stroke="url(#logo-gradient)" stroke-width="2" stroke-dasharray="3 3"/>
+              <path d="M9 14C9 10.5 11.5 8 15 8C18.5 8 20 10.5 20 14C20 17.5 16.5 20 13 20" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round"/>
+              <circle cx="14" cy="14" r="3.5" fill="#0D9488"/>
+              <defs>
+                <linearGradient id="logo-gradient" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#2563EB"/>
+                  <stop offset="0.5" stop-color="#0D9488"/>
+                  <stop offset="1" stop-color="#2563EB"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="logo-text">
+            <h1 class="app-title">BrandDNA <span>Studio</span></h1>
+            <span class="app-tagline">Sunlit Identity &amp; Vector Logo Lab</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Engine Status Badge -->
+        <div id="engine-status" class="engine-badge mode-procedural" title="Engine Mode: Smart Procedural, Netlify Serverless, or Gemini Direct">
+          <span class="status-dot"></span>
+          <span class="status-label">Smart Engine</span>
+        </div>
+
+        <!-- Optional Gemini API Key Box -->
+        <div class="api-key-container">
+          <div class="api-key-input-wrapper">
+            <svg class="key-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 2l-2 2m-1.5 1.5L16 7l-1.5-1.5L13 7l-1.5-1.5L10 7l-2-2a5 5 0 0 0-7 7l7 7a5 5 0 0 0 7-7l2-2 1.5 1.5L20 10l1.5-1.5L20 7l2-2z"/>
+            </svg>
+            <input 
+              type="password" 
+              id="api-key-input" 
+              class="api-key-input" 
+              placeholder="Gemini API Key (optional)" 
+              autocomplete="off"
+              spellcheck="false"
+              title="Add your Gemini API key (accepts all keys, including AQ. prefix). Saved locally."
+            />
+            <button type="button" id="btn-toggle-key-visibility" class="icon-btn" title="Toggle key visibility">
+              <svg id="eye-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+            <button type="button" id="btn-clear-key" class="icon-btn clear-btn hidden" title="Clear saved key">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Load Sample Brand Button -->
+        <div class="sample-brand-dropdown-wrapper">
+          <button type="button" id="btn-sample-brand" class="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+            <span>Load Sample Brand</span>
+            <svg class="chevron-down" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div id="sample-dropdown" class="sample-dropdown hidden">
+            <div class="dropdown-header">Curated Brand Archetypes</div>
+            <button type="button" class="sample-item" data-preset="komorebi">
+              <span class="sample-dot" style="background:#2D5A46"></span>
+              <div class="sample-meta">
+                <strong>Komorebi Botanicals</strong>
+                <small>Eco-Organic &bull; Forest, Terracotta, Alabaster</small>
+              </div>
+            </button>
+            <button type="button" class="sample-item" data-preset="hyperpop">
+              <span class="sample-dot" style="background:#EC4899"></span>
+              <div class="sample-meta">
+                <strong>HyperPop Studio</strong>
+                <small>Bold &amp; Gen-Z &bull; Neon Berry, Solar Tangerine</small>
+              </div>
+            </button>
+            <button type="button" class="sample-item" data-preset="saintgermain">
+              <span class="sample-dot" style="background:#B48A4E"></span>
+              <div class="sample-meta">
+                <strong>Maison Saint-Germain</strong>
+                <small>Minimalist Luxury &bull; Truffle, Bronze, Bone Ivory</small>
+              </div>
+            </button>
+            <button type="button" class="sample-item" data-preset="aether">
+              <span class="sample-dot" style="background:#3B82F6"></span>
+              <div class="sample-meta">
+                <strong>Aether Quantum</strong>
+                <small>Tech Futuristic &bull; Cyan Ion, Obsidian, Neon Mint</small>
+              </div>
+            </button>
+            <button type="button" class="sample-item" data-preset="solstice">
+              <span class="sample-dot" style="background:#D97706"></span>
+              <div class="sample-meta">
+                <strong>Solstice Roast Co.</strong>
+                <small>Artisanal Modern &bull; Amber, Mocha, Oat Cream</small>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Code Export Button -->
+        <button type="button" id="btn-copy-code" class="btn btn-primary btn-dev-export" title="Copy Production CSS Variables, Google Fonts @import, and Vector SVG">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          <span>Export Code</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Application Body (Left Sidebar + Studio Workspace) -->
+    <div class="app-body">
+      <!-- 1. Left 'Brand History' Sidebar -->
+      <aside class="brand-history-sidebar" id="brand-history-sidebar" aria-label="Brand History Sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title-row">
+            <div class="sidebar-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+              </svg>
+              <span>Brand History</span>
+            </div>
+            <span class="history-count-badge" id="history-count-badge">0 Brands</span>
+          </div>
+          <button type="button" id="btn-new-brand" class="btn btn-secondary btn-new-brand" title="Create a fresh brand identity">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>+ New Brand</span>
+          </button>
+        </div>
+
+        <div class="sidebar-scroll-area">
+          <div class="history-list" id="history-list">
+            <!-- Dynamically populated from localStorage -->
+          </div>
+        </div>
+      </aside>
+
+      <!-- 2. Studio Workspace (Main Input Panel + Output Bento Grid) -->
+      <main class="studio-workspace">
+        <!-- Main Input Panel Card -->
+        <section class="bento-card input-panel-card" aria-label="Brand Creation Parameters">
+          <div class="panel-header">
+            <div class="panel-icon-wrap">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="panel-title">Brand DNA Studio</h2>
+              <p class="panel-subtitle">Create a complete brand identity from scratch or supercharge your existing venture</p>
+            </div>
+          </div>
+
+          <!-- Dual-Mode Segmented Pill Toggle -->
+          <div class="mode-toggle-wrap">
+            <div class="mode-segmented-toggle" role="tablist" aria-label="Studio Mode">
+              <button 
+                type="button" 
+                class="mode-toggle-btn active" 
+                id="btn-tab-scratch" 
+                role="tab" 
+                aria-selected="true" 
+                aria-controls="panel-scratch"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                <span>Create From Scratch</span>
+              </button>
+              <button 
+                type="button" 
+                class="mode-toggle-btn" 
+                id="btn-tab-existing" 
+                role="tab" 
+                aria-selected="false" 
+                aria-controls="panel-existing"
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="3"></circle>
+                </svg>
+                <span>I Already Have a Brand</span>
+                <span class="mode-badge-pill">Growth Kit</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mode 1: Create From Scratch -->
+          <div id="panel-scratch" class="mode-panel active">
+            <form id="brand-form" class="brand-form" onsubmit="return false;">
+            <div class="form-grid-row">
+              <!-- Brand Name with Trademark Conflict Checker -->
+              <div class="form-group flex-1">
+                <div class="form-label-row">
+                  <label for="input-brand-name" class="form-label">
+                    <span>Brand Name</span>
+                    <span class="label-badge required">Required</span>
+                  </label>
+                  <div class="form-label-actions">
+                    <button type="button" id="btn-suggest-names" class="btn-suggest-names" title="AI Name Generator: Suggest 8 distinct brandable names for your niche &amp; vibe">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                      </svg>
+                      <span id="suggest-btn-text">✨ Suggest Names</span>
+                      <span id="suggest-spinner" class="spinner-small hidden"></span>
+                    </button>
+                    <button type="button" id="btn-check-trademark" class="btn-check-trademark" title="Audit potential trademark conflicts in Indian &amp; global registries">
+                      <svg class="trademark-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                      </svg>
+                      <span id="trademark-btn-text">Check Trademark</span>
+                      <span id="trademark-spinner" class="spinner-small hidden"></span>
+                    </button>
+                  </div>
+                </div>
+                <div class="input-with-icon">
+                  <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+                  </svg>
+                  <input 
+                    type="text" 
+                    id="input-brand-name" 
+                    class="form-input" 
+                    placeholder="e.g. Lumina Botanicals, PulseFlow, Maison Velour" 
+                    value="Komorebi Living" 
+                    required 
+                    maxlength="50"
+                  />
+                </div>
+
+                <!-- Inline Pill-Tray for AI Suggested Names -->
+                <div id="name-suggestions-tray" class="name-suggestions-tray hidden" aria-live="polite">
+                  <div class="tray-header">
+                    <div class="tray-header-left">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      </svg>
+                      <span class="tray-title">AI Suggested Names (8 Concepts)</span>
+                      <span class="tray-sub">Click to pick &amp; auto-audit</span>
+                    </div>
+                    <div class="tray-header-actions">
+                      <button type="button" id="btn-refresh-names" class="btn-tray-icon" title="Generate 8 more fresh ideas">
+                        <svg id="refresh-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                          <polyline points="23 4 23 10 17 10"></polyline>
+                          <polyline points="1 20 1 14 7 14"></polyline>
+                          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                        </svg>
+                        <span id="refresh-btn-text">Refresh 8 More</span>
+                      </button>
+                      <button type="button" id="btn-close-tray" class="btn-tray-close" title="Close suggestions">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div id="suggested-names-list" class="suggested-names-list">
+                    <!-- 8 pills dynamically rendered -->
+                  </div>
+                </div>
+
+                <!-- Compact Trademark Conflict Status Card -->
+                <div id="trademark-status-card" class="trademark-status-card hidden" aria-live="polite">
+                  <div class="trademark-card-top">
+                    <div class="trademark-class-meta">
+                      <span class="trademark-class-badge" id="tm-class-badge">Class 30</span>
+                      <span class="trademark-class-desc" id="tm-class-desc">Staple Foods &amp; Beverages</span>
+                    </div>
+                    <div class="trademark-status-pill pill-clear" id="tm-status-pill">
+                      <span class="status-dot"></span>
+                      <span id="tm-status-text">Clear</span>
+                    </div>
+                  </div>
+
+                  <div class="trademark-body">
+                    <!-- Conflicting brands section (shown if conflicts exist) -->
+                    <div id="tm-conflicts-wrap" class="tm-conflicts-wrap hidden">
+                      <div class="tm-conflicts-label">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <span>Potential Trademark Collisions</span>
+                      </div>
+                      <div id="tm-conflicts-list" class="tm-conflicts-list"></div>
+                    </div>
+
+                    <!-- Reassurance note if Clear -->
+                    <div id="tm-clear-note" class="tm-clear-note">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span>No identical or phonetic trademark collisions detected. High registration availability in this NICE Class.</span>
+                    </div>
+
+                    <!-- Live QuickCompany (IP India) Registry Filings Section -->
+                    <div id="tm-quickcompany-wrap" class="tm-quickcompany-wrap">
+                      <div class="tm-qc-header">
+                        <div class="tm-qc-title">
+                          <svg class="tm-qc-logo-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="m9 12 2 2 4-4"/>
+                          </svg>
+                          <span>Live QuickCompany Registry Filings</span>
+                          <span id="tm-qc-count-badge" class="tm-qc-count-badge">0 Found</span>
+                        </div>
+                        <button type="button" id="btn-fetch-quickcompany" class="btn-fetch-qc" title="Fetch live trademark filings directly from QuickCompany">
+                          <svg id="qc-fetch-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                          </svg>
+                          <span id="qc-fetch-spinner" class="spinner-small hidden"></span>
+                          <span id="qc-fetch-text">Fetch Live</span>
+                        </button>
+                      </div>
+
+                      <!-- Loading state -->
+                      <div id="tm-qc-loading" class="tm-qc-loading hidden">
+                        <div class="spinner-small"></div>
+                        <span>Querying QuickCompany.in live Indian trademark registry...</span>
+                      </div>
+
+                      <!-- Records List -->
+                      <div id="tm-qc-results-list" class="tm-qc-results-list"></div>
+
+                      <!-- Empty State -->
+                      <div id="tm-qc-empty" class="tm-qc-empty hidden">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span id="tm-qc-empty-text">No conflicting active filings found on QuickCompany for this mark.</span>
+                      </div>
+                    </div>
+
+                    <!-- 3 Clickable Alternative Names -->
+                    <div class="tm-alternatives-wrap">
+                      <span class="tm-alt-label">Protected Alternative Names (Click to use):</span>
+                      <div id="tm-alternatives-list" class="tm-alternatives-list"></div>
+                    </div>
+
+                    <!-- Verify Link -->
+                    <div class="tm-card-footer">
+                      <a href="https://www.quickcompany.in/trademarks" target="_blank" rel="noopener noreferrer" class="tm-verify-link" id="tm-verify-link" title="Verify live trademark status on QuickCompany Indian Trademark database">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span id="tm-verify-link-text">Verify Live on QuickCompany (IP India)</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Expanded Industry / Niche Selector (20+ Grouped Options) -->
+              <div class="form-group flex-1">
+                <label for="industry-select" class="form-label">
+                  <span>Industry / Niche Sector</span>
+                  <span class="label-badge">20+ Curated</span>
+                </label>
+                <div class="input-with-icon select-wrap">
+                  <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                  </svg>
+                  <select id="industry-select" class="form-select">
+                    <optgroup label="Tech &amp; SaaS">
+                      <option value="AI &amp; Automation SaaS">AI &amp; Automation SaaS</option>
+                      <option value="FinTech &amp; Crypto">FinTech &amp; Crypto</option>
+                      <option value="Cybersecurity">Cybersecurity</option>
+                      <option value="EdTech &amp; Online Learning">EdTech &amp; Online Learning</option>
+                      <option value="Gaming &amp; Esports">Gaming &amp; Esports</option>
+                      <option value="Developer Tools">Developer Tools</option>
+                    </optgroup>
+                    <optgroup label="Food &amp; Beverage">
+                      <option value="Specialty Coffee &amp; Chai Cafe">Specialty Coffee &amp; Chai Cafe</option>
+                      <option value="Artisanal Bakery &amp; Cloud Kitchen">Artisanal Bakery &amp; Cloud Kitchen</option>
+                      <option value="Craft Beverages &amp; Kombucha">Craft Beverages &amp; Kombucha</option>
+                      <option value="Vegan &amp; Health Food">Vegan &amp; Health Food</option>
+                    </optgroup>
+                    <optgroup label="Fashion &amp; Beauty">
+                      <option value="Organic Skincare &amp; Clean Beauty">Organic Skincare &amp; Clean Beauty</option>
+                      <option value="Streetwear &amp; Sustainable Fashion">Streetwear &amp; Sustainable Fashion</option>
+                      <option value="Luxury Jewelry &amp; Watches">Luxury Jewelry &amp; Watches</option>
+                    </optgroup>
+                    <optgroup label="Wellness &amp; Lifestyle">
+                      <option value="Fitness &amp; Yoga Studio">Fitness &amp; Yoga Studio</option>
+                      <option value="Mental Health &amp; Mindfulness App">Mental Health &amp; Mindfulness App</option>
+                      <option value="Pet Care &amp; Grooming">Pet Care &amp; Grooming</option>
+                      <option value="Boutique Interior Design">Boutique Interior Design</option>
+                    </optgroup>
+                    <optgroup label="Media &amp; Services">
+                      <option value="Event &amp; Wedding Planning">Event &amp; Wedding Planning</option>
+                      <option value="Eco-Travel &amp; Boutique Stays">Eco-Travel &amp; Boutique Stays</option>
+                      <option value="Podcast &amp; Creator Media">Podcast &amp; Creator Media</option>
+                    </optgroup>
+                    <optgroup label="Custom">
+                      <option value="Other / Custom">Other / Custom</option>
+                    </optgroup>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom Niche Input (Shows when Other / Custom selected or quick toggled) -->
+            <div class="form-group hidden" id="custom-niche-group">
+              <label for="input-custom-niche" class="form-label">
+                <span>Custom Niche Specification</span>
+                <span class="label-badge highlight">Custom Type-in</span>
+              </label>
+              <div class="input-with-icon">
+                <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20h9"></path>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                </svg>
+                <input 
+                  type="text" 
+                  id="input-custom-niche" 
+                  class="form-input" 
+                  placeholder="e.g. Regenerative Bio-Materials, High-Altitude Tea Terroir, Neuromorphic Audio" 
+                  maxlength="60"
+                />
+              </div>
+            </div>
+
+            <!-- Target Audience -->
+            <div class="form-group">
+              <label for="input-audience" class="form-label">
+                <span>Target Audience</span>
+                <span class="label-badge">Demographic</span>
+              </label>
+              <div class="input-with-icon textarea-wrap">
+                <svg class="field-icon textarea-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <textarea 
+                  id="input-audience" 
+                  class="form-textarea" 
+                  rows="2" 
+                  placeholder="e.g. Mindful design connoisseurs, urban dwellers seeking restorative rituals and tactile warmth"
+                  maxlength="160"
+                >Mindful design connoisseurs &amp; urban dwellers seeking restorative living rituals</textarea>
+              </div>
+            </div>
+
+            <!-- Brand Vibe Selector (4 Archetypes) -->
+            <div class="form-group">
+              <label class="form-label">
+                <span>Brand Archetype &amp; Aesthetic Vibe</span>
+                <span class="label-badge highlight">Visual DNA</span>
+              </label>
+              <div class="vibe-grid" role="radiogroup" aria-label="Brand Vibe Options">
+                <label class="vibe-card active" data-vibe="eco-organic">
+                  <input type="radio" name="brand-vibe" value="eco-organic" checked class="sr-only">
+                  <div class="vibe-indicator">
+                    <span class="vibe-swatch-dot" style="background:#2D5A46"></span>
+                    <span class="vibe-swatch-dot" style="background:#C27D53"></span>
+                    <span class="vibe-swatch-dot" style="background:#E9C46A"></span>
+                  </div>
+                  <div class="vibe-title">Eco-Organic</div>
+                  <p class="vibe-desc">Restorative, biophilic, earthy terracotta &amp; botanical calm</p>
+                  <span class="vibe-radio-indicator"></span>
+                </label>
+
+                <label class="vibe-card" data-vibe="minimalist-luxury">
+                  <input type="radio" name="brand-vibe" value="minimalist-luxury" class="sr-only">
+                  <div class="vibe-indicator">
+                    <span class="vibe-swatch-dot" style="background:#B48A4E"></span>
+                    <span class="vibe-swatch-dot" style="background:#1C1917"></span>
+                    <span class="vibe-swatch-dot" style="background:#F5F3EF"></span>
+                  </div>
+                  <div class="vibe-title">Minimalist Luxury</div>
+                  <p class="vibe-desc">Archival restraint, champagne bronze, bone ivory &amp; editorial poise</p>
+                  <span class="vibe-radio-indicator"></span>
+                </label>
+
+                <label class="vibe-card" data-vibe="bold-genz">
+                  <input type="radio" name="brand-vibe" value="bold-genz" class="sr-only">
+                  <div class="vibe-indicator">
+                    <span class="vibe-swatch-dot" style="background:#EC4899"></span>
+                    <span class="vibe-swatch-dot" style="background:#F97316"></span>
+                    <span class="vibe-swatch-dot" style="background:#8B5CF6"></span>
+                  </div>
+                  <div class="vibe-title">Bold &amp; Gen-Z</div>
+                  <p class="vibe-desc">High-voltage dopamine, neon acid hues &amp; irreverent pop velocity</p>
+                  <span class="vibe-radio-indicator"></span>
+                </label>
+
+                <label class="vibe-card" data-vibe="tech-futuristic">
+                  <input type="radio" name="brand-vibe" value="tech-futuristic" class="sr-only">
+                  <div class="vibe-indicator">
+                    <span class="vibe-swatch-dot" style="background:#2563EB"></span>
+                    <span class="vibe-swatch-dot" style="background:#10B981"></span>
+                    <span class="vibe-swatch-dot" style="background:#0F172A"></span>
+                  </div>
+                  <div class="vibe-title">Tech Futuristic</div>
+                  <p class="vibe-desc">Algorithmic cobalt, quantum lattice, ion telemetry &amp; sleek obsidian</p>
+                  <span class="vibe-radio-indicator"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Generate Button -->
+            <div class="action-buttons-wrap">
+              <button type="button" id="btn-generate" class="btn btn-primary btn-generate">
+                <span class="btn-spinner hidden" id="generate-spinner"></span>
+                <svg class="btn-icon-sparkle" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M5.64 18.36l2.12-2.12M16.24 7.76l2.12-2.12"/>
+                </svg>
+                <span id="btn-generate-text">Generate Complete Brand</span>
+              </button>
+              <div class="generation-hint">
+                <span id="generation-source-hint">⚡ Smart Procedural Synthesis active</span>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Mode 2: Existing Brand Growth Mode -->
+        <div id="panel-existing" class="mode-panel hidden">
+          <form id="existing-brand-form" class="brand-form" onsubmit="return false;">
+            <div class="form-grid-row">
+              <!-- Brand Name -->
+              <div class="form-group flex-1">
+                <label for="input-existing-name" class="form-label">
+                  <span>Existing Brand Name</span>
+                  <span class="label-badge required">Required</span>
+                </label>
+                <div class="input-with-icon">
+                  <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+                  </svg>
+                  <input 
+                    type="text" 
+                    id="input-existing-name" 
+                    class="form-input" 
+                    placeholder="e.g. Aura Soundworks, Maison Velour" 
+                    value="Aura Soundworks" 
+                    required 
+                    maxlength="50"
+                  />
+                </div>
+              </div>
+
+              <!-- Industry / Niche Selector -->
+              <div class="form-group flex-1">
+                <label for="existing-industry-select" class="form-label">
+                  <span>Industry / Sector</span>
+                  <span class="label-badge">20+ Curated</span>
+                </label>
+                <div class="input-with-icon select-wrap">
+                  <svg class="field-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                  </svg>
+                  <select id="existing-industry-select" class="form-select">
+                    <optgroup label="Tech &amp; SaaS">
+                      <option value="AI &amp; Automation SaaS">AI &amp; Automation SaaS</option>
+                      <option value="FinTech &amp; Crypto">FinTech &amp; Crypto</option>
+                      <option value="Cybersecurity">Cybersecurity</option>
+                      <option value="EdTech &amp; Online Learning">EdTech &amp; Online Learning</option>
+                      <option value="Gaming &amp; Esports">Gaming &amp; Esports</option>
+                      <option value="Developer Tools">Developer Tools</option>
+                    </optgroup>
+                    <optgroup label="Food &amp; Beverage">
+                      <option value="Specialty Coffee &amp; Chai Cafe">Specialty Coffee &amp; Chai Cafe</option>
+                      <option value="Artisanal Bakery &amp; Cloud Kitchen">Artisanal Bakery &amp; Cloud Kitchen</option>
+                      <option value="Craft Beverages &amp; Kombucha">Craft Beverages &amp; Kombucha</option>
+                      <option value="Vegan &amp; Health Food">Vegan &amp; Health Food</option>
+                    </optgroup>
+                    <optgroup label="Fashion &amp; Beauty">
+                      <option value="Organic Skincare &amp; Clean Beauty">Organic Skincare &amp; Clean Beauty</option>
+                      <option value="Streetwear &amp; Sustainable Fashion">Streetwear &amp; Sustainable Fashion</option>
+                      <option value="Luxury Jewelry &amp; Watches">Luxury Jewelry &amp; Watches</option>
+                    </optgroup>
+                    <optgroup label="Wellness &amp; Lifestyle">
+                      <option value="Fitness &amp; Yoga Studio">Fitness &amp; Yoga Studio</option>
+                      <option value="Mental Health &amp; Mindfulness App">Mental Health &amp; Mindfulness App</option>
+                      <option value="Pet Care &amp; Grooming">Pet Care &amp; Grooming</option>
+                      <option value="Boutique Interior Design" selected>Boutique Interior Design</option>
+                    </optgroup>
+                    <optgroup label="Media &amp; Services">
+                      <option value="Event &amp; Wedding Planning">Event &amp; Wedding Planning</option>
+                      <option value="Eco-Travel &amp; Boutique Stays">Eco-Travel &amp; Boutique Stays</option>
+                      <option value="Podcast &amp; Creator Media">Podcast &amp; Creator Media</option>
+                    </optgroup>
+                    <optgroup label="Custom / Specialized">
+                      <option value="Other / Custom">Other / Custom</option>
+                    </optgroup>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Brand Description / Positioning -->
+            <div class="form-group">
+              <label for="input-existing-desc" class="form-label">
+                <span>Current Brand Description &amp; Positioning</span>
+                <span class="label-badge">Required</span>
+              </label>
+              <textarea 
+                id="input-existing-desc" 
+                class="form-textarea" 
+                rows="2" 
+                placeholder="Describe what you sell, your target aesthetic, and core positioning (e.g. 'We design precision wireless audio hardware and acoustic transducers for creators who demand uncompromising clarity')."
+                maxlength="240"
+              >We design precision wireless audio hardware and acoustic transducers for creators who demand uncompromising clarity.</textarea>
+            </div>
+
+            <!-- Pick or Paste 3-5 Brand Hex Colors -->
+            <div class="form-group">
+              <div class="existing-palette-header">
+                <label class="form-label" style="margin-bottom: 0;">
+                  <span>Existing Brand Colors (Pick or Paste Hex Codes)</span>
+                  <span class="label-badge">3–5 Brand Swatches</span>
+                </label>
+                <button type="button" class="btn-text-action" id="btn-preset-cobalt-palette" title="Load sample modern palette">Reset Palette</button>
+              </div>
+              <div class="existing-colors-grid">
+                <!-- Color 1: Primary -->
+                <div class="existing-color-card">
+                  <span class="color-role-tag">Primary</span>
+                  <div class="color-input-pair">
+                    <input type="color" id="existing-picker-1" class="color-picker-input" value="#2563EB" title="Choose color">
+                    <input type="text" id="existing-hex-1" class="color-hex-input" value="#2563EB" maxlength="7" spellcheck="false">
+                  </div>
+                </div>
+                <!-- Color 2: Secondary -->
+                <div class="existing-color-card">
+                  <span class="color-role-tag">Secondary</span>
+                  <div class="color-input-pair">
+                    <input type="color" id="existing-picker-2" class="color-picker-input" value="#0D9488" title="Choose color">
+                    <input type="text" id="existing-hex-2" class="color-hex-input" value="#0D9488" maxlength="7" spellcheck="false">
+                  </div>
+                </div>
+                <!-- Color 3: Accent -->
+                <div class="existing-color-card">
+                  <span class="color-role-tag">Accent</span>
+                  <div class="color-input-pair">
+                    <input type="color" id="existing-picker-3" class="color-picker-input" value="#38BDF8" title="Choose color">
+                    <input type="text" id="existing-hex-3" class="color-hex-input" value="#38BDF8" maxlength="7" spellcheck="false">
+                  </div>
+                </div>
+                <!-- Color 4: Light Neutral -->
+                <div class="existing-color-card">
+                  <span class="color-role-tag">Neutral Light</span>
+                  <div class="color-input-pair">
+                    <input type="color" id="existing-picker-4" class="color-picker-input" value="#F8FAFC" title="Choose color">
+                    <input type="text" id="existing-hex-4" class="color-hex-input" value="#F8FAFC" maxlength="7" spellcheck="false">
+                  </div>
+                </div>
+                <!-- Color 5: Dark Contrast -->
+                <div class="existing-color-card">
+                  <span class="color-role-tag">Dark / Text</span>
+                  <div class="color-input-pair">
+                    <input type="color" id="existing-picker-5" class="color-picker-input" value="#0F172A" title="Choose color">
+                    <input type="text" id="existing-hex-5" class="color-hex-input" value="#0F172A" maxlength="7" spellcheck="false">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upload Existing Logo Image Dropzone -->
+            <div class="form-group">
+              <label class="form-label">
+                <span>Upload Existing Logo Asset</span>
+                <span class="label-badge">PNG, SVG, JPG, WEBP</span>
+              </label>
+              <input type="file" id="input-existing-logo" accept="image/png, image/svg+xml, image/jpeg, image/webp" class="sr-only">
+              
+              <div class="logo-dropzone" id="logo-upload-dropzone" tabindex="0" role="button" aria-label="Upload logo image">
+                <div class="dropzone-content" id="dropzone-prompt">
+                  <div class="dropzone-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="17 8 12 3 7 8"></polyline>
+                      <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                  </div>
+                  <div class="dropzone-text">
+                    <span class="dropzone-title">Click to upload or drag &amp; drop your logo</span>
+                    <span class="dropzone-sub">PNG, SVG, or JPG &bull; Transparent background recommended</span>
+                  </div>
+                </div>
+
+                <!-- Live Logo Preview Box (shown once loaded) -->
+                <div class="logo-preview-box hidden" id="logo-preview-box">
+                  <div class="logo-preview-thumb-wrap">
+                    <img id="logo-preview-img" src="" alt="Uploaded Logo Preview" class="logo-preview-img">
+                  </div>
+                  <div class="logo-preview-details">
+                    <span class="logo-preview-name" id="logo-file-details">logo.png</span>
+                    <span class="logo-preview-status">✓ Ready &bull; Automatically applied to all mockups</span>
+                  </div>
+                  <button type="button" class="btn-text-action btn-remove-logo" id="btn-remove-logo" title="Remove uploaded logo">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <span>Remove</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+              <button type="button" id="btn-generate-existing" class="btn btn-primary btn-generate" title="Generate growth campaign kit for your existing brand">
+                <span class="btn-spinner hidden" id="existing-spinner"></span>
+                <svg class="btn-icon-sparkle" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+                <span id="btn-generate-existing-text">Generate Growth &amp; Campaign Kit</span>
+              </button>
+              <div class="generation-hint">
+                <span>⚡ Tailors social campaign templates, tagline vault, and launch strategy to your exact brand assets</span>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+        <!-- Dynamic Brand Hero Bar -->
+        <div class="brand-hero-bar" id="brand-hero-bar">
+          <div class="hero-left">
+            <span class="hero-vibe-pill" id="hero-vibe-pill">Eco-Organic Archetype</span>
+            <h2 class="hero-brand-name" id="hero-brand-name">Komorebi Living</h2>
+            <p class="hero-brand-sub" id="hero-brand-sub">Artisanal Home &amp; Bio-Wellness &bull; Crafted for mindful design connoisseurs</p>
+          </div>
+          <div class="hero-right">
+            <button type="button" class="btn btn-outline" id="btn-copy-brief" title="Copy Brand Brief to Clipboard">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span>Copy Brief</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Bento Grid -->
+        <section class="output-bento-grid" id="output-bento-grid" aria-label="Generated Brand Identity Bento Grid">
+          
+          <!-- =========================================================================
+               BENTO CARD 1: 3-CONCEPT VECTOR SVG LOGO STUDIO (Span 12)
+               ========================================================================= -->
+          <div class="bento-card card-logo-studio" id="card-logo-studio">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-eyebrow card-kicker">Scalable Vector System</span>
+                <div class="card-title-row">
+                  <div class="card-icon-pill icon-emerald">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                      <polyline points="2 17 12 22 22 17"></polyline>
+                      <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                  </div>
+                  <h2 class="card-title">Vector SVG Logo Studio</h2>
+                </div>
+              </div>
+              <div class="card-actions-header">
+                <span class="badge-studio-meta">3 Tailored Concepts &bull; viewBox 0 0 240 120</span>
+              </div>
+            </div>
+
+            <!-- 3 Scalable Logo Cards Grid -->
+            <div class="logo-concepts-grid" id="logo-concepts-grid">
+              
+              <!-- Concept 1: Icon + Wordmark Lockup -->
+              <div class="logo-concept-card">
+                <div class="concept-meta-bar">
+                  <span class="concept-num-tag">Concept 01</span>
+                  <span class="concept-name-label">Icon + Wordmark Lockup</span>
+                </div>
+                <div class="logo-svg-stage-box" id="logo-concept-1-stage" aria-label="Concept 1 SVG Stage">
+                  <!-- Scalable SVG injected by JS -->
+                </div>
+                <div class="logo-card-actions">
+                  <button type="button" class="btn-logo-action" id="btn-download-logo-1" title="Download standalone .SVG file">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download .SVG</span>
+                  </button>
+                  <button type="button" class="btn-logo-action" id="btn-copy-logo-1" title="Copy raw SVG code">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy SVG Code</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Concept 2: Monogram Crest -->
+              <div class="logo-concept-card">
+                <div class="concept-meta-bar">
+                  <span class="concept-num-tag">Concept 02</span>
+                  <span class="concept-name-label">Monogram Crest</span>
+                </div>
+                <div class="logo-svg-stage-box" id="logo-concept-2-stage" aria-label="Concept 2 SVG Stage">
+                  <!-- Scalable SVG injected by JS -->
+                </div>
+                <div class="logo-card-actions">
+                  <button type="button" class="btn-logo-action" id="btn-download-logo-2" title="Download standalone .SVG file">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download .SVG</span>
+                  </button>
+                  <button type="button" class="btn-logo-action" id="btn-copy-logo-2" title="Copy raw SVG code">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy SVG Code</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Concept 3: Minimalist Dark-Card Variant -->
+              <div class="logo-concept-card card-dark-variant">
+                <div class="concept-meta-bar">
+                  <span class="concept-num-tag dark-tag">Concept 03</span>
+                  <span class="concept-name-label">Minimalist Dark-Card Variant</span>
+                </div>
+                <div class="logo-svg-stage-box dark-stage-box" id="logo-concept-3-stage" aria-label="Concept 3 SVG Stage">
+                  <!-- Scalable SVG injected by JS -->
+                </div>
+                <div class="logo-card-actions">
+                  <button type="button" class="btn-logo-action" id="btn-download-logo-3" title="Download standalone .SVG file">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download .SVG</span>
+                  </button>
+                  <button type="button" class="btn-logo-action" id="btn-copy-logo-3" title="Copy raw SVG code">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy SVG Code</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- =========================================================================
+               BENTO CARD 2: COLOR PALETTE & LIVE WCAG CONTRAST AUDITOR (Span 6)
+               ========================================================================= -->
+          <div class="bento-card card-palette" id="card-palette">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-eyebrow card-kicker">Harmonic Chromatics</span>
+                <div class="card-title-row">
+                  <div class="card-icon-pill icon-tangerine">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 2a10 10 0 0 1 10 10c0 4-3 7-7 7h-1a2 2 0 0 0-2 2v1a2 2 0 0 1-2 2 10 10 0 0 1-2-20"/>
+                      <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+                      <circle cx="12" cy="6" r="1.5" fill="currentColor"/>
+                      <circle cx="16" cy="8" r="1.5" fill="currentColor"/>
+                      <circle cx="17.5" cy="12" r="1.5" fill="currentColor"/>
+                    </svg>
+                  </div>
+                  <h2 class="card-title">Color Palette &amp; Psychology</h2>
+                </div>
+              </div>
+              <span class="badge-swatch-count">5 Clickable Hex Swatches</span>
+            </div>
+
+            <!-- Clickable Swatches Grid -->
+            <div class="swatches-grid" id="swatches-grid">
+              <!-- Swatches injected by JS -->
+            </div>
+
+            <!-- Palette Narrative -->
+            <div class="palette-narrative-box">
+              <div class="narrative-label">Chromatic Psychology Narrative</div>
+              <p class="palette-narrative" id="palette-narrative">
+                A restorative synthesis of deep forest grounding, sun-baked clay warmth, and luminous linen openness.
+              </p>
+            </div>
+
+            <!-- Live WCAG Accessibility Contrast Auditor Bar -->
+            <div class="wcag-auditor-bar" id="wcag-auditor-bar">
+              <div class="wcag-bar-header">
+                <div class="wcag-title-row">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 2a10 10 0 0 0 0 20z" fill="currentColor"></path>
+                  </svg>
+                  <span class="wcag-title">Live WCAG Contrast Auditor</span>
+                </div>
+                <div class="wcag-audit-badge pass-aaa" id="wcag-audit-badge">
+                  <span class="wcag-ratio-number" id="wcag-ratio-val">8.4:1</span>
+                  <span class="wcag-pass-label" id="wcag-grade-val">AAA Pass</span>
+                </div>
+              </div>
+
+              <div class="wcag-bar-body">
+                <p class="wcag-explainer" id="wcag-explainer">
+                  Calculated with JavaScript relative luminance formula between background (<span id="wcag-bg-label">#2D5A46</span>) and text (<span id="wcag-text-label">#FFFFFF</span>).
+                </p>
+                <div class="wcag-controls-row">
+                  <div class="wcag-swatch-picker" id="wcag-swatch-picker">
+                    <!-- Dynamic mini dots for instant auditing -->
+                  </div>
+                  <div class="wcag-text-color-toggle">
+                    <span class="toggle-micro-label">Text Color:</span>
+                    <button type="button" class="wcag-toggle-btn active" data-text-color="#FFFFFF">White</button>
+                    <button type="button" class="wcag-toggle-btn" data-text-color="#1C1917">Charcoal</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- =========================================================================
+               BENTO CARD 3: TYPOGRAPHY & BRAND VOICE REWRITER GUARDRAIL (Span 6)
+               ========================================================================= -->
+          <div class="bento-card card-typography" id="card-typography">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-eyebrow card-kicker">Typography &amp; Persona</span>
+                <div class="card-title-row">
+                  <div class="card-icon-pill icon-charcoal">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="4 7 4 4 20 4 20 7"/>
+                      <line x1="9" y1="20" x2="15" y2="20"/>
+                      <line x1="12" y1="4" x2="12" y2="20"/>
+                    </svg>
+                  </div>
+                  <h2 class="card-title">Google Font Pairing &amp; Voice</h2>
+                </div>
+              </div>
+              <span class="badge-studio-meta">Dynamic Font Injection</span>
+            </div>
+
+            <!-- Typography Pairing Cards: Two Side-by-Side Soft Alabaster Sub-Cards -->
+            <div class="font-specs-row font-pairing-grid" id="font-pairing-grid">
+              <!-- Sub-Card 1: Headline Font -->
+              <div class="font-spec-card font-sub-card" id="font-sub-card-heading">
+                <div class="spec-label-row">
+                  <span class="spec-label">Headline Font</span>
+                  <span class="spec-meta" id="font-heading-weight">Bold 700 &bull; Display Serif</span>
+                </div>
+                <div class="spec-font-name" id="font-heading-name">Cinzel</div>
+                <div class="font-preview-large font-preview-heading" id="font-heading-preview">
+                  Aa Bb Gg 123
+                </div>
+                <div class="font-preview-sample" id="font-heading-sample">
+                  The quick brown fox jumps over the lazy dog.
+                </div>
+              </div>
+
+              <!-- Sub-Card 2: Body & UI Font -->
+              <div class="font-spec-card font-sub-card" id="font-sub-card-body">
+                <div class="spec-label-row">
+                  <span class="spec-label">Body &amp; UI Font</span>
+                  <span class="spec-meta" id="font-body-weight">Regular 400 &bull; Clean Sans</span>
+                </div>
+                <div class="spec-font-name" id="font-body-name">Plus Jakarta Sans</div>
+                <div class="font-preview-large font-preview-body" id="font-body-preview">
+                  Aa Bb Gg 123
+                </div>
+                <div class="font-preview-sample" id="font-body-sample">
+                  Crafting resilient, intentional interfaces and editorial clarity.
+                </div>
+              </div>
+            </div>
+
+            <!-- Dynamic Live Font Preview Box -->
+            <div class="live-font-preview-box">
+              <h4 class="sample-headline" id="sample-headline">Breathe room into the everyday.</h4>
+              <p class="sample-body" id="sample-body">
+                Designed for modern dwellers who seek refuge in tactile materials, natural circadian rhythms, and conscious stillness.
+              </p>
+            </div>
+
+            <!-- Brand Tone Adjectives Row -->
+            <div class="brand-tone-section">
+              <div class="section-micro-title">Voice Tone Persona</div>
+              <div class="tone-tags-row" id="tone-tags-row">
+                <span class="tone-tag">Restorative</span>
+                <span class="tone-tag">Tactile</span>
+                <span class="tone-tag">Discerning</span>
+              </div>
+            </div>
+
+            <!-- Tagline Section -->
+            <div class="tagline-quote-box">
+              <span class="quote-mark">&ldquo;</span>
+              <p class="punchy-tagline-text" id="punchy-tagline-text">Sanctuary for the intentional senses.</p>
+            </div>
+
+            <!-- Brand Voice Rewriter Guardrail Module -->
+            <div class="voice-rewriter-card">
+              <div class="voice-rewriter-header">
+                <div class="voice-rewriter-title">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                  <span>Brand Voice Rewriter &amp; Guardrail</span>
+                </div>
+                <span class="voice-output-badge" id="voice-output-badge">Tone Guardrail Active</span>
+              </div>
+
+              <div class="voice-input-row">
+                <input 
+                  type="text" 
+                  id="voiceInput" 
+                  class="input-voice-rewrite" 
+                  placeholder="Paste any sentence (e.g. 'We sell good coffee')" 
+                  value="We sell good coffee"
+                />
+                <button type="button" id="btn-rewrite-voice" class="btn btn-primary btn-rewrite" title="Rewrite sentence using brand voice rules">
+                  <span class="btn-spinner hidden" id="rewrite-spinner"></span>
+                  <svg class="rewrite-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M21 2v6h-6"></path>
+                    <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+                    <path d="M3 22v-6h6"></path>
+                    <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+                  </svg>
+                  <span id="btn-rewrite-text">Rewrite in Brand Voice</span>
+                </button>
+              </div>
+
+              <!-- Quick Sentence Chips -->
+              <div class="voice-chips-row">
+                <button type="button" class="voice-chip-btn" data-sentence="We sell good coffee">☕ "We sell good coffee"</button>
+                <button type="button" class="voice-chip-btn" data-sentence="Our mobile app is now available">📱 "Our app is available"</button>
+                <button type="button" class="voice-chip-btn" data-sentence="We make stylish sustainable clothes">🌿 "Sustainable clothes"</button>
+                <button type="button" class="voice-chip-btn" data-sentence="Fast delivery right to your door">🚀 "Fast delivery to door"</button>
+              </div>
+
+              <!-- Transformed Output Box -->
+              <div class="voice-transformed-box">
+                <div class="voice-output-meta">
+                  <span class="voice-output-label">Brand-Transformed Voicing</span>
+                  <button type="button" class="btn-copy-rewritten" id="btn-copy-rewritten" title="Copy rewritten sentence">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy</span>
+                  </button>
+                </div>
+                <p class="voice-transformed-text" id="voice-transformed-text">
+                  "Slow-roasted single-origin harvests honoring volcanic terroir, smallholder agroforestry, and morning stillness."
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- =========================================================================
+               BENTO CARD 4: LIVE INSTAGRAM POST MOCKUP (Span 6)
+               ========================================================================= -->
+          <div class="bento-card card-social" id="card-social">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-eyebrow card-kicker">Marketing Validation</span>
+                <div class="card-title-row">
+                  <div class="card-icon-pill icon-emerald">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                    </svg>
+                  </div>
+                  <h2 class="card-title">Live Instagram Post Mockup</h2>
+                </div>
+              </div>
+              <span class="badge-studio-meta">Real-Time Canvas</span>
+            </div>
+
+            <!-- Instagram Feed Card -->
+            <div class="social-post-card">
+              <!-- Post Header -->
+              <div class="post-header">
+                <div class="post-user-info">
+                  <div class="post-avatar" id="ig-avatar">
+                    <!-- SVG Initials Avatar injected by JS -->
+                  </div>
+                  <div class="post-user-meta">
+                    <span class="post-handle" id="ig-handle">komorebi.living</span>
+                    <span class="post-location" id="ig-location">Kyoto &bull; Studio Sanctuary</span>
+                  </div>
+                </div>
+                <div class="post-more-btn" aria-hidden="true">&bull;&bull;&bull;</div>
+              </div>
+
+              <!-- Media Canvas -->
+              <div class="ig-media-canvas" id="ig-media-canvas">
+                <div class="ig-category-tag" id="ig-category-tag">New Collection &bull; SS26</div>
+                <div class="ig-post-headline" id="ig-post-headline">Breathe room into the everyday.</div>
+                <div class="ig-post-subtext" id="ig-post-subtext">Circadian vessels &amp; raw clay lighting unveiled.</div>
+                <div class="ig-post-pill" id="ig-post-pill">
+                  <span class="pill-dot"></span>
+                  <span>Explore Catalog</span>
+                </div>
+                <div class="ig-watermark" id="ig-watermark">KL</div>
+              </div>
+
+              <!-- Action Bar -->
+              <div class="post-action-bar">
+                <div class="action-icons-left">
+                  <button type="button" class="post-icon-btn" id="btn-ig-heart" title="Like post">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  </button>
+                  <button type="button" class="post-icon-btn" title="Comment">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                  </button>
+                  <button type="button" class="post-icon-btn" title="Share">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  </button>
+                </div>
+                <button type="button" class="post-icon-btn" id="btn-ig-bookmark" title="Save post">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                </button>
+              </div>
+
+              <!-- Likes Counter -->
+              <div class="post-likes">
+                Liked by <strong id="ig-likes-user">atelier.minimal</strong> and <span id="ig-likes-number">1,420 others</span>
+              </div>
+
+              <!-- Caption -->
+              <div class="post-caption-block">
+                <span class="caption-handle" id="ig-caption-handle">komorebi.living</span>
+                <span class="caption-text" id="ig-caption-text">
+                  Simplicity isn't the absence of clutter—it's the presence of intention. Our new collection of circadian vessels and raw clay lighting is now unveiled.
+                </span>
+              </div>
+
+              <!-- Hashtags -->
+              <div class="post-hashtags" id="ig-hashtags">
+                #KomorebiLiving #MindfulLiving #IntentionalDesign #BiophilicHome #QuietLuxury
+              </div>
+
+              <!-- Copy Caption Button -->
+              <div class="post-footer-actions">
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-caption">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span>Copy Caption &amp; Hashtags</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- =========================================================================
+               BENTO CARD 5: 7-DAY BRAND LAUNCH CALENDAR (Span 6)
+               ========================================================================= -->
+          <div class="bento-card card-launch-calendar" id="card-calendar">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-eyebrow card-kicker">Growth Playbook</span>
+                <div class="card-title-row">
+                  <div class="card-icon-pill icon-tangerine">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                  </div>
+                  <h2 class="card-title">7-Day Brand Launch Calendar</h2>
+                </div>
+              </div>
+              <div class="calendar-meta-status">
+                <span class="calendar-progress-label" id="calendar-progress-label">0 of 7 Completed</span>
+                <button type="button" id="btn-reset-calendar" class="btn-text-action" title="Reset checklist">Reset</button>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="calendar-progress-track">
+              <div class="calendar-progress-bar" id="calendar-progress-bar" style="width: 0%;"></div>
+            </div>
+
+            <!-- Day 1 to 7 Checklist Grid -->
+            <div class="launch-calendar-grid" id="launch-calendar-grid">
+              <!-- Dynamically populated from brand state -->
+            </div>
+          </div>
+
+          <!-- =========================================================================
+               BENTO CARD 6: INFINITE INSTAGRAM IDEA STUDIO (Span 12)
+               ========================================================================= -->
+          <div class="bento-card card-ideas-studio" id="card-ideas">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-eyebrow card-kicker">Content Velocity</span>
+                <div class="card-title-row">
+                  <div class="card-icon-pill icon-emerald">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                    </svg>
+                  </div>
+                  <h2 class="card-title">Infinite Instagram Idea Studio</h2>
+                </div>
+              </div>
+              <div class="ideas-header-actions">
+                <span class="ideas-count-badge" id="ideas-count-badge">3 Ideas Ready</span>
+                <button type="button" id="btn-generate-more-ideas" class="btn btn-primary btn-generate-more">
+                  <span class="btn-spinner hidden" id="more-ideas-spinner"></span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span id="btn-generate-more-text">+ Generate 3 More Fresh Ideas</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Ideas Cards Grid -->
+            <div class="ideas-cards-grid" id="ideas-cards-grid">
+              <!-- Dynamically populated from brand state -->
+            </div>
+          </div>
+
+          <!-- =========================================================================
+               BENTO CARD 7: SOCIAL CAMPAIGN TEMPLATES & TAGLINE VAULT (Span 12)
+               ========================================================================= -->
+          <div class="bento-card card-campaigns" id="card-campaigns">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-eyebrow card-kicker">Campaign Accelerator &amp; Asset Vault</span>
+                <div class="card-title-row">
+                  <div class="card-icon-pill icon-cobalt">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                      <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                      <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                    </svg>
+                  </div>
+                  <h2 class="card-title">Social Campaign Templates &amp; Tagline Vault</h2>
+                </div>
+              </div>
+              <span class="badge-studio-meta">3 Ready Creatives &bull; 4 Tagline Angles</span>
+            </div>
+
+            <!-- Sub-Section A: 3 Visual Social Campaign Templates -->
+            <div class="campaign-section-header">
+              <div class="vault-title-wrap">
+                <span class="spec-label">Multi-Format Creatives</span>
+                <h3 class="vault-title">High-Conversion Social Campaign Templates</h3>
+              </div>
+              <span class="campaign-sync-pill">🎨 Synced to Brand Palette</span>
+            </div>
+
+            <div class="campaign-templates-grid" id="campaign-templates-grid">
+              <!-- Template 1: Product Launch Banner -->
+              <div class="campaign-card template-launch" id="campaign-card-launch">
+                <div class="campaign-card-header">
+                  <div class="campaign-brand-header">
+                    <div class="campaign-logo-preview" id="campaign-launch-logo"></div>
+                    <span class="campaign-badge" id="campaign-launch-kicker">GLOBAL DROP &bull; PHASE 01</span>
+                  </div>
+                  <span class="campaign-format-pill">16:9 Hero Banner</span>
+                </div>
+                <div class="campaign-card-body">
+                  <h3 class="campaign-headline" id="campaign-launch-headline">Introducing the New Standard in Circadian Living.</h3>
+                  <p class="campaign-subtext" id="campaign-launch-subtext">Architected for mindful dwellers. Tactile vessels &amp; raw clay lighting designed for stillness.</p>
+                  <div class="campaign-cta-mockup" id="campaign-launch-cta">
+                    <span>Explore Collection</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </div>
+                </div>
+                <div class="campaign-card-footer">
+                  <button type="button" class="btn-copy-idea" id="btn-copy-launch-copy" title="Copy Launch Banner Copy">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy Campaign Copy</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Template 2: Discount / Flash Drop Story Card -->
+              <div class="campaign-card template-drop" id="campaign-card-drop">
+                <div class="campaign-card-header">
+                  <div class="campaign-brand-header">
+                    <div class="campaign-logo-preview" id="campaign-drop-logo"></div>
+                    <span class="campaign-badge badge-drop" id="campaign-drop-badge">FLASH DROP &bull; 48 HRS ONLY</span>
+                  </div>
+                  <span class="campaign-format-pill">9:16 Story Card</span>
+                </div>
+                <div class="campaign-card-body">
+                  <div class="drop-discount-number" id="campaign-drop-offer">25% OFF DEBUT</div>
+                  <p class="campaign-subtext" id="campaign-drop-hook">Unlock priority access to the inaugural studio edition.</p>
+                  <div class="campaign-voucher-box">
+                    <span class="voucher-label">PROMO CODE</span>
+                    <span class="voucher-code" id="campaign-drop-code">KOMOREBI25</span>
+                  </div>
+                </div>
+                <div class="campaign-card-footer">
+                  <button type="button" class="btn-copy-idea" id="btn-copy-drop-copy" title="Copy Drop Story Copy">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy Story Text</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Template 3: Testimonial / Editorial Quote Card -->
+              <div class="campaign-card template-testimonial" id="campaign-card-testimonial">
+                <div class="campaign-card-header">
+                  <div class="campaign-brand-header">
+                    <div class="campaign-logo-preview" id="campaign-test-logo"></div>
+                    <span class="campaign-badge badge-editorial">EDITORIAL SPOTLIGHT</span>
+                  </div>
+                  <span class="campaign-format-pill">Editorial Square</span>
+                </div>
+                <div class="campaign-card-body">
+                  <div class="testimonial-rating" id="campaign-test-rating">★★★★★</div>
+                  <blockquote class="testimonial-quote" id="campaign-test-quote">
+                    “A profound masterclass in modern intentional design. Every curve carries quiet conviction.”
+                  </blockquote>
+                  <div class="testimonial-author-block">
+                    <div class="testimonial-author" id="campaign-test-author">Architectural Digest</div>
+                    <div class="testimonial-title" id="campaign-test-title">Design Critic &bull; Tokyo Dispatch</div>
+                  </div>
+                </div>
+                <div class="campaign-card-footer">
+                  <button type="button" class="btn-copy-idea" id="btn-copy-test-copy" title="Copy Testimonial Quote">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy Quote</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sub-Section B: The Tagline Vault (4 Distinct Angles) -->
+            <div class="tagline-vault-section">
+              <div class="tagline-vault-header">
+                <div class="vault-title-wrap">
+                  <span class="spec-label">Strategic Positioning</span>
+                  <h3 class="vault-title">The Tagline Vault &bull; 4 Distinct Angles</h3>
+                </div>
+                <span class="ideas-count-badge">4 Angles Ready</span>
+              </div>
+              <div class="tagline-vault-grid" id="tagline-vault-grid">
+                <!-- Angle 1: Bold -->
+                <div class="tagline-angle-card" id="tagline-card-bold">
+                  <div class="angle-header">
+                    <span class="angle-badge badge-bold">⚡ Bold &amp; Unapologetic</span>
+                    <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-bold" title="Copy bold tagline">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="tagline-text" id="tagline-text-bold">Command the room. Set the standard.</p>
+                </div>
+
+                <!-- Angle 2: Minimal -->
+                <div class="tagline-angle-card" id="tagline-card-minimal">
+                  <div class="angle-header">
+                    <span class="angle-badge badge-minimal">✦ Minimal &amp; Poetic</span>
+                    <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-minimal" title="Copy minimal tagline">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="tagline-text" id="tagline-text-minimal">Quiet precision. Pure form.</p>
+                </div>
+
+                <!-- Angle 3: Emotional -->
+                <div class="tagline-angle-card" id="tagline-card-emotional">
+                  <div class="angle-header">
+                    <span class="angle-badge badge-emotional">♥ Emotional &amp; Evocative</span>
+                    <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-emotional" title="Copy emotional tagline">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="tagline-text" id="tagline-text-emotional">Made for moments that linger forever.</p>
+                </div>
+
+                <!-- Angle 4: Playful -->
+                <div class="tagline-angle-card" id="tagline-card-playful">
+                  <div class="angle-header">
+                    <span class="angle-badge badge-playful">✦ Playful &amp; Clever</span>
+                    <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-playful" title="Copy playful tagline">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="tagline-text" id="tagline-text-playful">Seriously good design for delightfully chaotic days.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Developer Code Export Modal -->
+  <div id="dev-code-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-code-title">
+    <div class="modal-dialog bento-card">
+      <div class="modal-header">
+        <div class="modal-title-row">
+          <div class="card-icon-pill icon-emerald">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <div>
+            <h3 class="modal-title" id="modal-code-title">Production Developer Assets</h3>
+            <p class="modal-subtitle">Ready-to-use CSS tokens, Google Fonts @import, and Scalable SVG Logos</p>
+          </div>
+        </div>
+        <button type="button" id="btn-close-dev-modal" class="icon-btn modal-close-btn" aria-label="Close dialog">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="modal-tabs-row">
+        <button type="button" class="modal-tab-btn active" data-tab="all">Complete Bundle</button>
+        <button type="button" class="modal-tab-btn" data-tab="css">CSS Tokens &amp; Fonts</button>
+        <button type="button" class="modal-tab-btn" data-tab="svg">Vector SVG Logos</button>
+      </div>
+
+      <div class="modal-code-viewport">
+        <pre><code id="dev-code-snippet" class="code-snippet"></code></pre>
+      </div>
+
+      <div class="modal-footer">
+        <span class="modal-hint">⚡ Generated with strict semantic standards &bull; Zero external build dependencies</span>
+        <button type="button" id="btn-copy-modal-code" class="btn btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span>Copy to Clipboard</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Google Fonts Link Destination -->
+  <link id="dynamic-google-fonts" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Fraunces:wght@600;700&display=swap">
+
+  <script src="app.js"></script>
+</body>
+</html>
