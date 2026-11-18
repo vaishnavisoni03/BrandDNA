@@ -5197,6 +5197,238 @@ body {
   transform: translateY(-50%) translateX(2px);
 }
 
+/* ==========================================================================
+   Remix Colors & Fonts Control Bar
+   ========================================================================== */
+.output-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.5rem;
+}
+
+.remix-control-bar {
+  grid-column: span 12;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.6rem;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+  position: relative;
+  overflow: hidden;
+  border-top: 3px solid #2563EB;
+}
+
+.remix-bar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.remix-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.remix-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.remix-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #EFF6FF;
+  color: #2563EB;
+  border: 1px solid #BFDBFE;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 9999px;
+}
+
+.remix-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-remix-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.15rem;
+  background: #F8FAFC;
+  color: #0F172A;
+  border: 1px solid #E2E8F0;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.btn-remix-action:hover {
+  background: #EFF6FF;
+  color: #2563EB;
+  border-color: #93C5FD;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+}
+
+.btn-remix-action:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-remix-action svg {
+  color: #2563EB;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.btn-remix-action:hover svg {
+  transform: rotate(30deg);
+}
+
+.remix-prompt-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.remix-prompt-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 5px 6px 5px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.remix-prompt-bar:focus-within {
+  background: #FFFFFF;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.remix-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.remix-sparkle-icon {
+  flex-shrink: 0;
+  color: #2563EB;
+}
+
+.remix-style-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.88rem;
+  color: #0F172A;
+  font-family: inherit;
+  font-weight: 500;
+  min-width: 0;
+}
+
+.remix-style-input::placeholder {
+  color: #94A3B8;
+  font-weight: 400;
+}
+
+.btn-apply-vibe {
+  padding: 0.55rem 1.25rem !important;
+  font-size: 0.84rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.remix-presets-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.remix-preset-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 2px;
+}
+
+.preset-vibe-pill {
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #475569;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.preset-vibe-pill:hover {
+  background: #EFF6FF;
+  color: #2563EB;
+  border-color: #BFDBFE;
+  transform: translateY(-1px);
+}
+
+.preset-vibe-pill:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 768px) {
+  .remix-bar-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+  .remix-quick-actions {
+    width: 100%;
+  }
+  .btn-remix-action {
+    flex: 1;
+    justify-content: center;
+  }
+  .remix-prompt-bar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px;
+  }
+  .btn-apply-vibe {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 
 
 

@@ -469,6 +469,15 @@
     heroBrandSub: document.getElementById('hero-brand-sub'),
     btnCopyBrief: document.getElementById('btn-copy-brief'),
 
+    // Remix Colors & Fonts Controls
+    btnShufflePalette: document.getElementById('btn-shuffle-palette'),
+    btnShuffleFonts: document.getElementById('btn-shuffle-fonts'),
+    inputStylePrompt: document.getElementById('input-style-prompt'),
+    btnApplyVibe: document.getElementById('btn-apply-vibe'),
+    btnApplyVibeText: document.getElementById('btn-apply-vibe-text'),
+    vibeSpinner: document.getElementById('vibe-spinner'),
+    presetVibePills: document.querySelectorAll('.preset-vibe-pill'),
+
     logoConcept1Stage: document.getElementById('logo-concept-1-stage'),
     logoConcept2Stage: document.getElementById('logo-concept-2-stage'),
     logoConcept3Stage: document.getElementById('logo-concept-3-stage'),
@@ -767,7 +776,7 @@
     }
 
     if (fontsToLoad.length > 0) {
-      const familyParams = fontsToLoad
+      const familyParams = Array.from(loadedFonts)
         .map(f => `family=${encodeURIComponent(f)}:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400`)
         .join('&');
 
@@ -7477,6 +7486,378 @@ Return JSON matching this schema:
   }
 
   // =========================================================================
+  // 17d. Remix Colors & Fonts Engine (Shuffle & AI Style Prompt)
+  // =========================================================================
+  const REMIX_PALETTE_POOL = [
+    {
+      name: "Warm Earthy Terracotta",
+      narrative: "Grounded agrarian warmth rooted in Tuscan terracotta clay, wild eucalyptus, and sunlit limestone.",
+      colors: [
+        { hex: "#C86D51", name: "Terracotta Clay", role: "Primary Brand Color", psychology: "Warmth, tactile craftsmanship, and grounded authenticity." },
+        { hex: "#4A6B5D", name: "Eucalyptus Sage", role: "Secondary Accent", psychology: "Botanical vitality, balance, and restorative calm." },
+        { hex: "#FAF6F0", name: "Alabaster Linen", role: "Light Background", psychology: "Organic spaciousness, purity, and mindful stillness." },
+        { hex: "#E0A96D", name: "Warm Ochre", role: "Highlight Accent", psychology: "Golden hour optimism, generous light, and tactile depth." },
+        { hex: "#2B2118", name: "Espresso Soil", role: "Dark Charcoal", psychology: "Architectural gravity and timeless earth heritage." }
+      ]
+    },
+    {
+      name: "Electric Cobalt & Tangerine",
+      narrative: "High-contrast digital vigor fusing vibrant electric cobalt with radiant citrus and obsidian slate.",
+      colors: [
+        { hex: "#2563EB", name: "Electric Cobalt", role: "Primary Brand Color", psychology: "Decisive precision, digital confidence, and forward energy." },
+        { hex: "#0D9488", name: "Mint Teal", role: "Secondary Accent", psychology: "Refreshing clarity, inventive agility, and modern freshness." },
+        { hex: "#F4F6FA", name: "Crisp Porcelain", role: "Light Background", psychology: "Uncluttered focus, modern elegance, and breathable structure." },
+        { hex: "#F97316", name: "Radiant Tangerine", role: "Highlight Accent", psychology: "Creative enthusiasm, urgent vitality, and playful spark." },
+        { hex: "#0F172A", name: "Obsidian Slate", role: "Dark Charcoal", psychology: "Authoritative contrast, deep depth, and rock-solid grounding." }
+      ]
+    },
+    {
+      name: "Kyoto Matcha & Hinoki",
+      narrative: "Quiet Japanese sanctuary rooted in ceremonial stone-ground matcha and smoke-cured hinoki cedar.",
+      colors: [
+        { hex: "#3E5C43", name: "Ceremonial Matcha", role: "Primary Brand Color", psychology: "Meditative tranquility, organic reverence, and slow rituals." },
+        { hex: "#8C7355", name: "Smoked Hinoki", role: "Secondary Accent", psychology: "Artisanal timber warmth, quiet restraint, and heritage carpentry." },
+        { hex: "#F9F7F2", name: "Washi Parchment", role: "Light Background", psychology: "Delicate paper texture, soft light diffusion, and serenity." },
+        { hex: "#D97762", name: "Persimmon Ember", role: "Highlight Accent", psychology: "Subtle ceremonial warmth and seasonal celebration." },
+        { hex: "#1E2420", name: "Sumi Ink", role: "Dark Charcoal", psychology: "Calligraphic conviction and timeless contemplative shadow." }
+      ]
+    },
+    {
+      name: "Nordic Dusk & Arctic Ice",
+      narrative: "Sub-zero Scandinavian serenity pairing deep fjord navy with glacial cyan and warm amber beacons.",
+      colors: [
+        { hex: "#1E293B", name: "Midnight Fjord", role: "Primary Brand Color", psychology: "Deep oceanic composure, steadfast integrity, and quiet power." },
+        { hex: "#0284C7", name: "Glacial Azure", role: "Secondary Accent", psychology: "Pristine arctic clarity, crisp flow, and modern intelligence." },
+        { hex: "#F0F9FF", name: "Pale Frost", role: "Light Background", psychology: "Breathtaking spaciousness, sub-zero purity, and clean light." },
+        { hex: "#F59E0B", name: "Nordic Amber", role: "Highlight Accent", psychology: "Sheltered hearth light, winter warmth, and joyful welcome." },
+        { hex: "#0B0F19", name: "Abyssal Slate", role: "Dark Charcoal", psychology: "Nordic granite foundation and uncompromising structural poise." }
+      ]
+    },
+    {
+      name: "Velvet Burgundy & Champagne",
+      narrative: "Sensual high-luxury editorial poise layered with antique champagne gold and velvet blackberry.",
+      colors: [
+        { hex: "#701A75", name: "Imperial Plum", role: "Primary Brand Color", psychology: "Opulent royalty, dramatic mystery, and couture sophistication." },
+        { hex: "#BE185D", name: "Velvet Magenta", role: "Secondary Accent", psychology: "Expressive glamour, passionate pulse, and unapologetic presence." },
+        { hex: "#FDF4FF", name: "Silk Cream", role: "Light Background", psychology: "Tactile cashmere softness and glowing editorial breathing room." },
+        { hex: "#D97706", name: "Champagne Gold", role: "Highlight Accent", psychology: "Prestige craftsmanship, gilded legacy, and warm luxury." },
+        { hex: "#2E0830", name: "Noir Blackberry", role: "Dark Charcoal", psychology: "Midnight velvet weight and enigmatic haute-couture depth." }
+      ]
+    },
+    {
+      name: "Sun-Drenched Tuscan Ochre",
+      narrative: "Sun-drenched agrarian heritage radiating warmth, slow living, and sun-ripened olive groves.",
+      colors: [
+        { hex: "#D97706", name: "Tuscan Ochre", role: "Primary Brand Color", psychology: "Sunlit optimism, generous hospitality, and rustic artisanal soul." },
+        { hex: "#65A30D", name: "Olive Leaf", role: "Secondary Accent", psychology: "Agrarian longevity, sun-cured harvest, and peaceful earth." },
+        { hex: "#FEFCE8", name: "Warm Limestone", role: "Light Background", psychology: "Sun-bleached courtyard stone and gentle morning radiance." },
+        { hex: "#DC2626", name: "Ripe Pomegranate", role: "Highlight Accent", psychology: "Spontaneous passion, vivid flavor, and artisanal zest." },
+        { hex: "#36200A", name: "Aged Chestnut", role: "Dark Charcoal", psychology: "Weathered antique timber and time-tested culinary depth." }
+      ]
+    },
+    {
+      name: "Cyberpunk Neon & Carbon",
+      narrative: "Futuristic synthetic telemetry powered by high-frequency photonic cyan and laser magenta.",
+      colors: [
+        { hex: "#06B6D4", name: "Photonic Cyan", role: "Primary Brand Color", psychology: "Hyper-speed throughput, futuristic data streams, and neon brilliance." },
+        { hex: "#8B5CF6", name: "Quantum Violet", role: "Secondary Accent", psychology: "Synthetic mystery, dimensional depth, and algorithmic elegance." },
+        { hex: "#ECFEFF", name: "Luminescent Mist", role: "Light Background", psychology: "Cleanroom transparency and crystalline electronic radiance." },
+        { hex: "#EC4899", name: "Laser Magenta", role: "Highlight Accent", psychology: "High-voltage kinetic impact and electric pulse." },
+        { hex: "#090D16", name: "Carbon Void", role: "Dark Charcoal", psychology: "Zero-latency dark mode canvas and sub-atomic depth." }
+      ]
+    },
+    {
+      name: "Regal Emerald & Sovereign Gold",
+      narrative: "Old-world sovereign elegance paired with luminous gold leaf and tailored forest depth.",
+      colors: [
+        { hex: "#047857", name: "Regal Emerald", role: "Primary Brand Color", psychology: "Enduring prosperity, prestige heritage, and lush architectural balance." },
+        { hex: "#B45309", name: "Burnished Cognac", role: "Secondary Accent", psychology: "Tailored equestrian leather, oak casks, and heirloom warmth." },
+        { hex: "#F0FDF4", name: "Pearl Alabaster", role: "Light Background", psychology: "Gilded salon walls, effortless light, and regal calm." },
+        { hex: "#FBBF24", name: "Sovereign Gold", role: "Highlight Accent", psychology: "Master goldsmith hallmark, exquisite excellence, and triumph." },
+        { hex: "#062E20", name: "Forest Noir", role: "Dark Charcoal", psychology: "Ancient botanical sanctuary and authoritative reserve." }
+      ]
+    },
+    {
+      name: "Desert Rose & Sedona Sand",
+      narrative: "Southwestern geological poetry evoking wind-carved canyon sandstone and wild blooming cactus.",
+      colors: [
+        { hex: "#BE5A6D", name: "Desert Rose", role: "Primary Brand Color", psychology: "Quiet empathy, nuanced femininity, and organic warmth." },
+        { hex: "#A16207", name: "Sedona Sandstone", role: "Secondary Accent", psychology: "Geological permanence, sun-baked clay, and weathered stone." },
+        { hex: "#FFF7ED", name: "Raw Cotton", role: "Light Background", psychology: "Hand-spun natural fibers and sunlit desert horizon." },
+        { hex: "#F43F5E", name: "Sedona Coral", role: "Highlight Accent", psychology: "Wild canyon blossom and spontaneous artistic expression." },
+        { hex: "#33151D", name: "Canyon Shadow", role: "Dark Charcoal", psychology: "Dusk over the red rocks and rooted contemplative solace." }
+      ]
+    },
+    {
+      name: "Brutalist Monochrome & Signal Orange",
+      narrative: "Uncompromising Swiss architectural brutalism with high-visibility signal accents.",
+      colors: [
+        { hex: "#18181B", name: "Pitch Carbon", role: "Primary Brand Color", psychology: "Zero compromise, razor-sharp focus, and industrial minimalism." },
+        { hex: "#71717A", name: "Anodized Zinc", role: "Secondary Accent", psychology: "Raw aluminum honesty, structural neutrality, and precision." },
+        { hex: "#FAFAFA", name: "Pure Chalk", role: "Light Background", psychology: "Uncoated paper stock, maximum contrast, and clinical clarity." },
+        { hex: "#FF5722", name: "International Signal", role: "Highlight Accent", psychology: "Immediate cognitive trigger and high-conviction call to action." },
+        { hex: "#09090B", name: "Stark Obsidian", role: "Dark Charcoal", psychology: "Absolute black foundation and architectural permanence." }
+      ]
+    },
+    {
+      name: "Mediterranean Azure & Limone",
+      narrative: "Sun-bleached coastal breeze celebrating Aegean waters, seafoam tides, and ripe lemon groves.",
+      colors: [
+        { hex: "#0284C7", name: "Aegean Azure", role: "Primary Brand Color", psychology: "Boundless ocean horizons, maritime freedom, and open clarity." },
+        { hex: "#0D9488", name: "Seafoam Wave", role: "Secondary Accent", psychology: "Coastal restoration, salty sea spray, and cooling balance." },
+        { hex: "#F0FDFA", name: "Whitewash Cliff", role: "Light Background", psychology: "Cycladic stucco walls reflecting pure Mediterranean sunshine." },
+        { hex: "#EAB308", name: "Limone Spark", role: "Highlight Accent", psychology: "Zesty citrus exuberance and radiant coastal vitality." },
+        { hex: "#082F49", name: "Deep Trench", role: "Dark Charcoal", psychology: "Maritime abyss grounding and profound oceanic depth." }
+      ]
+    },
+    {
+      name: "Lavender Twilight & Iris",
+      narrative: "Ethereal botanical twilight radiating modern gentleness, creative intuition, and calm.",
+      colors: [
+        { hex: "#7C3AED", name: "Royal Iris", role: "Primary Brand Color", psychology: "Visionary intuition, creative imagination, and contemplative luxury." },
+        { hex: "#EC4899", name: "Petal Bloom", role: "Secondary Accent", psychology: "Empathetic tenderness, vibrant expression, and joy." },
+        { hex: "#FAF5FF", name: "Lilac Veil", role: "Light Background", psychology: "Dreamlike tranquility and gentle ambient comfort." },
+        { hex: "#F59E0B", name: "Sunlit Pollen", role: "Highlight Accent", psychology: "Golden evening warmth and playful delicate surprise." },
+        { hex: "#200D42", name: "Midnight Velvet", role: "Dark Charcoal", psychology: "Deep starlit sky and magnetic psychological anchor." }
+      ]
+    }
+  ];
+
+  const REMIX_FONT_PAIRINGS = [
+    { heading: "Cinzel", body: "Plus Jakarta Sans", label: "Roman Editorial Luxury" },
+    { heading: "Fraunces", body: "Space Grotesk", label: "Warm Tactile Editorial" },
+    { heading: "Syne", body: "Inter", label: "Contemporary Avant-Garde" },
+    { heading: "Playfair Display", body: "Plus Jakarta Sans", label: "Classic High-Fashion Grace" },
+    { heading: "Cormorant Garamond", body: "Montserrat", label: "Poetic Fine Couture" },
+    { heading: "DM Serif Display", body: "DM Sans", label: "Crisp European Publishing" },
+    { heading: "Instrument Serif", body: "Inter", label: "Quiet Luxury Minimalist" },
+    { heading: "Bodoni Moda", body: "Plus Jakarta Sans", label: "Haute Horlogerie & Vogue" },
+    { heading: "Space Grotesk", body: "JetBrains Mono", label: "Silicon Protocol Deep Tech" },
+    { heading: "Prata", body: "Work Sans", label: "Nordic Gallerist & Sculpture" },
+    { heading: "Marcellus", body: "Plus Jakarta Sans", label: "Museum Heritage Classic" },
+    { heading: "Lora", body: "Plus Jakarta Sans", label: "Thoughtful Literary Essay" },
+    { heading: "Abril Fatface", body: "Raleway", label: "Maximalist Kinetic Voice" },
+    { heading: "Cinzel Decorative", body: "Inter", label: "Sovereign Ceremonial Craft" }
+  ];
+
+  function handleShufflePalette() {
+    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
+    const currentPrimary = (brand.palette && brand.palette[0]?.hex) || '';
+
+    const candidates = REMIX_PALETTE_POOL.filter(p => p.colors[0].hex.toLowerCase() !== currentPrimary.toLowerCase());
+    const pool = candidates.length > 0 ? candidates : REMIX_PALETTE_POOL;
+    const chosen = pool[Math.floor(Math.random() * pool.length)];
+
+    brand.palette = chosen.colors;
+    brand.colors = chosen.colors;
+    brand.paletteNarrative = chosen.narrative;
+
+    state.currentBrand = brand;
+    renderBrand(brand);
+    saveActiveProjectToStorage();
+
+    showToast(`🎨 Remixed Palette: ${chosen.name}!`, 'success', 2200);
+  }
+
+  function handleShuffleFonts() {
+    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
+    const currentHeading = cleanFontName(brand.headingFont || brand.fonts?.heading || '');
+
+    const candidates = REMIX_FONT_PAIRINGS.filter(p => p.heading.toLowerCase() !== currentHeading.toLowerCase());
+    const pool = candidates.length > 0 ? candidates : REMIX_FONT_PAIRINGS;
+    const chosen = pool[Math.floor(Math.random() * pool.length)];
+
+    loadGoogleFontPairing(chosen.heading, chosen.body);
+
+    brand.headingFont = chosen.heading;
+    brand.bodyFont = chosen.body;
+    brand.fonts = {
+      heading: chosen.heading,
+      headingWeight: '600 / 700',
+      body: chosen.body,
+      bodyWeight: '400 / 500'
+    };
+
+    state.currentBrand = brand;
+    renderBrand(brand);
+    saveActiveProjectToStorage();
+
+    showToast(`🔤 Remixed Typography: ${chosen.heading} + ${chosen.body}!`, 'success', 2200);
+  }
+
+  function synthesizeOfflineVibe(prompt = '') {
+    const p = prompt.toLowerCase();
+
+    let chosenPairing = null;
+    if (p.includes('serif') || p.includes('editorial') || p.includes('warm') || p.includes('terracotta') || p.includes('earth') || p.includes('craft')) {
+      chosenPairing = REMIX_FONT_PAIRINGS[1]; // Fraunces + Space Grotesk
+    } else if (p.includes('luxury') || p.includes('gold') || p.includes('regal') || p.includes('royal') || p.includes('emerald') || p.includes('classic')) {
+      chosenPairing = REMIX_FONT_PAIRINGS[0]; // Cinzel + Plus Jakarta Sans
+    } else if (p.includes('tech') || p.includes('cyber') || p.includes('code') || p.includes('mono') || p.includes('futuristic')) {
+      chosenPairing = REMIX_FONT_PAIRINGS[8]; // Space Grotesk + JetBrains Mono
+    } else if (p.includes('bold') || p.includes('genz') || p.includes('pop') || p.includes('fun') || p.includes('playful')) {
+      chosenPairing = REMIX_FONT_PAIRINGS[2]; // Syne + Inter
+    } else if (p.includes('minimal') || p.includes('clean') || p.includes('simple') || p.includes('nordic') || p.includes('sans')) {
+      chosenPairing = REMIX_FONT_PAIRINGS[6]; // Instrument Serif + Inter
+    } else if (p.includes('fashion') || p.includes('vogue') || p.includes('couture')) {
+      chosenPairing = REMIX_FONT_PAIRINGS[7]; // Bodoni Moda + Plus Jakarta Sans
+    } else {
+      chosenPairing = REMIX_FONT_PAIRINGS[Math.floor(Math.random() * REMIX_FONT_PAIRINGS.length)];
+    }
+
+    let chosenPalette = null;
+    if (p.includes('terracotta') || p.includes('clay') || p.includes('earth') || p.includes('warm') || p.includes('rustic')) {
+      chosenPalette = REMIX_PALETTE_POOL[0]; // Warm Earthy Terracotta
+    } else if (p.includes('cyberpunk') || p.includes('neon') || p.includes('glow') || p.includes('matrix') || p.includes('dark mode')) {
+      chosenPalette = REMIX_PALETTE_POOL[6]; // Cyberpunk Neon & Carbon
+    } else if (p.includes('cobalt') || p.includes('electric') || p.includes('mint') || p.includes('tangerine') || p.includes('teal')) {
+      chosenPalette = REMIX_PALETTE_POOL[1]; // Electric Cobalt & Tangerine
+    } else if (p.includes('matcha') || p.includes('zen') || p.includes('japan') || p.includes('hinoki') || p.includes('tea')) {
+      chosenPalette = REMIX_PALETTE_POOL[2]; // Kyoto Matcha & Hinoki
+    } else if (p.includes('nordic') || p.includes('scandi') || p.includes('fjord') || p.includes('frost') || p.includes('ice')) {
+      chosenPalette = REMIX_PALETTE_POOL[3]; // Nordic Dusk & Arctic Ice
+    } else if (p.includes('burgundy') || p.includes('wine') || p.includes('plum') || p.includes('velvet') || p.includes('champagne')) {
+      chosenPalette = REMIX_PALETTE_POOL[4]; // Velvet Burgundy & Champagne
+    } else if (p.includes('emerald') || p.includes('gold') || p.includes('luxury') || p.includes('royal') || p.includes('regal')) {
+      chosenPalette = REMIX_PALETTE_POOL[7]; // Regal Emerald & Sovereign Gold
+    } else if (p.includes('tuscan') || p.includes('ochre') || p.includes('olive') || p.includes('sun') || p.includes('italy')) {
+      chosenPalette = REMIX_PALETTE_POOL[5]; // Sun-Drenched Tuscan Ochre
+    } else if (p.includes('desert') || p.includes('rose') || p.includes('sand') || p.includes('canyon') || p.includes('sedona')) {
+      chosenPalette = REMIX_PALETTE_POOL[8]; // Desert Rose & Sedona Sand
+    } else if (p.includes('mono') || p.includes('black and white') || p.includes('brutalist') || p.includes('stark')) {
+      chosenPalette = REMIX_PALETTE_POOL[9]; // Brutalist Monochrome
+    } else if (p.includes('azure') || p.includes('mediterranean') || p.includes('ocean') || p.includes('blue') || p.includes('coastal') || p.includes('sea')) {
+      chosenPalette = REMIX_PALETTE_POOL[10]; // Mediterranean Azure & Limone
+    } else if (p.includes('lavender') || p.includes('lilac') || p.includes('pastel') || p.includes('purple') || p.includes('iris')) {
+      chosenPalette = REMIX_PALETTE_POOL[11]; // Lavender Twilight & Iris
+    } else {
+      chosenPalette = REMIX_PALETTE_POOL[Math.floor(Math.random() * REMIX_PALETTE_POOL.length)];
+    }
+
+    return {
+      name: chosenPalette.name,
+      narrative: chosenPalette.narrative,
+      colors: chosenPalette.colors,
+      headingFont: chosenPairing.heading,
+      bodyFont: chosenPairing.body
+    };
+  }
+
+  async function generateVibeWithGemini(promptText, brand) {
+    const systemPrompt = `
+You are an elite Brand Colorist & Typographic Director.
+The user wants to restyle the current brand with this style direction: "${promptText}".
+Current Brand Context:
+- Brand Name: "${brand?.name || 'Brand'}"
+- Industry: "${brand?.industry || 'Creative'}"
+
+Generate:
+1. Exactly 5 cohesive brand colors with great aesthetic harmony and WCAG contrast:
+   - Primary Brand Color (dominant signature tone)
+   - Secondary Accent Tone (complementary or harmonious balance)
+   - Light Background Tone (soft, clean, pale tint for cards and canvas)
+   - Highlight Accent (vibrant pop for badges, CTAs, stickers)
+   - Dark Contrast Tone (deep charcoal or obsidian for typography & anchors)
+   All colors MUST be valid 6-digit hex codes starting with # (e.g., #2563EB).
+2. An evocative palette name and 1-sentence narrative.
+3. A Google Fonts pairing that fits the requested vibe:
+   - headingFont: e.g. "Fraunces", "Cinzel", "Syne", "Playfair Display", "Cormorant Garamond", "DM Serif Display", "Bodoni Moda", "Space Grotesk", "Prata", "Marcellus", "Lora"
+   - bodyFont: e.g. "Plus Jakarta Sans", "Inter", "Space Grotesk", "DM Sans", "Montserrat", "Work Sans", "JetBrains Mono"
+
+Return ONLY a valid JSON object matching this schema:
+{
+  "paletteName": "Name of Palette",
+  "narrative": "1-sentence color psychology rationale.",
+  "colors": [
+    { "hex": "#HEX1", "name": "Name1", "role": "Primary Brand Color", "psychology": "Meaning" },
+    { "hex": "#HEX2", "name": "Name2", "role": "Secondary Accent", "psychology": "Meaning" },
+    { "hex": "#HEX3", "name": "Name3", "role": "Light Background", "psychology": "Meaning" },
+    { "hex": "#HEX4", "name": "Name4", "role": "Highlight Accent", "psychology": "Meaning" },
+    { "hex": "#HEX5", "name": "Name5", "role": "Dark Charcoal", "psychology": "Meaning" }
+  ],
+  "headingFont": "FontName",
+  "bodyFont": "FontName"
+}
+`;
+
+    const payload = {
+      contents: [{ parts: [{ text: systemPrompt }] }],
+      generationConfig: {
+        temperature: 0.8,
+        responseMimeType: "application/json"
+      }
+    };
+
+    const data = await callGeminiEndpoint(payload);
+    const parsed = extractJsonFromGeminiResponse(data);
+    if (parsed && Array.isArray(parsed.colors) && parsed.colors.length >= 5 && parsed.headingFont && parsed.bodyFont) {
+      return {
+        name: parsed.paletteName || "Custom AI Vibe",
+        narrative: parsed.narrative || "Dynamically tuned aesthetic balance.",
+        colors: parsed.colors.slice(0, 5).map((c, i) => ({
+          hex: c.hex && c.hex.startsWith('#') ? c.hex : ['#2563EB', '#0D9488', '#F4F6FA', '#F97316', '#0F172A'][i],
+          name: c.name || `Tone ${i + 1}`,
+          role: c.role || `Role ${i + 1}`,
+          psychology: c.psychology || 'Harmonizes brand sentiment.'
+        })),
+        headingFont: cleanFontName(parsed.headingFont),
+        bodyFont: cleanFontName(parsed.bodyFont)
+      };
+    }
+    throw new Error('Invalid JSON structure from Gemini');
+  }
+
+  async function handleApplyVibe() {
+    const input = elements.inputStylePrompt;
+    const promptText = (input && input.value ? input.value.trim() : '');
+    if (!promptText) {
+      showToast('Please type a style vibe (e.g., "Warm earthy terracotta with serif fonts")', 'info', 3000);
+      if (input) input.focus();
+      return;
+    }
+
+    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
+
+    if (elements.btnApplyVibe) elements.btnApplyVibe.disabled = true;
+    if (elements.vibeSpinner) elements.vibeSpinner.classList.remove('hidden');
+    if (elements.btnApplyVibeText) elements.btnApplyVibeText.textContent = "Synthesizing...";
+
+    let result = null;
+    try {
+      result = await generateVibeWithGemini(promptText, brand);
+      showToast(`✨ AI Vibe Applied: "${result.name}"!`, 'success', 3000);
+    } catch (err) {
+      console.warn('Gemini style synthesis offline fallback:', err);
+      result = synthesizeOfflineVibe(promptText);
+      showToast(`🎨 Vibe Applied (Curated Preset): "${result.name}"`, 'info', 3000);
+    } finally {
+      if (elements.btnApplyVibe) elements.btnApplyVibe.disabled = false;
+      if (elements.vibeSpinner) elements.vibeSpinner.classList.add('hidden');
+      if (elements.btnApplyVibeText) elements.btnApplyVibeText.textContent = "Apply Vibe";
+    }
+
+    if (result) {
+      loadGoogleFontPairing(result.headingFont, result.bodyFont);
+
+      brand.palette = result.colors;
+      brand.colors = result.colors;
+      brand.paletteNarrative = result.narrative;
+      brand.headingFont = result.headingFont;
+      brand.bodyFont = result.bodyFont;
+      brand.fonts = {
+        heading: result.headingFont,
+        headingWeight: '600 / 700',
+        body: result.bodyFont,
+        bodyWeight: '400 / 500'
+      };
+
+      state.currentBrand = brand;
+      renderBrand(brand);
+      saveActiveProjectToStorage();
+    }
+  }
+
+  // =========================================================================
   // 17c. Dual-Mode Toggle, Existing Brand Form & Logo Upload
   // =========================================================================
   function initModeToggle() {
@@ -8383,6 +8764,36 @@ ${(b.palette || b.colors).map(c => `- **${c.hex}** | ${c.name} (${c.role}): ${c.
     // Tagline Vault: + Generate 4 More Button
     if (elements.btnGenerateMoreTaglines) {
       elements.btnGenerateMoreTaglines.addEventListener('click', handleGenerateMoreTaglines);
+    }
+
+    // Remix Colors & Fonts Control Bar
+    if (elements.btnShufflePalette) {
+      elements.btnShufflePalette.addEventListener('click', handleShufflePalette);
+    }
+    if (elements.btnShuffleFonts) {
+      elements.btnShuffleFonts.addEventListener('click', handleShuffleFonts);
+    }
+    if (elements.btnApplyVibe) {
+      elements.btnApplyVibe.addEventListener('click', handleApplyVibe);
+    }
+    if (elements.inputStylePrompt) {
+      elements.inputStylePrompt.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleApplyVibe();
+        }
+      });
+    }
+    if (elements.presetVibePills && elements.presetVibePills.length > 0) {
+      elements.presetVibePills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          const vibe = pill.getAttribute('data-vibe');
+          if (vibe && elements.inputStylePrompt) {
+            elements.inputStylePrompt.value = vibe;
+            handleApplyVibe();
+          }
+        });
+      });
     }
   }
 

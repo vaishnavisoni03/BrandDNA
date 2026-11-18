@@ -685,6 +685,86 @@
         <section class="output-bento-grid" id="output-bento-grid" aria-label="Generated Brand Identity Bento Grid">
           
           <!-- =========================================================================
+               BENTO CONTROL BAR: REMIX COLORS & FONTS (Span 12)
+               ========================================================================= -->
+          <div class="bento-card remix-control-bar" id="remix-control-bar">
+            <div class="remix-bar-top">
+              <div class="remix-title-group">
+                <span class="card-eyebrow card-kicker">Live Studio Reskin</span>
+                <div class="remix-title-row">
+                  <div class="card-icon-pill icon-cobalt">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+                      <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+                      <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+                      <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+                      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>
+                    </svg>
+                  </div>
+                  <h2 class="card-title">Remix Colors &amp; Fonts</h2>
+                  <span class="remix-live-pill">✦ Instant Live Reskin</span>
+                </div>
+              </div>
+              <div class="remix-quick-actions">
+                <button type="button" id="btn-shuffle-palette" class="btn-remix-action" title="Shuffle a fresh 5-color palette and re-skin brand visuals live">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                    <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+                    <circle cx="16" cy="16" r="1.5" fill="currentColor"/>
+                    <circle cx="16" cy="8" r="1.5" fill="currentColor"/>
+                    <circle cx="8" cy="16" r="1.5" fill="currentColor"/>
+                  </svg>
+                  <span>Shuffle Palette</span>
+                </button>
+                <button type="button" id="btn-shuffle-fonts" class="btn-remix-action" title="Shuffle Google Font pairing and update typography live">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <polyline points="4 7 4 4 20 4 20 7"/>
+                    <line x1="9" y1="20" x2="15" y2="20"/>
+                    <line x1="12" y1="4" x2="12" y2="20"/>
+                  </svg>
+                  <span>Shuffle Fonts</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- AI Style Prompt Box -->
+            <div class="remix-prompt-container">
+              <div class="remix-prompt-bar">
+                <div class="remix-input-wrap">
+                  <svg class="remix-sparkle-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                  </svg>
+                  <input 
+                    type="text" 
+                    id="input-style-prompt" 
+                    class="remix-style-input" 
+                    placeholder="e.g. Make it warm earthy terracotta with serif fonts" 
+                    maxlength="120"
+                    autocomplete="off"
+                  />
+                </div>
+                <button type="button" id="btn-apply-vibe" class="btn btn-primary btn-apply-vibe" title="Apply AI Vibe Palette &amp; Typography">
+                  <span id="vibe-spinner" class="btn-spinner hidden"></span>
+                  <svg id="vibe-sparkle-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                  </svg>
+                  <span id="btn-apply-vibe-text">Apply Vibe</span>
+                </button>
+              </div>
+
+              <!-- Quick Vibe Inspiration Pills -->
+              <div class="remix-presets-row">
+                <span class="remix-preset-label">Quick Vibes:</span>
+                <button type="button" class="preset-vibe-pill" data-vibe="Make it warm earthy terracotta with serif fonts">🍂 Earthy Terracotta</button>
+                <button type="button" class="preset-vibe-pill" data-vibe="Cyberpunk neon with futuristic grotesque fonts">⚡ Cyberpunk Neon</button>
+                <button type="button" class="preset-vibe-pill" data-vibe="Minimalist alabaster with clean sans-serif typography">✦ Minimalist Nordic</button>
+                <button type="button" class="preset-vibe-pill" data-vibe="Regal emerald and champagne gold with luxury serif fonts">👑 Luxury Emerald</button>
+                <button type="button" class="preset-vibe-pill" data-vibe="Mediterranean azure and lemon with editorial serif fonts">🌊 Mediterranean Azure</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- =========================================================================
                BENTO CARD 1: 3-CONCEPT VECTOR SVG LOGO STUDIO (Span 12)
                ========================================================================= -->
           <div class="bento-card card-logo-studio" id="card-logo-studio">
