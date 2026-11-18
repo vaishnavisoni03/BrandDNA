@@ -6978,7 +6978,7 @@ STRICT CONSTRAINTS:
   }
 
   async function downloadCampaignTemplateAsPNG(templateIndex) {
-    const brand = state.currentBrand || getProceduralBrand("Komorebi Living", "minimalist-luxury", "Home Goods & Ceramics", "Connoisseurs");
+    const brand = state.currentBrand || PRESET_BRANDS.komorebi || generateProceduralBrand("Komorebi Living", "Home Goods & Ceramics", "Connoisseurs", "minimalist-luxury");
     const kit = brand.campaignTemplates || getProceduralCampaignKit(brand).campaignTemplates;
     const pPrimary = (brand.palette && brand.palette[0]?.hex) || '#2563EB';
     const pSecondary = (brand.palette && brand.palette[1]?.hex) || '#0D9488';
@@ -7380,7 +7380,7 @@ STRICT CONSTRAINTS:
   }
 
   async function handleGenerateMoreTaglines() {
-    const brand = state.currentBrand || getProceduralBrand("Komorebi Living", "minimalist-luxury", "Home Goods & Ceramics", "Connoisseurs");
+    const brand = state.currentBrand || PRESET_BRANDS.komorebi || generateProceduralBrand("Komorebi Living", "Home Goods & Ceramics", "Connoisseurs", "minimalist-luxury");
     if (!elements.taglineVaultGrid) return;
 
     if (elements.btnGenerateMoreTaglines) elements.btnGenerateMoreTaglines.disabled = true;
@@ -7400,89 +7400,96 @@ STRICT CONSTRAINTS:
       { badgeClass: 'badge-heritage', icon: '🏛️', label: 'Timeless Gravity', text: `Built for permanence in an era of disposable noise.` },
       { badgeClass: 'badge-bold', icon: '⚡', label: 'High Velocity', text: `Accelerate into distinction. Never look back.` },
       { badgeClass: 'badge-playful', icon: '🎉', label: 'Clever Wit', text: `Impossibly high standards, delightfully low pretense.` },
-      { badgeClass: 'badge-emotional', icon: '♥', label: 'Human Connection', text: `For the daily rituals that define who you become.` }
+      { badgeClass: 'badge-emotional', icon: '♥', label: 'Human Connection', text: `For the daily rituals that define who you become.` },
+      { badgeClass: 'badge-benefit', icon: '🚀', label: 'Futuristic Vision', text: `The future of ${niche.split('&')[0].trim()} arrives ahead of schedule.` },
+      { badgeClass: 'badge-minimal', icon: '🪶', label: 'Quiet Authority', text: `Less volume. Exponentially more conviction.` },
+      { badgeClass: 'badge-poetic', icon: '🌿', label: 'Living Harmony', text: `Shaped by intention. Sustained by nature.` },
+      { badgeClass: 'badge-rebel', icon: '💥', label: 'Unfiltered Truth', text: `Everything the industry was too cautious to create.` }
     ];
 
     const startIndex = (currentCount - 8) % freshArchetypes.length;
-    const selected4 = [];
+    let selected4 = [];
     for (let i = 0; i < 4; i++) {
-      selected4.push(freshArchetypes[(startIndex + i) % freshArchetypes.length]);
+      const template = freshArchetypes[(startIndex + i) % freshArchetypes.length];
+      selected4.push({ ...template });
     }
 
-    const apiKey = getStoredApiKey();
-    if (apiKey) {
-      try {
-        const promptText = `
-You are a legendary Brand Strategist & Copywriter.
-Create 4 additional novel, punchy taglines for:
+    try {
+      const promptText = `
+You are an elite Brand Strategist & Lead Copywriter.
+Generate EXACTLY 4 brand-new, distinct, unforgettable taglines for:
 - Brand Name: "${name}"
-- Sector: "${niche}"
-- Brand Vibe: "${vibe}"
+- Sector/Industry: "${niche}"
+- Brand Archetype: "${vibe}"
 
-Return JSON matching this schema:
+Each tagline MUST follow a unique strategic angle.
+Return ONLY a valid JSON array matching this schema:
 [
-  { "label": "Angle Name (e.g. Futuristic Vision)", "icon": "🚀", "badgeClass": "badge-benefit", "text": "Punchy 4-8 word tagline." },
-  { "label": "Angle Name (e.g. Quiet Confidence)", "icon": "✦", "badgeClass": "badge-minimal", "text": "Punchy 4-8 word tagline." },
-  { "label": "Angle Name (e.g. Visceral Craft)", "icon": "🌊", "badgeClass": "badge-poetic", "text": "Punchy 4-8 word tagline." },
-  { "label": "Angle Name (e.g. Bold Defiance)", "icon": "🔥", "badgeClass": "badge-rebel", "text": "Punchy 4-8 word tagline." }
+  { "label": "Strategic Angle Name", "icon": "⚡", "badgeClass": "badge-bold", "text": "Punchy 4 to 8 word memorable tagline." },
+  { "label": "Strategic Angle Name", "icon": "✦", "badgeClass": "badge-minimal", "text": "Punchy 4 to 8 word memorable tagline." },
+  { "label": "Strategic Angle Name", "icon": "🌊", "badgeClass": "badge-poetic", "text": "Punchy 4 to 8 word memorable tagline." },
+  { "label": "Strategic Angle Name", "icon": "🎯", "badgeClass": "badge-benefit", "text": "Punchy 4 to 8 word memorable tagline." }
 ]
 `.trim();
 
-        const data = await callGeminiEndpoint({
-          contents: [{ parts: [{ text: promptText }] }],
-          generationConfig: { temperature: 0.8, responseMimeType: "application/json" }
-        });
-        const parsed = extractJsonFromGeminiResponse(data);
-        if (Array.isArray(parsed) && parsed.length >= 4) {
-          selected4.forEach((item, idx) => {
-            if (parsed[idx] && parsed[idx].text) {
-              item.text = parsed[idx].text;
-              if (parsed[idx].label) item.label = parsed[idx].label;
-            }
+      const data = await callGeminiEndpoint({
+        contents: [{ parts: [{ text: promptText }] }],
+        generationConfig: { temperature: 0.85, responseMimeType: "application/json" }
+      });
+      const parsed = extractJsonFromGeminiResponse(data);
+      if (Array.isArray(parsed) && parsed.length >= 4) {
+        selected4 = parsed.slice(0, 4).map((p, idx) => ({
+          label: p.label || selected4[idx].label,
+          icon: p.icon || selected4[idx].icon,
+          badgeClass: p.badgeClass || selected4[idx].badgeClass,
+          text: p.text || selected4[idx].text
+        }));
+      }
+    } catch (err) {
+      console.warn('AI more taglines fallback to procedural pool:', err);
+    }
+
+    try {
+      selected4.forEach((angle, idx) => {
+        const card = document.createElement('div');
+        card.className = 'tagline-angle-card';
+        card.style.animation = 'fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both';
+        const angleId = `tagline-more-${currentCount + idx + 1}`;
+
+        card.innerHTML = `
+          <div class="angle-header">
+            <span class="angle-badge ${angle.badgeClass}">${angle.icon} ${angle.label}</span>
+            <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-${angleId}" title="Copy tagline">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+          <p class="tagline-text" id="text-${angleId}" style="font-family:'${brand.fonts?.heading || 'Plus Jakarta Sans'}', serif;">${angle.text}</p>
+        `;
+
+        elements.taglineVaultGrid.appendChild(card);
+
+        const copyBtn = card.querySelector(`#btn-copy-${angleId}`);
+        if (copyBtn) {
+          copyBtn.addEventListener('click', () => {
+            copyToClipboard(angle.text, `${angle.label} Tagline copied!`);
           });
         }
-      } catch (err) {
-        console.warn('AI more taglines fallback to procedural:', err);
+      });
+
+      state.taglineCount = currentCount + 4;
+      if (elements.taglinesCountBadge) {
+        elements.taglinesCountBadge.textContent = `${state.taglineCount} Angles Ready`;
       }
+
+      showToast(`Generated 4 new strategic taglines! Total: ${state.taglineCount}`, 'success', 2500);
+    } catch (renderErr) {
+      console.error('Failed to append new tagline cards:', renderErr);
+    } finally {
+      if (elements.btnGenerateMoreTaglines) elements.btnGenerateMoreTaglines.disabled = false;
+      if (elements.moreTaglinesSpinner) elements.moreTaglinesSpinner.classList.add('hidden');
+      if (elements.btnMoreTaglinesText) elements.btnMoreTaglinesText.textContent = "+ 4 More Taglines";
     }
-
-    selected4.forEach((angle, idx) => {
-      const card = document.createElement('div');
-      card.className = 'tagline-angle-card';
-      card.style.animation = 'fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both';
-      const angleId = `tagline-more-${currentCount + idx + 1}`;
-
-      card.innerHTML = `
-        <div class="angle-header">
-          <span class="angle-badge ${angle.badgeClass}">${angle.icon} ${angle.label}</span>
-          <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-${angleId}" title="Copy tagline">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span>Copy</span>
-          </button>
-        </div>
-        <p class="tagline-text" id="text-${angleId}" style="font-family:'${brand.fonts?.heading || 'Plus Jakarta Sans'}', serif;">${angle.text}</p>
-      `;
-
-      elements.taglineVaultGrid.appendChild(card);
-
-      const copyBtn = card.querySelector(`#btn-copy-${angleId}`);
-      if (copyBtn) {
-        copyBtn.addEventListener('click', () => {
-          copyToClipboard(angle.text, `${angle.label} Tagline copied!`);
-        });
-      }
-    });
-
-    state.taglineCount = currentCount + 4;
-    if (elements.taglinesCountBadge) {
-      elements.taglinesCountBadge.textContent = `${state.taglineCount} Angles Ready`;
-    }
-
-    showToast(`Generated 4 new strategic taglines! Total: ${state.taglineCount}`, 'success', 2500);
-
-    if (elements.btnGenerateMoreTaglines) elements.btnGenerateMoreTaglines.disabled = false;
-    if (elements.moreTaglinesSpinner) elements.moreTaglinesSpinner.classList.add('hidden');
-    if (elements.btnMoreTaglinesText) elements.btnMoreTaglinesText.textContent = "+ 4 More Taglines";
   }
 
   // =========================================================================
