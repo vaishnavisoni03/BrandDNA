@@ -248,13 +248,6 @@
                       <span id="suggest-btn-text">✨ Suggest Names</span>
                       <span id="suggest-spinner" class="spinner-small hidden"></span>
                     </button>
-                    <button type="button" id="btn-check-trademark" class="btn-check-trademark" title="Audit potential trademark conflicts in Indian &amp; global registries">
-                      <svg class="trademark-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                      </svg>
-                      <span id="trademark-btn-text">Check Trademark</span>
-                      <span id="trademark-spinner" class="spinner-small hidden"></span>
-                    </button>
                   </div>
                 </div>
                 <div class="input-with-icon">
@@ -280,7 +273,7 @@
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                       </svg>
                       <span class="tray-title">8 Distinct Naming Archetypes</span>
-                      <span class="tray-sub">Click to pick &amp; audit clearance</span>
+                      <span class="tray-sub">Click any name to apply instantly</span>
                     </div>
                     <div class="tray-header-actions">
                       <button type="button" id="btn-refresh-names" class="btn-tray-icon" title="Generate 8 more fresh ideas">
@@ -301,88 +294,6 @@
                   </div>
                   <div id="suggested-names-list" class="suggested-names-list">
                     <!-- 8 pills dynamically rendered -->
-                  </div>
-                </div>
-
-                <!-- Compact Trademark Conflict Status Card -->
-                <div id="trademark-status-card" class="trademark-status-card hidden" aria-live="polite">
-                  <div class="trademark-card-top">
-                    <div class="trademark-class-meta">
-                      <span class="trademark-class-badge" id="tm-class-badge">Class 30</span>
-                      <span class="trademark-class-desc" id="tm-class-desc">Staple Foods &amp; Beverages</span>
-                    </div>
-                    <div class="trademark-status-pill pill-clear" id="tm-status-pill">
-                      <span class="status-dot"></span>
-                      <span id="tm-status-text">Clear</span>
-                    </div>
-                  </div>
-
-                  <div class="trademark-body">
-                    <!-- Conflicting brands section (shown if conflicts exist) -->
-                    <div id="tm-conflicts-wrap" class="tm-conflicts-wrap hidden">
-                      <div class="tm-conflicts-label">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        <span>Potential Trademark Collisions</span>
-                      </div>
-                      <div id="tm-conflicts-list" class="tm-conflicts-list"></div>
-                    </div>
-
-                    <!-- Reassurance note if Clear -->
-                    <div id="tm-clear-note" class="tm-clear-note">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                      <span>No identical or phonetic trademark collisions detected. High registration availability in this NICE Class.</span>
-                    </div>
-
-                    <!-- Live QuickCompany (IP India) Registry Filings Section -->
-                    <div id="tm-quickcompany-wrap" class="tm-quickcompany-wrap">
-                      <div class="tm-qc-header">
-                        <div class="tm-qc-title">
-                          <svg class="tm-qc-logo-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            <path d="m9 12 2 2 4-4"/>
-                          </svg>
-                          <span>Live QuickCompany Registry Filings</span>
-                          <span id="tm-qc-count-badge" class="tm-qc-count-badge">0 Found</span>
-                        </div>
-                        <button type="button" id="btn-fetch-quickcompany" class="btn-fetch-qc" title="Fetch live trademark filings directly from QuickCompany">
-                          <svg id="qc-fetch-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-                          </svg>
-                          <span id="qc-fetch-spinner" class="spinner-small hidden"></span>
-                          <span id="qc-fetch-text">Fetch Live</span>
-                        </button>
-                      </div>
-
-                      <!-- Loading state -->
-                      <div id="tm-qc-loading" class="tm-qc-loading hidden">
-                        <div class="spinner-small"></div>
-                        <span>Querying QuickCompany.in live Indian trademark registry...</span>
-                      </div>
-
-                      <!-- Records List -->
-                      <div id="tm-qc-results-list" class="tm-qc-results-list"></div>
-
-                      <!-- Empty State -->
-                      <div id="tm-qc-empty" class="tm-qc-empty hidden">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                        <span id="tm-qc-empty-text">No conflicting active filings found on QuickCompany for this mark.</span>
-                      </div>
-                    </div>
-
-                    <!-- 3 Clickable Alternative Names -->
-                    <div class="tm-alternatives-wrap">
-                      <span class="tm-alt-label">Protected Alternative Names (Click to use):</span>
-                      <div id="tm-alternatives-list" class="tm-alternatives-list"></div>
-                    </div>
-
-                    <!-- Verify Link -->
-                    <div class="tm-card-footer">
-                      <a href="https://www.quickcompany.in/trademarks" target="_blank" rel="noopener noreferrer" class="tm-verify-link" id="tm-verify-link" title="Verify live trademark status on QuickCompany Indian Trademark database">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <span id="tm-verify-link-text">Verify Live on QuickCompany (IP India)</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                      </a>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -1256,27 +1167,27 @@
                   <h2 class="card-title">Social Campaign Templates &amp; Tagline Vault</h2>
                 </div>
               </div>
-              <span class="badge-studio-meta">3 Ready Creatives &bull; 4 Tagline Angles</span>
+              <span class="badge-studio-meta" id="campaign-vault-meta">6 Ready Creatives &bull; 8 Tagline Angles</span>
             </div>
 
-            <!-- Sub-Section A: 3 Visual Social Campaign Templates -->
+            <!-- Sub-Section A: 6 Visual Social Campaign Templates -->
             <div class="campaign-section-header">
               <div class="vault-title-wrap">
                 <span class="spec-label">Multi-Format Creatives</span>
                 <h3 class="vault-title">High-Conversion Social Campaign Templates</h3>
               </div>
-              <span class="campaign-sync-pill">🎨 Synced to Brand Palette</span>
+              <span class="campaign-sync-pill">🎨 Synced to Brand Palette &amp; High-Res PNG Export</span>
             </div>
 
             <div class="campaign-templates-grid" id="campaign-templates-grid">
-              <!-- Template 1: Product Launch Banner -->
+              <!-- Template 1: Hero Product Drop Banner (Square 1:1) -->
               <div class="campaign-card template-launch" id="campaign-card-launch">
                 <div class="campaign-card-header">
                   <div class="campaign-brand-header">
                     <div class="campaign-logo-preview" id="campaign-launch-logo"></div>
                     <span class="campaign-badge" id="campaign-launch-kicker">GLOBAL DROP &bull; PHASE 01</span>
                   </div>
-                  <span class="campaign-format-pill">16:9 Hero Banner</span>
+                  <span class="campaign-format-pill">Square 1:1</span>
                 </div>
                 <div class="campaign-card-body">
                   <h3 class="campaign-headline" id="campaign-launch-headline">Introducing the New Standard in Circadian Living.</h3>
@@ -1287,21 +1198,25 @@
                   </div>
                 </div>
                 <div class="campaign-card-footer">
-                  <button type="button" class="btn-copy-idea" id="btn-copy-launch-copy" title="Copy Launch Banner Copy">
+                  <button type="button" class="btn-copy-idea btn-copy-campaign" id="btn-copy-launch-copy" title="Copy Launch Banner Copy">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                    <span>Copy Campaign Copy</span>
+                    <span>Copy Template Copy</span>
+                  </button>
+                  <button type="button" class="btn-download-campaign" id="btn-download-launch-png" title="Download High-Res PNG">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download PNG</span>
                   </button>
                 </div>
               </div>
 
-              <!-- Template 2: Discount / Flash Drop Story Card -->
+              <!-- Template 2: Limited-Time Flash Offer / Promo Story (Vertical 9:16 preview) -->
               <div class="campaign-card template-drop" id="campaign-card-drop">
                 <div class="campaign-card-header">
                   <div class="campaign-brand-header">
                     <div class="campaign-logo-preview" id="campaign-drop-logo"></div>
                     <span class="campaign-badge badge-drop" id="campaign-drop-badge">FLASH DROP &bull; 48 HRS ONLY</span>
                   </div>
-                  <span class="campaign-format-pill">9:16 Story Card</span>
+                  <span class="campaign-format-pill">Vertical 9:16</span>
                 </div>
                 <div class="campaign-card-body">
                   <div class="drop-discount-number" id="campaign-drop-offer">25% OFF DEBUT</div>
@@ -1312,19 +1227,23 @@
                   </div>
                 </div>
                 <div class="campaign-card-footer">
-                  <button type="button" class="btn-copy-idea" id="btn-copy-drop-copy" title="Copy Drop Story Copy">
+                  <button type="button" class="btn-copy-idea btn-copy-campaign" id="btn-copy-drop-copy" title="Copy Drop Story Copy">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                    <span>Copy Story Text</span>
+                    <span>Copy Template Copy</span>
+                  </button>
+                  <button type="button" class="btn-download-campaign" id="btn-download-drop-png" title="Download High-Res PNG">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download PNG</span>
                   </button>
                 </div>
               </div>
 
-              <!-- Template 3: Testimonial / Editorial Quote Card -->
+              <!-- Template 3: Customer Review / Social Proof Spotlight (Editorial Square) -->
               <div class="campaign-card template-testimonial" id="campaign-card-testimonial">
                 <div class="campaign-card-header">
                   <div class="campaign-brand-header">
                     <div class="campaign-logo-preview" id="campaign-test-logo"></div>
-                    <span class="campaign-badge badge-editorial">EDITORIAL SPOTLIGHT</span>
+                    <span class="campaign-badge badge-editorial" id="campaign-test-badge">EDITORIAL SPOTLIGHT</span>
                   </div>
                   <span class="campaign-format-pill">Editorial Square</span>
                 </div>
@@ -1339,28 +1258,138 @@
                   </div>
                 </div>
                 <div class="campaign-card-footer">
-                  <button type="button" class="btn-copy-idea" id="btn-copy-test-copy" title="Copy Testimonial Quote">
+                  <button type="button" class="btn-copy-idea btn-copy-campaign" id="btn-copy-test-copy" title="Copy Testimonial Quote">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                    <span>Copy Quote</span>
+                    <span>Copy Template Copy</span>
+                  </button>
+                  <button type="button" class="btn-download-campaign" id="btn-download-test-png" title="Download High-Res PNG">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download PNG</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Template 4: Founder Story / Behind-the-Craft Carousel Cover (Carousel Cover 4:5) -->
+              <div class="campaign-card template-founder" id="campaign-card-founder">
+                <div class="campaign-card-header">
+                  <div class="campaign-brand-header">
+                    <div class="campaign-logo-preview" id="campaign-founder-logo"></div>
+                    <span class="campaign-badge badge-founder" id="campaign-founder-badge">BEHIND THE CRAFT &bull; ISSUE 01</span>
+                  </div>
+                  <span class="campaign-format-pill">Carousel Cover 4:5</span>
+                </div>
+                <div class="campaign-card-body">
+                  <div class="founder-chapter-kicker" id="campaign-founder-chapter">CHAPTER 01 // ORIGINS</div>
+                  <h3 class="campaign-headline founder-headline" id="campaign-founder-headline">Why We Spent 18 Months Perfecting A Single Seam.</h3>
+                  <p class="campaign-subtext founder-subtext" id="campaign-founder-subtext">Mass production took the soul out of daily rituals. We founded this studio to restore slow, intentional artistry to the objects you touch every day.</p>
+                  <div class="founder-author-tag" id="campaign-founder-author">Founder’s Journal &bull; 3 Min Read</div>
+                </div>
+                <div class="campaign-card-footer">
+                  <button type="button" class="btn-copy-idea btn-copy-campaign" id="btn-copy-founder-copy" title="Copy Founder Story Copy">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy Template Copy</span>
+                  </button>
+                  <button type="button" class="btn-download-campaign" id="btn-download-founder-png" title="Download High-Res PNG">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download PNG</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Template 5: 'Did You Know?' Educational Infographic Card -->
+              <div class="campaign-card template-infographic" id="campaign-card-infographic">
+                <div class="campaign-card-header">
+                  <div class="campaign-brand-header">
+                    <div class="campaign-logo-preview" id="campaign-info-logo"></div>
+                    <span class="campaign-badge badge-educational" id="campaign-info-badge">DID YOU KNOW? &bull; MASTERCLASS</span>
+                  </div>
+                  <span class="campaign-format-pill">Infographic Card</span>
+                </div>
+                <div class="campaign-card-body">
+                  <h3 class="campaign-headline infographic-headline" id="campaign-info-headline">3 Industry Truths Most Brands Keep Secret.</h3>
+                  <div class="infographic-points-list">
+                    <div class="info-point-row">
+                      <span class="info-point-num">01</span>
+                      <p class="info-point-text" id="campaign-info-point1">Natural textures reduce cortisol and restore cognitive clarity.</p>
+                    </div>
+                    <div class="info-point-row">
+                      <span class="info-point-num">02</span>
+                      <p class="info-point-text" id="campaign-info-point2">Circadian warmth beats harsh lux: light temperature dictates focus.</p>
+                    </div>
+                    <div class="info-point-row">
+                      <span class="info-point-num">03</span>
+                      <p class="info-point-text" id="campaign-info-point3">Less is regenerative: fewer objects, infinitely higher craft.</p>
+                    </div>
+                  </div>
+                  <div class="infographic-footer-hint" id="campaign-info-footer-text">Save this post for your weekly mindful ritual 🔖</div>
+                </div>
+                <div class="campaign-card-footer">
+                  <button type="button" class="btn-copy-idea btn-copy-campaign" id="btn-copy-info-copy" title="Copy Infographic Content">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy Template Copy</span>
+                  </button>
+                  <button type="button" class="btn-download-campaign" id="btn-download-info-png" title="Download High-Res PNG">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download PNG</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Template 6: Community Giveaway / Launch Countdown Card -->
+              <div class="campaign-card template-countdown" id="campaign-card-countdown">
+                <div class="campaign-card-header">
+                  <div class="campaign-brand-header">
+                    <div class="campaign-logo-preview" id="campaign-countdown-logo"></div>
+                    <span class="campaign-badge badge-countdown" id="campaign-countdown-badge">COMMUNITY DROP &bull; LAUNCH DAY</span>
+                  </div>
+                  <span class="campaign-format-pill">Launch Countdown</span>
+                </div>
+                <div class="campaign-card-body">
+                  <div class="countdown-timer-chip" id="campaign-countdown-timer">T-MINUS 72 HOURS // LAUNCH PROTOCOL</div>
+                  <h3 class="campaign-headline countdown-headline" id="campaign-countdown-headline">The Curated Vault Opens This Friday.</h3>
+                  <p class="campaign-subtext countdown-subtext" id="campaign-countdown-subtext">We're gifting 3 Founding Member Bundles ($450 value) to celebrate our debut. Tap notify to join the private guestlist.</p>
+                  <div class="campaign-cta-mockup countdown-cta" id="campaign-countdown-cta">
+                    <span>Enter Founding Giveaway</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                  </div>
+                </div>
+                <div class="campaign-card-footer">
+                  <button type="button" class="btn-copy-idea btn-copy-campaign" id="btn-copy-countdown-copy" title="Copy Countdown Giveaway Copy">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span>Copy Template Copy</span>
+                  </button>
+                  <button type="button" class="btn-download-campaign" id="btn-download-countdown-png" title="Download High-Res PNG">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download PNG</span>
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- Sub-Section B: The Tagline Vault (4 Distinct Angles) -->
+            <!-- Sub-Section B: The Tagline Vault (8 Distinct Angles + '+ Generate 4 More') -->
             <div class="tagline-vault-section">
               <div class="tagline-vault-header">
                 <div class="vault-title-wrap">
                   <span class="spec-label">Strategic Positioning</span>
-                  <h3 class="vault-title">The Tagline Vault &bull; 4 Distinct Angles</h3>
+                  <h3 class="vault-title">The Tagline Vault &bull; 8 Distinct Angles</h3>
                 </div>
-                <span class="ideas-count-badge">4 Angles Ready</span>
+                <div class="taglines-header-actions">
+                  <span class="ideas-count-badge" id="taglines-count-badge">8 Angles Ready</span>
+                  <button type="button" id="btn-generate-more-taglines" class="btn btn-primary btn-generate-more">
+                    <span class="btn-spinner hidden" id="more-taglines-spinner"></span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span id="btn-more-taglines-text">+ Generate 4 More Taglines</span>
+                  </button>
+                </div>
               </div>
               <div class="tagline-vault-grid" id="tagline-vault-grid">
-                <!-- Angle 1: Bold -->
+                <!-- Angle 1: Bold & Punchy -->
                 <div class="tagline-angle-card" id="tagline-card-bold">
                   <div class="angle-header">
-                    <span class="angle-badge badge-bold">⚡ Bold &amp; Unapologetic</span>
+                    <span class="angle-badge badge-bold">⚡ Bold &amp; Punchy</span>
                     <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-bold" title="Copy bold tagline">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                       <span>Copy</span>
@@ -1369,10 +1398,10 @@
                   <p class="tagline-text" id="tagline-text-bold">Command the room. Set the standard.</p>
                 </div>
 
-                <!-- Angle 2: Minimal -->
+                <!-- Angle 2: Minimalist Luxury -->
                 <div class="tagline-angle-card" id="tagline-card-minimal">
                   <div class="angle-header">
-                    <span class="angle-badge badge-minimal">✦ Minimal &amp; Poetic</span>
+                    <span class="angle-badge badge-minimal">✦ Minimalist Luxury</span>
                     <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-minimal" title="Copy minimal tagline">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                       <span>Copy</span>
@@ -1381,10 +1410,10 @@
                   <p class="tagline-text" id="tagline-text-minimal">Quiet precision. Pure form.</p>
                 </div>
 
-                <!-- Angle 3: Emotional -->
+                <!-- Angle 3: Emotional & Warm -->
                 <div class="tagline-angle-card" id="tagline-card-emotional">
                   <div class="angle-header">
-                    <span class="angle-badge badge-emotional">♥ Emotional &amp; Evocative</span>
+                    <span class="angle-badge badge-emotional">♥ Emotional &amp; Warm</span>
                     <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-emotional" title="Copy emotional tagline">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                       <span>Copy</span>
@@ -1393,16 +1422,64 @@
                   <p class="tagline-text" id="tagline-text-emotional">Made for moments that linger forever.</p>
                 </div>
 
-                <!-- Angle 4: Playful -->
+                <!-- Angle 4: Playful & Gen-Z -->
                 <div class="tagline-angle-card" id="tagline-card-playful">
                   <div class="angle-header">
-                    <span class="angle-badge badge-playful">✦ Playful &amp; Clever</span>
+                    <span class="angle-badge badge-playful">🎉 Playful &amp; Gen-Z</span>
                     <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-playful" title="Copy playful tagline">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                       <span>Copy</span>
                     </button>
                   </div>
                   <p class="tagline-text" id="tagline-text-playful">Seriously good design for delightfully chaotic days.</p>
+                </div>
+
+                <!-- Angle 5: Benefit-Driven -->
+                <div class="tagline-angle-card" id="tagline-card-benefit">
+                  <div class="angle-header">
+                    <span class="angle-badge badge-benefit">🎯 Benefit-Driven</span>
+                    <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-benefit" title="Copy benefit-driven tagline">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="tagline-text" id="tagline-text-benefit">Engineered for effortless daily clarity and peak performance.</p>
+                </div>
+
+                <!-- Angle 6: Rebel / Disruptor -->
+                <div class="tagline-angle-card" id="tagline-card-rebel">
+                  <div class="angle-header">
+                    <span class="angle-badge badge-rebel">🔥 Rebel / Disruptor</span>
+                    <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-rebel" title="Copy rebel tagline">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="tagline-text" id="tagline-text-rebel">Break the ordinary. Rewrite the category from scratch.</p>
+                </div>
+
+                <!-- Angle 7: Heritage & Trust -->
+                <div class="tagline-angle-card" id="tagline-card-heritage">
+                  <div class="angle-header">
+                    <span class="angle-badge badge-heritage">🏛️ Heritage &amp; Trust</span>
+                    <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-heritage" title="Copy heritage tagline">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="tagline-text" id="tagline-text-heritage">Generational integrity. Built to outlive every passing trend.</p>
+                </div>
+
+                <!-- Angle 8: Poetic / Rhythmic -->
+                <div class="tagline-angle-card" id="tagline-card-poetic">
+                  <div class="angle-header">
+                    <span class="angle-badge badge-poetic">🌊 Poetic / Rhythmic</span>
+                    <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-tagline-poetic" title="Copy poetic tagline">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="tagline-text" id="tagline-text-poetic">Where quiet stillness meets uncompromising craft.</p>
                 </div>
               </div>
             </div>

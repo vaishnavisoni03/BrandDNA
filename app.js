@@ -415,10 +415,9 @@
     uploadedLogoDataUrl: null,
     uploadedLogoFileName: '',
     isGeneratingExisting: false,
-    isCheckingTrademark: false,
     isSuggestingNames: false,
     suggestedNames: [],
-    lastTrademarkCheck: null,
+    taglineCount: 8,
     auditBgColor: '#2563EB',
     auditTextColor: '#FFFFFF',
     isLiked: false,
@@ -453,30 +452,6 @@
     btnRefreshNames: document.getElementById('btn-refresh-names'),
     btnCloseTray: document.getElementById('btn-close-tray'),
     suggestedNamesList: document.getElementById('suggested-names-list'),
-    btnCheckTrademark: document.getElementById('btn-check-trademark'),
-    trademarkBtnText: document.getElementById('trademark-btn-text'),
-    trademarkSpinner: document.getElementById('trademark-spinner'),
-    trademarkStatusCard: document.getElementById('trademark-status-card'),
-    tmClassBadge: document.getElementById('tm-class-badge'),
-    tmClassDesc: document.getElementById('tm-class-desc'),
-    tmStatusPill: document.getElementById('tm-status-pill'),
-    tmStatusText: document.getElementById('tm-status-text'),
-    tmConflictsWrap: document.getElementById('tm-conflicts-wrap'),
-    tmConflictsList: document.getElementById('tm-conflicts-list'),
-    tmClearNote: document.getElementById('tm-clear-note'),
-    tmAlternativesList: document.getElementById('tm-alternatives-list'),
-    tmVerifyLink: document.getElementById('tm-verify-link'),
-    tmVerifyLinkText: document.getElementById('tm-verify-link-text'),
-    tmQuickCompanyWrap: document.getElementById('tm-quickcompany-wrap'),
-    tmQcCountBadge: document.getElementById('tm-qc-count-badge'),
-    btnFetchQuickcompany: document.getElementById('btn-fetch-quickcompany'),
-    qcFetchIcon: document.getElementById('qc-fetch-icon'),
-    qcFetchSpinner: document.getElementById('qc-fetch-spinner'),
-    qcFetchText: document.getElementById('qc-fetch-text'),
-    tmQcLoading: document.getElementById('tm-qc-loading'),
-    tmQcResultsList: document.getElementById('tm-qc-results-list'),
-    tmQcEmpty: document.getElementById('tm-qc-empty'),
-    tmQcEmptyText: document.getElementById('tm-qc-empty-text'),
     industrySelect: document.getElementById('industry-select'),
     customNicheGroup: document.getElementById('custom-niche-group'),
     inputCustomNiche: document.getElementById('input-custom-niche'),
@@ -593,27 +568,79 @@
 
     // Bento Card 7: Social Campaign Templates & Tagline Vault
     cardCampaigns: document.getElementById('card-campaigns'),
+    campaignVaultMeta: document.getElementById('campaign-vault-meta'),
+
+    // Template 1: Launch Banner
+    campaignCardLaunch: document.getElementById('campaign-card-launch'),
     campaignLaunchLogo: document.getElementById('campaign-launch-logo'),
     campaignLaunchKicker: document.getElementById('campaign-launch-kicker'),
     campaignLaunchHeadline: document.getElementById('campaign-launch-headline'),
     campaignLaunchSubtext: document.getElementById('campaign-launch-subtext'),
     campaignLaunchCta: document.getElementById('campaign-launch-cta'),
     btnCopyLaunchCopy: document.getElementById('btn-copy-launch-copy'),
+    btnDownloadLaunchPng: document.getElementById('btn-download-launch-png'),
 
+    // Template 2: Flash Drop Story
+    campaignCardDrop: document.getElementById('campaign-card-drop'),
     campaignDropLogo: document.getElementById('campaign-drop-logo'),
     campaignDropBadge: document.getElementById('campaign-drop-badge'),
     campaignDropOffer: document.getElementById('campaign-drop-offer'),
     campaignDropHook: document.getElementById('campaign-drop-hook'),
     campaignDropCode: document.getElementById('campaign-drop-code'),
     btnCopyDropCopy: document.getElementById('btn-copy-drop-copy'),
+    btnDownloadDropPng: document.getElementById('btn-download-drop-png'),
 
+    // Template 3: Editorial Testimonial
+    campaignCardTest: document.getElementById('campaign-card-testimonial'),
     campaignTestLogo: document.getElementById('campaign-test-logo'),
+    campaignTestBadge: document.getElementById('campaign-test-badge'),
     campaignTestRating: document.getElementById('campaign-test-rating'),
     campaignTestQuote: document.getElementById('campaign-test-quote'),
     campaignTestAuthor: document.getElementById('campaign-test-author'),
     campaignTestTitle: document.getElementById('campaign-test-title'),
     btnCopyTestCopy: document.getElementById('btn-copy-test-copy'),
+    btnDownloadTestPng: document.getElementById('btn-download-test-png'),
 
+    // Template 4: Founder Story
+    campaignCardFounder: document.getElementById('campaign-card-founder'),
+    campaignFounderLogo: document.getElementById('campaign-founder-logo'),
+    campaignFounderBadge: document.getElementById('campaign-founder-badge'),
+    campaignFounderChapter: document.getElementById('campaign-founder-chapter'),
+    campaignFounderHeadline: document.getElementById('campaign-founder-headline'),
+    campaignFounderSubtext: document.getElementById('campaign-founder-subtext'),
+    campaignFounderAuthor: document.getElementById('campaign-founder-author'),
+    btnCopyFounderCopy: document.getElementById('btn-copy-founder-copy'),
+    btnDownloadFounderPng: document.getElementById('btn-download-founder-png'),
+
+    // Template 5: Infographic
+    campaignCardInfo: document.getElementById('campaign-card-infographic'),
+    campaignInfoLogo: document.getElementById('campaign-info-logo'),
+    campaignInfoBadge: document.getElementById('campaign-info-badge'),
+    campaignInfoHeadline: document.getElementById('campaign-info-headline'),
+    campaignInfoPoint1: document.getElementById('campaign-info-point1'),
+    campaignInfoPoint2: document.getElementById('campaign-info-point2'),
+    campaignInfoPoint3: document.getElementById('campaign-info-point3'),
+    campaignInfoFooterText: document.getElementById('campaign-info-footer-text'),
+    btnCopyInfoCopy: document.getElementById('btn-copy-info-copy'),
+    btnDownloadInfoPng: document.getElementById('btn-download-info-png'),
+
+    // Template 6: Countdown
+    campaignCardCountdown: document.getElementById('campaign-card-countdown'),
+    campaignCountdownLogo: document.getElementById('campaign-countdown-logo'),
+    campaignCountdownBadge: document.getElementById('campaign-countdown-badge'),
+    campaignCountdownTimer: document.getElementById('campaign-countdown-timer'),
+    campaignCountdownHeadline: document.getElementById('campaign-countdown-headline'),
+    campaignCountdownSubtext: document.getElementById('campaign-countdown-subtext'),
+    campaignCountdownCta: document.getElementById('campaign-countdown-cta'),
+    btnCopyCountdownCopy: document.getElementById('btn-copy-countdown-copy'),
+    btnDownloadCountdownPng: document.getElementById('btn-download-countdown-png'),
+
+    // Tagline Vault
+    taglinesCountBadge: document.getElementById('taglines-count-badge'),
+    btnGenerateMoreTaglines: document.getElementById('btn-generate-more-taglines'),
+    moreTaglinesSpinner: document.getElementById('more-taglines-spinner'),
+    btnMoreTaglinesText: document.getElementById('btn-more-taglines-text'),
+    taglineVaultGrid: document.getElementById('tagline-vault-grid'),
     taglineTextBold: document.getElementById('tagline-text-bold'),
     btnCopyTaglineBold: document.getElementById('btn-copy-tagline-bold'),
     taglineTextMinimal: document.getElementById('tagline-text-minimal'),
@@ -621,7 +648,15 @@
     taglineTextEmotional: document.getElementById('tagline-text-emotional'),
     btnCopyTaglineEmotional: document.getElementById('btn-copy-tagline-emotional'),
     taglineTextPlayful: document.getElementById('tagline-text-playful'),
-    btnCopyTaglinePlayful: document.getElementById('btn-copy-tagline-playful')
+    btnCopyTaglinePlayful: document.getElementById('btn-copy-tagline-playful'),
+    taglineTextBenefit: document.getElementById('tagline-text-benefit'),
+    btnCopyTaglineBenefit: document.getElementById('btn-copy-tagline-benefit'),
+    taglineTextRebel: document.getElementById('tagline-text-rebel'),
+    btnCopyTaglineRebel: document.getElementById('btn-copy-tagline-rebel'),
+    taglineTextHeritage: document.getElementById('tagline-text-heritage'),
+    btnCopyTaglineHeritage: document.getElementById('btn-copy-tagline-heritage'),
+    taglineTextPoetic: document.getElementById('tagline-text-poetic'),
+    btnCopyTaglinePoetic: document.getElementById('btn-copy-tagline-poetic')
   };
 
   // =========================================================================
@@ -1189,934 +1224,6 @@ Guidelines:
       elements.btnRewriteVoice.disabled = false;
       elements.rewriteSpinner.classList.add('hidden');
       elements.btnRewriteText.textContent = "Rewrite in Brand Voice";
-    }
-  }
-
-  // =========================================================================
-  // 9b. Trademark Conflict Checker & NICE Classification Engine
-  // =========================================================================
-  const NICE_CLASSES_CLIENT = {
-    cosmetics: { classNum: 3, label: "Class 3", desc: "Cosmetics, soaps, perfumery, skincare, essential oils" },
-    pharma: { classNum: 5, label: "Class 5", desc: "Pharmaceuticals, medical preparations, dietary supplements & adaptogens" },
-    tech: { classNum: 9, label: "Class 9", desc: "Software, computers, mobile apps, electronics, digital equipment & AI models" },
-    jewelry: { classNum: 14, label: "Class 14", desc: "Precious metals, jewelry, timepieces & horological instruments" },
-    stationery: { classNum: 16, label: "Class 16", desc: "Paper, printed matter, stationery, packaging & books" },
-    leather: { classNum: 18, label: "Class 18", desc: "Leather goods, luggage, handbags, wallets & travel gear" },
-    furniture: { classNum: 20, label: "Class 20", desc: "Furniture, mirrors, home decor & artisanal wooden artifacts" },
-    kitchenware: { classNum: 21, label: "Class 21", desc: "Household or kitchen utensils, glassware, ceramics & pottery" },
-    textiles: { classNum: 24, label: "Class 24", desc: "Textiles, fabrics, bed covers & household linens" },
-    apparel: { classNum: 25, label: "Class 25", desc: "Clothing, footwear, headwear, apparel & streetwear" },
-    games: { classNum: 28, label: "Class 28", desc: "Games, toys, video ga/*  */me apparatus & sporting equipment" },
-    foods: { classNum: 29, label: "Class 29", desc: "Meat, preserved fruits, vegetables, dairy & edible oils" },
-    staples: { classNum: 30, label: "Class 30", desc: "Coffee, tea, chai, cocoa, spices, bakery & confectionery" },
-    beverages: { classNum: 32, label: "Class 32", desc: "Beers, mineral waters, juices & functional non-alcoholic beverages" },
-    spirits: { classNum: 33, label: "Class 33", desc: "Alcoholic beverages, craft spirits, fermentation & wines" },
-    retail: { classNum: 35, label: "Class 35", desc: "Advertising, business management, marketing & retail/e-commerce services" },
-    fintech: { classNum: 36, label: "Class 36", desc: "Financial services, banking, insurance, fintech & crypto" },
-    telecom: { classNum: 38, label: "Class 38", desc: "Telecommunications, messaging services & digital streaming" },
-    education: { classNum: 41, label: "Class 41", desc: "Education, training, entertainment, media production & podcasts" },
-    saas: { classNum: 42, label: "Class 42", desc: "SaaS, software development, cloud computing, architecture & tech services" },
-    hospitality: { classNum: 43, label: "Class 43", desc: "Services for providing food and drink (cafes, restaurants) & hotels" },
-    wellness: { classNum: 44, label: "Class 44", desc: "Medical services, wellness spas, beauty salons & therapeutic care" },
-    legal: { classNum: 45, label: "Class 45", desc: "Legal services, brand protection & personal social services" }
-  };
-
-  function getNiceClassForNiche(niche = '') {
-    const s = (niche || '').toLowerCase();
-    if (s.includes('coffee') || s.includes('chai') || s.includes('tea') || s.includes('bakery') || s.includes('kitchen') || s.includes('cafe')) {
-      return NICE_CLASSES_CLIENT.staples; // Class 30
-    }
-    if (s.includes('spirit') || s.includes('wine') || s.includes('ferment') || s.includes('alcohol') || s.includes('brew')) {
-      return NICE_CLASSES_CLIENT.spirits; // Class 33
-    }
-    if (s.includes('beverage') || s.includes('tonic') || s.includes('juice') || s.includes('water') || s.includes('kombucha')) {
-      return NICE_CLASSES_CLIENT.beverages; // Class 32
-    }
-    if (s.includes('clothing') || s.includes('apparel') || s.includes('streetwear') || s.includes('fashion') || s.includes('wear')) {
-      return NICE_CLASSES_CLIENT.apparel; // Class 25
-    }
-    if (s.includes('jewelry') || s.includes('watch') || s.includes('gem') || s.includes('gold') || s.includes('silver')) {
-      return NICE_CLASSES_CLIENT.jewelry; // Class 14
-    }
-    if (s.includes('leather') || s.includes('bag') || s.includes('luggage') || s.includes('travel gear')) {
-      return NICE_CLASSES_CLIENT.leather; // Class 18
-    }
-    if (s.includes('skincare') || s.includes('cosmetic') || s.includes('beauty') || s.includes('perfume') || s.includes('soap')) {
-      return NICE_CLASSES_CLIENT.cosmetics; // Class 3
-    }
-    if (s.includes('adaptogen') || s.includes('wellness') || s.includes('pharma') || s.includes('supplement')) {
-      return NICE_CLASSES_CLIENT.pharma; // Class 5
-    }
-    if (s.includes('saas') || s.includes('ai') || s.includes('automation') || s.includes('developer') || s.includes('cloud') || s.includes('cyber')) {
-      return NICE_CLASSES_CLIENT.saas; // Class 42
-    }
-    if (s.includes('fintech') || s.includes('crypto') || s.includes('bank') || s.includes('invest') || s.includes('finance')) {
-      return NICE_CLASSES_CLIENT.fintech; // Class 36
-    }
-    if (s.includes('gaming') || s.includes('esport') || s.includes('game') || s.includes('toy')) {
-      return NICE_CLASSES_CLIENT.games; // Class 28
-    }
-    if (s.includes('podcast') || s.includes('media') || s.includes('edtech') || s.includes('learning') || s.includes('entertainment') || s.includes('creator')) {
-      return NICE_CLASSES_CLIENT.education; // Class 41
-    }
-    if (s.includes('furniture') || s.includes('home') || s.includes('decor') || s.includes('interior')) {
-      return NICE_CLASSES_CLIENT.furniture; // Class 20
-    }
-    if (s.includes('hospitality') || s.includes('hotel') || s.includes('retreat') || s.includes('stay') || s.includes('travel')) {
-      return NICE_CLASSES_CLIENT.hospitality; // Class 43
-    }
-    if (s.includes('agency') || s.includes('marketing') || s.includes('retail') || s.includes('commerce') || s.includes('store') || s.includes('pet')) {
-      return NICE_CLASSES_CLIENT.retail; // Class 35
-    }
-    return NICE_CLASSES_CLIENT.tech;
-  }
-
-  // 100+ Verified Major Indian & Global Registered Trademarks Database
-  const MAJOR_TRADEMARKS_DATABASE = [
-    { key: 'zomato', name: 'Zomato', owner: 'Zomato Limited (formerly Info Edge / Deepinder Goyal)', classNums: [30, 35, 39, 43], aliases: ['zomato', 'zomaato', 'zomato cafe', 'zomato delivery', 'blinkit zomato'], reason: 'Identical and phonetic collision with registered Indian trademark Zomato owned by Zomato Limited in food delivery, restaurant services (Class 30, 43) and advertising (Class 35).' },
-    { key: 'swiggy', name: 'Swiggy', owner: 'Bundl Technologies Private Limited', classNums: [30, 35, 39, 43], aliases: ['swiggy', 'swigy', 'instamart', 'swiggy instamart', 'swiggy delivery', 'swiggy dineout'], reason: 'Direct collision with famous registered Indian trademark Swiggy owned by Bundl Technologies Pvt Ltd in food logistics and online commerce.' },
-    { key: 'chaayos', name: 'Chaayos', owner: 'Sunshine Teahouse Private Limited', classNums: [30, 43], aliases: ['chaayos', 'chayos', 'chaayos cafe'], reason: 'Direct identical collision with Chaayos owned by Sunshine Teahouse Pvt Ltd, registered in Class 30 (tea/chai) and Class 43 (cafe services).' },
-    { key: 'chaipoint', name: 'Chai Point', owner: 'Mountain Trail Foods Private Limited', classNums: [30, 43], aliases: ['chai point', 'chaipoint'], reason: 'Direct collision with registered Indian beverage chain Chai Point owned by Mountain Trail Foods Pvt Ltd in Class 30 and 43.' },
-    { key: 'bluetokai', name: 'Blue Tokai Coffee Roasters', owner: 'Rollatainers Limited / Blue Tokai Coffee Roasters Pvt Ltd', classNums: [30, 43], aliases: ['blue tokai', 'bluetokai', 'blue tokai coffee'], reason: 'Confusingly and deceptively similar to specialty coffee leader Blue Tokai Coffee Roasters in Class 30 and 43.' },
-    { key: 'starbucks', name: 'Starbucks Coffee', owner: 'Starbucks Corporation', classNums: [30, 35, 43], aliases: ['starbucks', 'starbuck', 'starbucks cafe', 'starbucks reserve'], reason: 'Direct identical collision with globally protected house mark Starbucks owned by Starbucks Corporation in Class 30 & 43.' },
-    { key: 'thirdwavecoffee', name: 'Third Wave Coffee', owner: 'Heisetasse Beverages Private Limited', classNums: [30, 43], aliases: ['third wave coffee', 'third wave', 'thirdwave'], reason: 'Direct collision with Indian specialty coffee brand Third Wave Coffee owned by Heisetasse Beverages Pvt Ltd.' },
-    { key: 'cafecoffeeday', name: 'Café Coffee Day (CCD)', owner: 'Coffee Day Global Limited', classNums: [30, 43], aliases: ['cafe coffee day', 'cafecoffeeday', 'coffee day', 'ccd'], reason: 'Direct collision with pioneering Indian cafe chain mark Café Coffee Day owned by Coffee Day Global Limited.' },
-    { key: 'costacoffee', name: 'Costa Coffee', owner: 'Costa Limited (The Coca-Cola Company)', classNums: [30, 43], aliases: ['costa coffee', 'costa'], reason: 'Direct collision with Costa Coffee registered globally and in India in Class 30 and 43.' },
-    { key: 'dunkin', name: 'Dunkin\' Donuts', owner: 'DD IP Holder LLC', classNums: [30, 43], aliases: ['dunkin', 'dunkin donuts'], reason: 'Direct collision with registered global mark Dunkin\' in Class 30 & 43.' },
-    { key: 'mcdonalds', name: 'McDonald\'s', owner: 'McDonald\'s Corporation', classNums: [29, 30, 43], aliases: ['mcdonalds', 'mcdonald', 'mcd'], reason: 'Famous global mark McDonald\'s enjoying well-known trademark status under Section 11(6) of Trade Marks Act.' },
-    { key: 'burgerking', name: 'Burger King', owner: 'Burger King Company LLC', classNums: [29, 30, 43], aliases: ['burger king', 'burgerking', 'bk'], reason: 'Direct collision with registered restaurant brand Burger King in Class 43 & 30.' },
-    { key: 'dominos', name: 'Domino\'s Pizza', owner: 'Domino\'s Pizza IP Holder LLC (Jubilant FoodWorks)', classNums: [30, 43], aliases: ['dominos', 'domino\'s', 'domino pizza'], reason: 'Direct collision with world-renowned pizza mark Domino\'s.' },
-    { key: 'pizzahut', name: 'Pizza Hut', owner: 'Pizza Hut International, LLC (Yum! Brands)', classNums: [30, 43], aliases: ['pizza hut', 'pizzahut'], reason: 'Direct collision with Yum! Brands registered mark Pizza Hut in Class 30 & 43.' },
-    { key: 'haldirams', name: 'Haldiram\'s', owner: 'Haldiram India Private Limited / Haldiram Foods International Pvt Ltd', classNums: [29, 30, 43], aliases: ['haldiram', 'haldirams', 'haldiram\'s'], reason: 'Famous well-known Indian mark Haldiram\'s in snacks, sweets, and quick service restaurants.' },
-    { key: 'bikanervala', name: 'Bikanervala / Bikano', owner: 'Bikanervala Foods Private Limited', classNums: [29, 30, 43], aliases: ['bikanervala', 'bikano'], reason: 'Direct collision with registered traditional Indian foods mark Bikanervala / Bikano.' },
-    { key: 'theobroma', name: 'Theobroma', owner: 'Theobroma Foods Private Limited', classNums: [30, 43], aliases: ['theobroma', 'theobroma bakery', 'theo'], reason: 'Direct collision with iconic Indian artisanal patisserie brand Theobroma registered in Class 30 & 43.' },
-    { key: 'bakingo', name: 'Bakingo', owner: 'FA Crafts Private Limited', classNums: [30, 35, 43], aliases: ['bakingo', 'bakingo cakes'], reason: 'Direct collision with registered cloud bakery brand Bakingo in Class 30 and 43.' },
-    { key: 'rebelfoods', name: 'Rebel Foods / Faasos / Behrouz', owner: 'Rebel Foods Private Limited', classNums: [29, 30, 43], aliases: ['rebel foods', 'faasos', 'behrouz biryani', 'ovenstory'], reason: 'Direct conflict with India’s largest cloud kitchen company Rebel Foods.' },
-    { key: 'curefoods', name: 'Curefoods / EatFit', owner: 'Curefoods India Private Limited', classNums: [29, 30, 43], aliases: ['curefoods', 'eatfit', 'eat fit'], reason: 'Direct collision with cloud kitchen and nutrition brand Curefoods / EatFit.' },
-    { key: 'zepto', name: 'Zepto', owner: 'KiranaKart Technologies Private Limited', classNums: [35, 39, 42], aliases: ['zepto', 'zepto delivery', 'zepto cafe'], reason: 'Direct collision with quick-commerce leader Zepto owned by KiranaKart Technologies Pvt Ltd in Class 35 & 39.' },
-    { key: 'blinkit', name: 'Blinkit', owner: 'Blink Commerce Private Limited (Zomato Ltd)', classNums: [35, 39, 42], aliases: ['blinkit', 'grofers', 'blink commerce'], reason: 'Direct identical collision with quick-commerce mark Blinkit owned by Blink Commerce Pvt Ltd.' },
-    { key: 'flipkart', name: 'Flipkart', owner: 'Flipkart Internet Private Limited (Walmart)', classNums: [9, 35, 38, 42], aliases: ['flipkart', 'flipkart internet'], reason: 'Direct collision with leading Indian e-commerce marketplace Flipkart in Class 35 & 9.' },
-    { key: 'amazon', name: 'Amazon', owner: 'Amazon Technologies, Inc.', classNums: [9, 35, 38, 42], aliases: ['amazon', 'amazon india', 'aws', 'amazon prime'], reason: 'Famous global mark Amazon enjoying broad multi-class protection under Sec 29(4) Indian Trade Marks Act.' },
-    { key: 'meesho', name: 'Meesho', owner: 'Fashnear Technologies Private Limited', classNums: [35, 38, 42], aliases: ['meesho', 'meesho app'], reason: 'Direct collision with registered social commerce platform Meesho.' },
-    { key: 'bigbasket', name: 'BigBasket', owner: 'Supermarket Grocery Supplies Private Limited (Tata)', classNums: [29, 30, 31, 35, 39], aliases: ['bigbasket', 'big basket', 'bb daily'], reason: 'Direct collision with Tata-owned online grocery pioneer BigBasket in Class 35.' },
-    { key: 'jiomart', name: 'JioMart', owner: 'Reliance Retail Limited', classNums: [35, 39, 42], aliases: ['jiomart', 'jio mart', 'reliance jiomart'], reason: 'Direct collision with Reliance house brand JioMart in Class 35.' },
-    { key: 'myntra', name: 'Myntra', owner: 'Myntra Designs Private Limited (Flipkart/Walmart)', classNums: [25, 35, 42], aliases: ['myntra', 'myntra fashion'], reason: 'Direct collision with premier Indian fashion platform Myntra in Class 25 & 35.' },
-    { key: 'ajio', name: 'AJIO', owner: 'Reliance Retail Limited', classNums: [25, 35], aliases: ['ajio', 'ajio luxe', 'reliance ajio'], reason: 'Direct collision with Reliance fashion marketplace AJIO in Class 25 and 35.' },
-    { key: 'nykaa', name: 'Nykaa', owner: 'FSN E-Commerce Ventures Limited', classNums: [3, 25, 35, 44], aliases: ['nykaa', 'nykaa cosmetics', 'nykaa fashion', 'nykaa man'], reason: 'Direct collision with registered beauty and lifestyle giant Nykaa (FSN E-Commerce Ventures Ltd).' },
-    { key: 'mamaearth', name: 'Mamaearth', owner: 'Honasa Consumer Limited', classNums: [3, 5, 35], aliases: ['mamaearth', 'mama earth', 'honasa'], reason: 'Direct identical collision with listed D2C beauty leader Mamaearth owned by Honasa Consumer Limited.' },
-    { key: 'sugarcosmetics', name: 'Sugar Cosmetics', owner: 'Vellvette Lifestyle Private Limited', classNums: [3, 35], aliases: ['sugar cosmetics', 'sugar', 'trysugar'], reason: 'Direct collision with leading Indian cosmetics brand Sugar registered in Class 3 by Vellvette Lifestyle Pvt Ltd.' },
-    { key: 'boat', name: 'boAt Lifestyle', owner: 'Imagine Marketing Limited', classNums: [9, 35], aliases: ['boat', 'boat lifestyle', 'boataudio', 'boat nirvana'], reason: 'Direct phonetic and conceptual collision with India’s #1 audio wearables trademark boAt (Imagine Marketing Ltd).' },
-    { key: 'noise', name: 'Noise', owner: 'Nexxbase Marketing Private Limited', classNums: [9, 35], aliases: ['noise', 'gonoise', 'noisefit', 'colorfit'], reason: 'Direct collision with registered smart wearables brand Noise owned by Nexxbase Marketing Pvt Ltd.' },
-    { key: 'boult', name: 'Boult Audio', owner: 'Excellence Technologies Private Limited', classNums: [9, 35], aliases: ['boult', 'boult audio', 'boultaudio'], reason: 'Direct collision with registered audio wearables brand Boult.' },
-    { key: 'fireboltt', name: 'Fire-Boltt', owner: 'Savex Technologies Private Limited', classNums: [9, 35], aliases: ['fire boltt', 'fireboltt', 'boltt'], reason: 'Direct collision with Indian smartwatch brand Fire-Boltt.' },
-    { key: 'plumgoodness', name: 'Plum Goodness', owner: 'Pureplay Skin Sciences (India) Private Limited', classNums: [3, 35], aliases: ['plum', 'plum goodness', 'pureplay'], reason: 'Direct collision with clean beauty brand Plum Goodness in Class 3.' },
-    { key: 'wowskinscience', name: 'WOW Skin Science', owner: 'Fit & Glow Healthcare Private Limited / Body Cupid Pvt Ltd', classNums: [3, 5], aliases: ['wow skin science', 'wow skin', 'buywow'], reason: 'Direct collision with D2C personal care brand WOW Skin Science.' },
-    { key: 'minimalist', name: 'Minimalist (Be Minimalist)', owner: 'Uprising Science Private Limited', classNums: [3, 5], aliases: ['minimalist', 'be minimalist', 'beminimalist'], reason: 'Direct collision with science-backed skincare brand Minimalist in Class 3.' },
-    { key: 'dotandkey', name: 'Dot & Key', owner: 'Dot & Key Wellness Private Limited (Nykaa)', classNums: [3, 35], aliases: ['dot and key', 'dot & key', 'dotandkey'], reason: 'Direct collision with registered skincare brand Dot & Key in Class 3.' },
-    { key: 'mcaffeine', name: 'mCaffeine', owner: 'PEP Technologies Private Limited', classNums: [3, 35], aliases: ['mcaffeine', 'm caffeine'], reason: 'Direct collision with caffeinated personal care trademark mCaffeine in Class 3.' },
-    { key: 'foxtale', name: 'Foxtale', owner: 'Foxtale Consumer Private Limited', classNums: [3, 35], aliases: ['foxtale', 'foxtale skin'], reason: 'Direct collision with trending skincare brand Foxtale in Class 3.' },
-    { key: 'forestessentials', name: 'Forest Essentials', owner: 'Mountain Valley Springs (India) Private Limited', classNums: [3, 35, 44], aliases: ['forest essentials', 'forestessentials'], reason: 'Direct collision with luxury Ayurvedic cosmetics house Forest Essentials in Class 3.' },
-    { key: 'kamaayurveda', name: 'Kama Ayurveda', owner: 'Kama Ayurveda Private Limited (Puig Group)', classNums: [3, 35, 44], aliases: ['kama ayurveda', 'kamaayurveda'], reason: 'Direct collision with luxury Ayurvedic wellness brand Kama Ayurveda in Class 3.' },
-    { key: 'loreal', name: 'L\'Oréal', owner: 'L\'Oréal S.A.', classNums: [3, 35, 44], aliases: ['loreal', 'l\'oreal', 'l oreal'], reason: 'Famous global beauty mark L\'Oréal with well-known status across multiple classes.' },
-    { key: 'nivea', name: 'Nivea', owner: 'Beiersdorf AG', classNums: [3, 5], aliases: ['nivea', 'beiersdorf'], reason: 'Famous global skincare mark Nivea registered in Class 3.' },
-    { key: 'lakme', name: 'Lakmé', owner: 'Hindustan Unilever Limited', classNums: [3, 35, 44], aliases: ['lakme', 'lakmé', 'lakme salon'], reason: 'Famous Indian beauty house mark Lakmé owned by HUL.' },
-    { key: 'dermaco', name: 'The Derma Co.', owner: 'Honasa Consumer Limited', classNums: [3, 5], aliases: ['the derma co', 'derma co', 'dermaco'], reason: 'Direct collision with clinical skincare brand The Derma Co. (Honasa).' },
-    { key: 'snitch', name: 'Snitch', owner: 'Snitch Apparels Private Limited', classNums: [25, 35], aliases: ['snitch', 'snitch apparel', 'snitch clothing'], reason: 'Direct collision with viral D2C menswear and streetwear brand Snitch registered in Class 25 and 35.' },
-    { key: 'bewakoof', name: 'Bewakoof', owner: 'Aditya Birla Digital Fashion Ventures / Pratyaksha Processors', classNums: [25, 35], aliases: ['bewakoof', 'bewakoof.com', 'bewakoof brands'], reason: 'Direct collision with registered Indian apparel brand Bewakoof in Class 25.' },
-    { key: 'thesouledstore', name: 'The Souled Store', owner: 'The Souled Store Private Limited', classNums: [25, 35], aliases: ['the souled store', 'souled store', 'souledstore'], reason: 'Direct collision with pop-culture merchandise and apparel brand The Souled Store in Class 25.' },
-    { key: 'fabindia', name: 'Fabindia', owner: 'Fabindia Overseas Private Limited', classNums: [24, 25, 30, 35], aliases: ['fabindia', 'fab india'], reason: 'Direct collision with iconic Indian craft and retail brand Fabindia in Class 25 & 35.' },
-    { key: 'manyavar', name: 'Manyavar / Mohey', owner: 'Vedant Fashions Limited', classNums: [25, 35], aliases: ['manyavar', 'mohey', 'vedant fashions'], reason: 'Direct collision with India’s leading celebration wear brand Manyavar in Class 25.' },
-    { key: 'raymond', name: 'Raymond', owner: 'Raymond Limited', classNums: [24, 25, 35], aliases: ['raymond', 'the complete man', 'raymonds'], reason: 'Famous Indian suiting and apparel mark Raymond registered in Class 24 & 25.' },
-    { key: 'allensolly', name: 'Allen Solly', owner: 'Aditya Birla Fashion and Retail Limited (ABFRL)', classNums: [25, 35], aliases: ['allen solly', 'allensolly'], reason: 'Direct collision with ABFRL registered apparel trademark Allen Solly.' },
-    { key: 'peterengland', name: 'Peter England', owner: 'Aditya Birla Fashion and Retail Limited (ABFRL)', classNums: [25, 35], aliases: ['peter england', 'peterengland'], reason: 'Direct collision with ABFRL registered menswear trademark Peter England in Class 25.' },
-    { key: 'louisphilippe', name: 'Louis Philippe', owner: 'Aditya Birla Fashion and Retail Limited (ABFRL)', classNums: [25, 35], aliases: ['louis philippe', 'louisphilippe'], reason: 'Direct collision with premium menswear mark Louis Philippe in Class 25.' },
-    { key: 'vanheusen', name: 'Van Heusen', owner: 'Aditya Birla Fashion and Retail Limited / PVH Corp.', classNums: [25, 35], aliases: ['van heusen', 'vanheusen'], reason: 'Direct collision with formalwear trademark Van Heusen in Class 25.' },
-    { key: 'flyingmachine', name: 'Flying Machine', owner: 'Arvind Fashions Limited', classNums: [25, 35], aliases: ['flying machine', 'flyingmachine'], reason: 'Direct collision with Arvind Fashions registered denim brand Flying Machine.' },
-    { key: 'zara', name: 'Zara', owner: 'Industria de Diseño Textil, S.A. (Inditex)', classNums: [25, 35], aliases: ['zara', 'zara man', 'zara home'], reason: 'Famous global fast-fashion mark Zara (Inditex) heavily defended across courts in India.' },
-    { key: 'hm', name: 'H&M', owner: 'H & M Hennes & Mauritz AB', classNums: [25, 35], aliases: ['h&m', 'hm', 'hennes mauritz'], reason: 'Famous global fashion mark H&M in Class 25 and 35.' },
-    { key: 'nike', name: 'Nike', owner: 'Nike, Inc.', classNums: [25, 28, 35], aliases: ['nike', 'nike air', 'jordan', 'just do it'], reason: 'Famous global trademark Nike enjoying cross-class statutory protection under Sec 29(4).' },
-    { key: 'adidas', name: 'Adidas', owner: 'Adidas AG', classNums: [25, 28, 35], aliases: ['adidas', 'adidas originals'], reason: 'Famous global athletic brand Adidas in footwear and apparel.' },
-    { key: 'puma', name: 'Puma', owner: 'Puma SE', classNums: [25, 28, 35], aliases: ['puma', 'puma motorsport'], reason: 'Famous global sportswear brand Puma registered in Class 25.' },
-    { key: 'underarmour', name: 'Under Armour', owner: 'Under Armour, Inc.', classNums: [25, 28, 35], aliases: ['under armour', 'underarmour'], reason: 'Direct collision with athletic performance mark Under Armour in Class 25.' },
-    { key: 'levis', name: 'Levi\'s', owner: 'Levi Strauss & Co.', classNums: [25, 35], aliases: ['levis', 'levi\'s', 'levi strauss'], reason: 'Iconic global denim house mark Levi\'s registered in Class 25.' },
-    { key: 'uniqlo', name: 'Uniqlo', owner: 'Fast Retailing Co., Ltd.', classNums: [25, 35], aliases: ['uniqlo', 'life wear'], reason: 'Famous global casualwear brand Uniqlo in Class 25.' },
-    { key: 'gucci', name: 'Gucci', owner: 'Guccio Gucci S.p.A. (Kering)', classNums: [14, 18, 25, 35], aliases: ['gucci', 'guccio gucci'], reason: 'Famous luxury fashion house mark Gucci protected across all classes.' },
-    { key: 'louisvuitton', name: 'Louis Vuitton (LV)', owner: 'Louis Vuitton Malletier (LVMH)', classNums: [14, 18, 25, 35], aliases: ['louis vuitton', 'louisvuitton', 'lv'], reason: 'Famous luxury house mark Louis Vuitton (LVMH) protected globally.' },
-    { key: 'zerodha', name: 'Zerodha', owner: 'Zerodha Broking Limited', classNums: [36, 42], aliases: ['zerodha', 'kite', 'varsity zerodha'], reason: 'Direct collision with India’s leading discount brokerage and fintech mark Zerodha.' },
-    { key: 'groww', name: 'Groww', owner: 'Nextbillion Technology Private Limited', classNums: [36, 42], aliases: ['groww', 'groww app', 'grow'], reason: 'Direct collision with premier Indian investment platform Groww in Class 36.' },
-    { key: 'razorpay', name: 'Razorpay', owner: 'Razorpay Software Private Limited', classNums: [36, 42], aliases: ['razorpay', 'razor pay', 'razorpayx'], reason: 'Direct collision with India’s leading payment gateway and fintech unicorn Razorpay.' },
-    { key: 'paytm', name: 'Paytm', owner: 'One97 Communications Limited', classNums: [36, 38, 42], aliases: ['paytm', 'pay tm', 'one97'], reason: 'Direct collision with famous Indian payments and fintech house mark Paytm.' },
-    { key: 'phonepe', name: 'PhonePe', owner: 'PhonePe Private Limited (Walmart)', classNums: [36, 42], aliases: ['phonepe', 'phone pe', 'phonepe app'], reason: 'Direct collision with India’s largest UPI payments mark PhonePe.' },
-    { key: 'cred', name: 'CRED', owner: 'Dreamplug Technologies Private Limited', classNums: [36, 42], aliases: ['cred', 'cred app', 'dreamplug'], reason: 'Direct collision with high-net-worth credit rewards platform CRED.' },
-    { key: 'bharatpe', name: 'BharatPe', owner: 'Resilient Innovations Private Limited', classNums: [36, 42], aliases: ['bharatpe', 'bharat pe', 'postpe'], reason: 'Direct collision with merchant fintech platform BharatPe in Class 36.' },
-    { key: 'pinelabs', name: 'Pine Labs', owner: 'Pine Labs Private Limited', classNums: [36, 42], aliases: ['pine labs', 'pinelabs'], reason: 'Direct collision with merchant commerce and POS fintech leader Pine Labs.' },
-    { key: 'mobikwik', name: 'MobiKwik', owner: 'One Mobikwik Systems Limited', classNums: [36, 42], aliases: ['mobikwik', 'mobicash', 'zaakpay'], reason: 'Direct collision with digital wallet and credit fintech MobiKwik.' },
-    { key: 'jupiter', name: 'Jupiter Money', owner: 'Amica Financial Technologies Private Limited', classNums: [36, 42], aliases: ['jupiter money', 'jupiter bank', 'amica'], reason: 'Direct collision with Indian neobanking brand Jupiter Money in Class 36.' },
-    { key: 'fimoney', name: 'Fi Money', owner: 'Epifi Technologies Private Limited', classNums: [36, 42], aliases: ['fi money', 'fimoney', 'epifi'], reason: 'Direct collision with neobanking platform Fi Money in Class 36.' },
-    { key: 'coindcx', name: 'CoinDCX', owner: 'Neblio Technologies Private Limited', classNums: [36, 42], aliases: ['coindcx', 'coin dcx'], reason: 'Direct collision with India’s leading crypto exchange CoinDCX in Class 36.' },
-    { key: 'coinswitch', name: 'CoinSwitch (CoinSwitch Kuber)', owner: 'Bitcipher Labs LLP', classNums: [36, 42], aliases: ['coinswitch', 'coin switch', 'coinswitch kuber'], reason: 'Direct collision with crypto and trading platform CoinSwitch in Class 36.' },
-    { key: 'hdfc', name: 'HDFC Bank', owner: 'HDFC Bank Limited', classNums: [36], aliases: ['hdfc', 'hdfc bank', 'hdfc securities'], reason: 'Famous Indian banking institution mark HDFC Bank in Class 36.' },
-    { key: 'icici', name: 'ICICI Bank', owner: 'ICICI Bank Limited', classNums: [36], aliases: ['icici', 'icici bank', 'icici direct'], reason: 'Famous Indian private bank mark ICICI in Class 36.' },
-    { key: 'sbi', name: 'State Bank of India (SBI)', owner: 'State Bank of India', classNums: [36], aliases: ['sbi', 'state bank of india', 'yono sbi'], reason: 'Famous statutory Indian banking institution mark SBI.' },
-    { key: 'axisbank', name: 'Axis Bank', owner: 'Axis Bank Limited', classNums: [36], aliases: ['axis bank', 'axisbank'], reason: 'Famous Indian private banking institution mark Axis Bank in Class 36.' },
-    { key: 'kotak', name: 'Kotak Mahindra Bank', owner: 'Kotak Mahindra Bank Limited', classNums: [36], aliases: ['kotak', 'kotak bank', 'kotak mahindra'], reason: 'Famous Indian banking and asset management mark Kotak in Class 36.' },
-    { key: 'stripe', name: 'Stripe', owner: 'Stripe, Inc.', classNums: [36, 42], aliases: ['stripe', 'stripe payments'], reason: 'Famous global payment infrastructure mark Stripe in Class 36 & 42.' },
-    { key: 'paypal', name: 'PayPal', owner: 'PayPal, Inc.', classNums: [36, 42], aliases: ['paypal', 'pay pal'], reason: 'Famous global digital payment platform mark PayPal in Class 36.' },
-    { key: 'apple', name: 'Apple Inc.', owner: 'Apple Inc.', classNums: [9, 35, 38, 42], aliases: ['apple', 'apple store', 'iphone', 'macbook', 'ipad'], reason: 'Famous global trademark Apple Inc. having multi-class protection under Sec 29(4) Indian Trademarks Act.' },
-    { key: 'google', name: 'Google', owner: 'Google LLC (Alphabet Inc.)', classNums: [9, 35, 38, 42], aliases: ['google', 'alphabet', 'android', 'youtube', 'gemini'], reason: 'Famous global trademark Google with total well-known mark protection under Sec 11(6).' },
-    { key: 'microsoft', name: 'Microsoft', owner: 'Microsoft Corporation', classNums: [9, 35, 38, 42], aliases: ['microsoft', 'azure', 'windows', 'xbox'], reason: 'Famous global computing mark Microsoft Corporation.' },
-    { key: 'meta', name: 'Meta (Facebook / Instagram / WhatsApp)', owner: 'Meta Platforms, Inc.', classNums: [9, 35, 38, 42], aliases: ['meta', 'facebook', 'instagram', 'whatsapp'], reason: 'Famous social technology house mark Meta Platforms, Inc.' },
-    { key: 'tata', name: 'Tata Group', owner: 'Tata Sons Private Limited', classNums: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45], aliases: ['tata', 'tata sons', 'tata motors', 'tcs', 'tata tea', 'tata salt'], reason: 'Identical / deceptive similarity to well-known Indian conglomerate Tata (cross-class protection across all 45 NICE classes).' },
-    { key: 'reliance', name: 'Reliance Industries / Jio', owner: 'Reliance Industries Limited', classNums: [9, 35, 36, 38, 42], aliases: ['reliance', 'jio', 'reliance retail', 'ril'], reason: 'Direct collision with Reliance / Jio registered conglomerate house mark.' },
-    { key: 'infosys', name: 'Infosys', owner: 'Infosys Limited', classNums: [9, 35, 42], aliases: ['infosys', 'infy'], reason: 'Famous Indian IT services mark Infosys Limited in Class 42.' },
-    { key: 'wipro', name: 'Wipro', owner: 'Wipro Limited', classNums: [9, 35, 42], aliases: ['wipro', 'wipro technologies'], reason: 'Famous Indian tech conglomerate mark Wipro in Class 42.' },
-    { key: 'hcl', name: 'HCL Technologies', owner: 'HCL Technologies Limited', classNums: [9, 35, 42], aliases: ['hcl', 'hcl tech'], reason: 'Famous Indian tech multinational mark HCL in Class 42.' },
-    { key: 'zoho', name: 'Zoho Corporation', owner: 'Zoho Corporation Private Limited', classNums: [9, 42], aliases: ['zoho', 'zoho crm', 'manageengine'], reason: 'Direct collision with SaaS giant Zoho Corporation in Class 42.' },
-    { key: 'freshworks', name: 'Freshworks', owner: 'Freshworks Inc.', classNums: [9, 42], aliases: ['freshworks', 'freshdesk', 'freshservice'], reason: 'Direct collision with listed SaaS leader Freshworks in Class 42.' },
-    { key: 'postman', name: 'Postman', owner: 'Postdot Technologies Inc.', classNums: [9, 42], aliases: ['postman', 'postman api'], reason: 'Direct collision with world-leading API platform Postman in Class 42.' },
-    { key: 'hasura', name: 'Hasura', owner: 'Hasura Inc.', classNums: [9, 42], aliases: ['hasura', 'hasura graphql'], reason: 'Direct collision with developer tooling unicorn Hasura in Class 42.' },
-    { key: 'browserstack', name: 'BrowserStack', owner: 'BrowserStack Inc.', classNums: [9, 42], aliases: ['browserstack', 'browser stack'], reason: 'Direct collision with software testing cloud platform BrowserStack.' },
-    { key: 'inmobi', name: 'InMobi', owner: 'InMobi Pte. Ltd.', classNums: [35, 42], aliases: ['inmobi', 'glance inMobi'], reason: 'Direct collision with ad-tech and mobile unicorn InMobi.' },
-    { key: 'salesforce', name: 'Salesforce', owner: 'Salesforce, Inc.', classNums: [9, 42], aliases: ['salesforce', 'salesforce crm'], reason: 'Famous global enterprise SaaS mark Salesforce in Class 42.' },
-    { key: 'adobe', name: 'Adobe', owner: 'Adobe Inc.', classNums: [9, 42], aliases: ['adobe', 'photoshop', 'illustrator', 'figma'], reason: 'Famous creative software house mark Adobe in Class 9 & 42.' },
-    { key: 'canva', name: 'Canva', owner: 'Canva Pty Ltd', classNums: [9, 42], aliases: ['canva', 'canva pro'], reason: 'Famous visual design SaaS mark Canva in Class 42.' },
-    { key: 'figma', name: 'Figma', owner: 'Figma, Inc.', classNums: [9, 42], aliases: ['figma', 'figjam'], reason: 'Famous collaborative design tool mark Figma in Class 42.' },
-    { key: 'slack', name: 'Slack', owner: 'Slack Technologies LLC (Salesforce)', classNums: [9, 38, 42], aliases: ['slack', 'slack app'], reason: 'Famous workplace messaging mark Slack in Class 38 & 42.' },
-    { key: 'notion', name: 'Notion', owner: 'Notion Labs, Inc.', classNums: [9, 42], aliases: ['notion', 'notion ai', 'notion workspace'], reason: 'Direct collision with productivity workspace mark Notion in Class 42.' },
-    { key: 'cultfit', name: 'Cult.fit / Cure.fit', owner: 'Curefit Healthcare Private Limited', classNums: [41, 44], aliases: ['cult.fit', 'cultfit', 'cure.fit', 'curefit', 'cult'], reason: 'Direct collision with premier Indian fitness chain Cult.fit in Class 41 & 44.' },
-    { key: 'healthifyme', name: 'HealthifyMe', owner: 'HealthifyMe Wellness Products and Services Pvt Ltd', classNums: [9, 41, 44], aliases: ['healthifyme', 'healthify me', 'healthify'], reason: 'Direct collision with fitness and wellness app HealthifyMe in Class 44.' },
-    { key: 'byjus', name: 'BYJU\'S', owner: 'Think & Learn Private Limited', classNums: [9, 41], aliases: ['byjus', 'byju\'s', 'byju'], reason: 'Direct collision with registered Indian edtech brand BYJU\'S in Class 41.' },
-    { key: 'unacademy', name: 'Unacademy', owner: 'Sorting Hat Technologies Private Limited', classNums: [9, 41], aliases: ['unacademy', 'sorting hat'], reason: 'Direct collision with edtech platform Unacademy in Class 41.' },
-    { key: 'physicswallah', name: 'Physics Wallah (PW)', owner: 'Physicswallah Private Limited', classNums: [9, 41], aliases: ['physics wallah', 'physicswallah', 'pw'], reason: 'Direct collision with edtech unicorn Physics Wallah in Class 41.' },
-    { key: 'headsupfortails', name: 'Heads Up For Tails (HUFT)', owner: 'Pre Parenting Solutions Private Limited', classNums: [18, 28, 31, 35], aliases: ['heads up for tails', 'huft', 'headsupfortails'], reason: 'Direct collision with India’s leading premium pet care brand Heads Up For Tails (HUFT) in Class 31 & 35.' },
-    { key: 'supertails', name: 'Supertails', owner: 'Chetanya Supertails Private Limited', classNums: [31, 35, 44], aliases: ['supertails', 'super tails'], reason: 'Direct collision with D2C pet care and telehealth brand Supertails in Class 35 & 44.' },
-    { key: 'lenskart', name: 'Lenskart', owner: 'Lenskart Solutions Limited', classNums: [9, 35, 44], aliases: ['lenskart', 'lens kart', 'john jacobs', 'vincent chase'], reason: 'Direct collision with eyewear giant Lenskart Solutions Ltd registered in Class 9 & 35.' },
-    { key: 'practo', name: 'Practo', owner: 'Practo Technologies Private Limited', classNums: [9, 42, 44], aliases: ['practo', 'practo care'], reason: 'Direct collision with digital health and telehealth platform Practo in Class 44.' },
-    { key: 'pharmeasy', name: 'PharmEasy', owner: 'API Holdings Limited', classNums: [35, 44], aliases: ['pharmeasy', 'pharm easy'], reason: 'Direct collision with digital pharmacy and diagnostic brand PharmEasy in Class 35 & 44.' },
-    { key: 'tata1mg', name: '1mg / Tata 1mg', owner: 'Tata 1mg Technologies Private Limited', classNums: [35, 44], aliases: ['1mg', 'tata 1mg', 'tata1mg'], reason: 'Direct collision with healthcare e-commerce platform Tata 1mg in Class 35.' },
-    { key: 'ola', name: 'Ola / Ola Electric', owner: 'ANI Technologies Private Limited / Ola Electric Mobility Ltd', classNums: [9, 12, 39], aliases: ['ola', 'ola cabs', 'ola electric'], reason: 'Direct collision with mobility and EV giant Ola in Class 39 & 12.' },
-    { key: 'uber', name: 'Uber', owner: 'Uber Technologies, Inc.', classNums: [9, 39], aliases: ['uber', 'uber eats', 'uber ride'], reason: 'Famous global mobility trademark Uber in Class 39.' },
-    { key: 'rapido', name: 'Rapido', owner: 'Roppen Transportation Services Private Limited', classNums: [9, 39], aliases: ['rapido', 'rapido bike'], reason: 'Direct collision with bike-taxi and mobility platform Rapido in Class 39.' },
-    { key: 'makemytrip', name: 'MakeMyTrip (MMT)', owner: 'MakeMyTrip (India) Private Limited', classNums: [39, 43], aliases: ['makemytrip', 'make my trip', 'mmt'], reason: 'Famous Indian online travel booking house mark MakeMyTrip in Class 39 & 43.' },
-    { key: 'oyo', name: 'OYO Rooms', owner: 'Oravel Stays Limited', classNums: [35, 43], aliases: ['oyo', 'oyo rooms', 'oravel'], reason: 'Direct collision with hospitality network mark OYO / Oravel Stays in Class 43.' },
-    { key: 'airbnb', name: 'Airbnb', owner: 'Airbnb, Inc.', classNums: [35, 43], aliases: ['airbnb', 'air bnb'], reason: 'Famous global hospitality platform mark Airbnb in Class 43.' },
-    { key: 'zostel', name: 'Zostel', owner: 'Zostel Hospitality Private Limited', classNums: [43], aliases: ['zostel', 'zostel home', 'zostel plus'], reason: 'Direct collision with India’s leading backpacker hostel chain Zostel in Class 43.' }
-  ];
-
-  function checkDatabaseTrademarkCollision(brandName) {
-    const rawClean = (brandName || '').trim().toLowerCase();
-    const stripped = rawClean.replace(/[^a-z0-9]/g, '');
-    if (!stripped || stripped.length < 2) return null;
-
-    const words = rawClean.split(/[\s\-_\.,\/]+/).filter(w => w.length > 0);
-
-    for (const entry of MAJOR_TRADEMARKS_DATABASE) {
-      const entryKey = entry.key.toLowerCase().replace(/[^a-z0-9]/g, '');
-      const entryName = entry.name.toLowerCase();
-
-      // 1. Exact match (stripped or raw)
-      if (stripped === entryKey || rawClean === entryName) {
-        return {
-          matchedBrand: entry.name,
-          owner: entry.owner,
-          primaryClasses: entry.classNums,
-          reason: entry.reason
-        };
-      }
-
-      // 2. Word match: check if any constituent word exactly matches entryKey or entryName
-      const hasWordMatch = words.some(w => {
-        const wClean = w.replace(/[^a-z0-9]/g, '');
-        return wClean === entryKey || (entryKey.length >= 3 && wClean === entryKey);
-      });
-      if (hasWordMatch) {
-        return {
-          matchedBrand: entry.name,
-          owner: entry.owner,
-          primaryClasses: entry.classNums,
-          reason: entry.reason
-        };
-      }
-
-      // 3. Substring match
-      if (entryKey.length >= 4 && (stripped.includes(entryKey) || rawClean.includes(entryName))) {
-        return {
-          matchedBrand: entry.name,
-          owner: entry.owner,
-          primaryClasses: entry.classNums,
-          reason: entry.reason
-        };
-      }
-
-      if (stripped.length >= 4 && entryKey.includes(stripped)) {
-        return {
-          matchedBrand: entry.name,
-          owner: entry.owner,
-          primaryClasses: entry.classNums,
-          reason: entry.reason
-        };
-      }
-
-      // 4. Aliases match
-      if (entry.aliases && entry.aliases.length > 0) {
-        for (const alias of entry.aliases) {
-          const aClean = alias.toLowerCase().replace(/[^a-z0-9]/g, '');
-          if (stripped === aClean || rawClean === alias.toLowerCase() || (aClean.length >= 4 && stripped.includes(aClean))) {
-            return {
-              matchedBrand: entry.name,
-              owner: entry.owner,
-              primaryClasses: entry.classNums,
-              reason: entry.reason
-            };
-          }
-          if (words.some(w => w.replace(/[^a-z0-9]/g, '') === aClean)) {
-            return {
-              matchedBrand: entry.name,
-              owner: entry.owner,
-              primaryClasses: entry.classNums,
-              reason: entry.reason
-            };
-          }
-        }
-      }
-    }
-
-    return null;
-  }
-
-  // Live Wikidata / Wikipedia Global Brand & Trademark Search Client Engine (CORS-friendly)
-  async function queryWikipediaBrandSearchClient(brandName = '') {
-    const query = (brandName || '').trim();
-    if (!query) return [];
-
-    const targetUrl = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=5&format=json&origin=*`;
-
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-      const response = await fetch(targetUrl, { signal: controller.signal });
-      clearTimeout(timeoutId);
-
-      if (!response.ok) return [];
-
-      const data = await response.json();
-      if (!Array.isArray(data) || data.length < 4) return [];
-
-      const [, titles, descs, urls] = data;
-      const matches = [];
-
-      const commercialKeywords = /\b(company|startup|brand|business|corporation|firm|enterprise|retail|retailer|conglomerate|platform|app|application|service|software|chain|store|manufacturer|brewery|patisserie|restaurant|e-commerce|fintech|agency|holdings|inc|ltd|llc|pvt|co\.)\b/i;
-
-      const cleanQuery = query.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-      for (let i = 0; i < Math.min(titles.length, 5); i++) {
-        const title = titles[i] || '';
-        if (!title) continue;
-
-        let desc = (descs[i] || '').trim();
-        const url = urls[i] || `https://en.wikipedia.org/wiki/${encodeURIComponent(title)}`;
-        const cleanTitle = title.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-        const isExactMatch = cleanTitle === cleanQuery || title.toLowerCase() === query.toLowerCase();
-        const isPartialMatch = cleanTitle.includes(cleanQuery) || cleanQuery.includes(cleanTitle);
-
-        // If description was empty, attempt quick REST summary fetch for exact or top titles
-        if (!desc && (isExactMatch || i < 2)) {
-          try {
-            const sumCtrl = new AbortController();
-            const sumTimeout = setTimeout(() => sumCtrl.abort(), 1800);
-            const sumRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`, {
-              signal: sumCtrl.signal
-            });
-            clearTimeout(sumTimeout);
-            if (sumRes.ok) {
-              const sumJson = await sumRes.json();
-              desc = sumJson.description || (sumJson.extract ? sumJson.extract.slice(0, 160) : '');
-            }
-          } catch (sumErr) {}
-        }
-
-        const isCommercial = commercialKeywords.test(desc) || commercialKeywords.test(title);
-
-        if (isExactMatch || isCommercial || isPartialMatch) {
-          matches.push({
-            title,
-            description: desc || 'Wikipedia global entity entry',
-            url,
-            isExactMatch,
-            isCommercial
-          });
-        }
-      }
-
-      return matches;
-    } catch (err) {
-      console.warn('Client-side Wikipedia search error / timeout:', err.message);
-      return [];
-    }
-  }
-
-  function proceduralTrademarkCheck(brandName = '', niche = '', wikiMatches = []) {
-    const cleanName = (brandName || '').trim();
-    const lower = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const nice = getNiceClassForNiche(niche);
-
-    const conflicts = [];
-    let status = 'Clear';
-
-    // 1. Comprehensive Check against 100+ Major Registered Trademarks
-    const dbMatch = checkDatabaseTrademarkCollision(cleanName);
-    if (dbMatch) {
-      status = 'Conflict';
-      conflicts.push({
-        name: `${dbMatch.matchedBrand} (Registered to ${dbMatch.owner})`,
-        reason: dbMatch.reason
-      });
-    }
-
-    // 2. Check live Wikipedia / Wikidata global entity records
-    if (Array.isArray(wikiMatches) && wikiMatches.length > 0) {
-      wikiMatches.forEach(wiki => {
-        if (wiki.isExactMatch && wiki.isCommercial) {
-          status = 'Conflict';
-          conflicts.unshift({
-            name: `${wiki.title} (Live Global Entity / Brand Record)`,
-            reason: `Existing registered commercial company or brand identified via global encyclopedia & entity archives: "${wiki.description}". Direct trademark conflict.`
-          });
-        } else if (wiki.isExactMatch) {
-          if (status !== 'Conflict') status = 'Caution';
-          conflicts.push({
-            name: `${wiki.title} (Global Entity Record)`,
-            reason: `Exact title match with existing public global entity: "${wiki.description}". May face prior-use objection.`
-          });
-        } else if (wiki.isCommercial) {
-          if (status === 'Clear') status = 'Caution';
-          conflicts.push({
-            name: `${wiki.title} (Commercial Entity Overlap)`,
-            reason: `Phonetically / conceptually similar commercial entity operating: "${wiki.description}".`
-          });
-        }
-      });
-    }
-
-    // 3. Check phonetic / generic caution terms
-    if (status !== 'Conflict') {
-      const genericWords = ['coffee', 'cafe', 'tech', 'studio', 'pay', 'mart', 'kart', 'super', 'hyper', 'aura', 'urban', 'luxe'];
-      const matchedGeneric = genericWords.find(w => lower === w || lower === w + 's' || lower === 'the' + w);
-
-      if (matchedGeneric) {
-        status = 'Caution';
-        conflicts.push({
-          name: `Descriptive / Generic Mark ("${matchedGeneric}")`,
-          reason: `Term is highly descriptive or crowded in ${nice.label}. Trademarks Registry routinely raises Section 9 (Descriptiveness) objections unless distinctively modified.`
-        });
-      } else if (cleanName.length <= 3) {
-        status = 'Caution';
-        conflicts.push({
-          name: 'Short Letter Combination / Acronym',
-          reason: '2-3 letter marks face heavy opposition in Indian Trademarks Journal unless backed by extensive prior commercial usage proof.'
-        });
-      }
-    }
-
-    // 4. Smart Alternative Generator based on niche
-    const nameBase = cleanName.replace(/Living|Studio|Lab|Venture|Co|Club|Craft|House|Roasters/gi, '').trim() || 'Veritas';
-    let alternatives = [];
-
-    if (nice.classNum === 30 || nice.classNum === 43) {
-      alternatives = [`${nameBase} Roasters`, `Komorebi Brew Co.`, `Solstice & Bean`];
-    } else if (nice.classNum === 25 || nice.classNum === 14) {
-      alternatives = [`Atelier ${nameBase}`, `${nameBase} Archive`, `Verve Studio`];
-    } else if (nice.classNum === 42 || nice.classNum === 9) {
-      alternatives = [`${nameBase} Logic`, `Synapse ${nameBase}`, `OmniCore Systems`];
-    } else if (nice.classNum === 3) {
-      alternatives = [`Botanica ${nameBase}`, `Floralis Care`, `Nativa Rituals`];
-    } else if (nice.classNum === 36) {
-      alternatives = [`Apex ${nameBase}`, `Meridian Trust`, `Solvent Pay`];
-    } else {
-      alternatives = [`${nameBase}ara`, `Aethel ${nameBase}`, `Maison ${nameBase}`];
-    }
-
-    return {
-      status: status,
-      statusLabel: status === 'Conflict' ? 'Conflict — Existing Trademark Detected' : (status === 'Caution' ? 'Caution — Potential Overlap' : 'Clear — High Likelihood of Registration'),
-      trademarkClass: nice.label,
-      classDesc: nice.desc,
-      conflicts: conflicts,
-      alternatives: alternatives,
-      quickCompanyUrl: `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(cleanName)}`,
-      wikiMatches: wikiMatches || []
-    };
-  }
-
-  async function checkTrademarkConflict(brandName, niche) {
-    const rawKey = elements.apiKeyInput ? elements.apiKeyInput.value.trim() : '';
-    const hasHeaderKey = Boolean(rawKey && rawKey.length > 5);
-
-    // 1. Direct registry database collision test
-    const dbMatch = checkDatabaseTrademarkCollision(brandName);
-
-    // 2. Query Wikipedia search concurrently
-    const clientWikiPromise = queryWikipediaBrandSearchClient(brandName);
-
-    try {
-      const res = await fetch('/.netlify/functions/trademark', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          brandName: brandName,
-          niche: niche,
-          apiKey: hasHeaderKey ? rawKey : undefined
-        })
-      });
-
-      if (res.ok) {
-        const netlifyData = await res.json();
-        // Guarantee registry collision is enforced
-        if (dbMatch) {
-          netlifyData.status = 'Conflict';
-          netlifyData.statusLabel = 'Conflict — Existing Trademark Detected';
-          const already = (netlifyData.conflicts || []).some(c => c.name.toLowerCase().includes(dbMatch.matchedBrand.toLowerCase()));
-          if (!already) {
-            netlifyData.conflicts = netlifyData.conflicts || [];
-            netlifyData.conflicts.unshift({
-              name: `${dbMatch.matchedBrand} (Registered to ${dbMatch.owner})`,
-              reason: dbMatch.reason
-            });
-          }
-        }
-        return netlifyData;
-      }
-      console.warn('Netlify trademark endpoint returned non-OK status:', res.status);
-    } catch (fetchErr) {
-      console.warn('Could not reach /.netlify/functions/trademark, engaging procedural fallback:', fetchErr);
-    }
-
-    const wikiMatches = await clientWikiPromise;
-
-    // Direct Gemini REST client fallback if header key is provided
-    if (hasHeaderKey) {
-      try {
-        const niceClass = getNiceClassForNiche(niche);
-
-        let wikiPrompt = '';
-        if (wikiMatches && wikiMatches.length > 0) {
-          wikiPrompt = `
-LIVE WIKIDATA / WIKIPEDIA BRAND RECORDS:
-${wikiMatches.map(m => `- "${m.title}": ${m.description} (Commercial: ${m.isCommercial ? 'Yes' : 'No'})`).join('\n')}
-`;
-        }
-
-        const promptText = `
-You are a senior Intellectual Property & Trademark Attorney specializing in Indian Trademark Law (IP India) and QuickCompany live registry audits.
-Evaluate trademark registration availability, phonetic similarity, and conflict risk for:
-- Proposed Brand Name: "${brandName}"
-- Sector / Niche: "${niche}"
-- Mapped NICE Trademark Class: "${niceClass.label}: ${niceClass.desc}"
-${dbMatch ? `CRITICAL: The name matches registered brand "${dbMatch.matchedBrand}" owned by "${dbMatch.owner}". Set status to "Conflict".` : ''}
-${wikiPrompt}
-
-Return a SINGLE valid JSON object matching this schema strictly:
-{
-  "status": "Clear" | "Caution" | "Conflict",
-  "trademarkClass": "${niceClass.label}",
-  "classDesc": "${niceClass.desc}",
-  "conflicts": [
-    { "name": "Existing Conflicting Mark or Legal Ground", "reason": "Clear explanation of identical/phonetic overlap, commercial existence or Section 9 objection" }
-  ],
-  "alternatives": ["CoinedAlternative1", "CoinedAlternative2", "CoinedAlternative3"]
-}
-
-Rules:
-- If "${brandName}" matches any existing company, startup, D2C brand, app or mark, status MUST be "Conflict".
-`;
-        const payload = {
-          contents: [{ parts: [{ text: promptText }] }],
-          generationConfig: { temperature: 0.2, responseMimeType: 'application/json' }
-        };
-        const data = await callGeminiEndpoint(payload);
-        const parsed = extractJsonFromGeminiResponse(data);
-        const conflictsList = Array.isArray(parsed.conflicts) ? parsed.conflicts : [];
-        let finalStatus = ['Clear', 'Caution', 'Conflict'].includes(parsed.status) ? parsed.status : 'Clear';
-        if (dbMatch) {
-          finalStatus = 'Conflict';
-          const already = conflictsList.some(c => c.name.toLowerCase().includes(dbMatch.matchedBrand.toLowerCase()));
-          if (!already) {
-            conflictsList.unshift({
-              name: `${dbMatch.matchedBrand} (Registered to ${dbMatch.owner})`,
-              reason: dbMatch.reason
-            });
-          }
-        }
-
-        // Enforce Wikipedia commercial entity collision
-        if (wikiMatches && wikiMatches.length > 0) {
-          wikiMatches.forEach(wiki => {
-            const already = conflictsList.some(c => c.name.toLowerCase().includes(wiki.title.toLowerCase()));
-            if (wiki.isExactMatch && wiki.isCommercial) {
-              finalStatus = 'Conflict';
-              if (!already) {
-                conflictsList.unshift({
-                  name: `${wiki.title} (Live Global Entity / Brand Record)`,
-                  reason: `Existing registered commercial company or brand identified: "${wiki.description}". Direct trademark conflict.`
-                });
-              }
-            }
-          });
-        }
-
-        return {
-          status: finalStatus,
-          statusLabel: finalStatus === 'Conflict' ? 'Conflict — Existing Trademark Detected' : (finalStatus === 'Caution' ? 'Caution — Potential Overlap' : 'Clear — High Likelihood of Registration'),
-          trademarkClass: parsed.trademarkClass || niceClass.label,
-          classDesc: parsed.classDesc || niceClass.desc,
-          conflicts: conflictsList,
-          alternatives: Array.isArray(parsed.alternatives) && parsed.alternatives.length >= 3 ? parsed.alternatives.slice(0, 3) : proceduralTrademarkCheck(brandName, niche, wikiMatches).alternatives,
-          quickCompanyUrl: `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(brandName)}`,
-          wikiMatches: wikiMatches || []
-        };
-      } catch (geminiErr) {
-        console.warn('Direct Gemini trademark check failed:', geminiErr);
-      }
-    }
-
-    // Procedural Fallback Engine
-    return proceduralTrademarkCheck(brandName, niche, wikiMatches);
-  }
-
-  function renderTrademarkStatus(result, brandName = null) {
-    if (!elements.trademarkStatusCard) return;
-
-    const currentBrand = (brandName || (elements.inputBrandName ? elements.inputBrandName.value.trim() : '') || 'Brand').trim();
-
-    // 1. Trademark Class Badge & Description
-    if (elements.tmClassBadge) elements.tmClassBadge.textContent = result.trademarkClass || "Class 30";
-    if (elements.tmClassDesc) elements.tmClassDesc.textContent = result.classDesc || "Staple Foods & Beverages";
-
-    // 2. Status Pill (Clear | Caution | Conflict)
-    const status = (result.status || 'Clear').toLowerCase();
-    if (elements.tmStatusPill) {
-      elements.tmStatusPill.className = `trademark-status-pill pill-${status}`;
-    }
-    if (elements.tmStatusText) {
-      if (status === 'conflict') {
-        elements.tmStatusText.textContent = 'Conflict — Existing Trademark Detected';
-      } else if (status === 'caution') {
-        elements.tmStatusText.textContent = 'Caution — Potential Overlap';
-      } else {
-        elements.tmStatusText.textContent = 'Clear — High Likelihood of Registration';
-      }
-    }
-
-    // 3. Conflicts List vs Clear Note
-    const conflicts = Array.isArray(result.conflicts) ? result.conflicts : [];
-    if (conflicts.length > 0 && status !== 'clear') {
-      if (elements.tmConflictsWrap) elements.tmConflictsWrap.classList.remove('hidden');
-      if (elements.tmClearNote) elements.tmClearNote.classList.add('hidden');
-      if (elements.tmConflictsList) {
-        elements.tmConflictsList.innerHTML = conflicts.map(c => `
-          <div class="tm-conflict-item">
-            <div class="conflict-head">
-              <span class="conflict-warning-badge">${status === 'conflict' ? 'Direct Collision' : 'Caution Ground'}</span>
-              <strong>${c.name}</strong>
-            </div>
-            <p class="conflict-desc">${c.reason}</p>
-          </div>
-        `).join('');
-      }
-    } else {
-      if (elements.tmConflictsWrap) elements.tmConflictsWrap.classList.add('hidden');
-      if (elements.tmClearNote) elements.tmClearNote.classList.remove('hidden');
-    }
-
-    // 4. Clickable Alternatives List
-    const alts = Array.isArray(result.alternatives) && result.alternatives.length > 0
-      ? result.alternatives.slice(0, 3)
-      : [`${currentBrand} Roasters`, `Komorebi Brew Co.`, `Solstice Studio`];
-
-    if (elements.tmAlternativesList) {
-      elements.tmAlternativesList.innerHTML = '';
-      alts.forEach(altName => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'tm-alt-btn';
-        btn.title = `Switch brand name to "${altName}"`;
-        btn.innerHTML = `
-          <span>${altName}</span>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
-        `;
-        btn.addEventListener('click', () => {
-          if (elements.inputBrandName) {
-            elements.inputBrandName.value = altName;
-            elements.inputBrandName.focus();
-            showToast(`Switched brand name to "${altName}"! Re-checking trademark...`, 'info', 2000);
-            handleCheckTrademark(altName);
-          }
-        });
-        elements.tmAlternativesList.appendChild(btn);
-      });
-    }
-
-    // 5. Update QuickCompany Live Verification Link with pre-searched brand name
-    if (elements.tmVerifyLink) {
-      const qcUrl = result.quickCompanyUrl || `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(currentBrand)}`;
-      elements.tmVerifyLink.href = qcUrl;
-      elements.tmVerifyLink.setAttribute('title', `Search "${currentBrand}" live on QuickCompany Indian Trademark database`);
-      if (elements.tmVerifyLinkText) {
-        elements.tmVerifyLinkText.textContent = `Verify Live on QuickCompany (IP India)`;
-      }
-    }
-
-    // Reveal the card
-    elements.trademarkStatusCard.classList.remove('hidden');
-    elements.trademarkStatusCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  async function handleCheckTrademark(overrideName = null) {
-    if (state.isCheckingTrademark) return;
-
-    const brandName = (overrideName || (elements.inputBrandName ? elements.inputBrandName.value.trim() : '')).trim();
-    if (!brandName) {
-      showToast('Please enter a Brand Name to check trademark availability', 'warning');
-      if (elements.inputBrandName) elements.inputBrandName.focus();
-      return;
-    }
-
-    let niche = elements.industrySelect ? elements.industrySelect.value : 'Specialty Coffee & Chai Cafe';
-    if (niche === 'Other / Custom') {
-      niche = (elements.inputCustomNiche && elements.inputCustomNiche.value.trim()) || 'Creative Studio';
-    }
-
-    state.isCheckingTrademark = true;
-    if (elements.btnCheckTrademark) elements.btnCheckTrademark.disabled = true;
-    if (elements.trademarkSpinner) elements.trademarkSpinner.classList.remove('hidden');
-    if (elements.trademarkBtnText) elements.trademarkBtnText.textContent = "Auditing...";
-
-    try {
-      const result = await checkTrademarkConflict(brandName, niche);
-      state.lastTrademarkCheck = result;
-      renderTrademarkStatus(result, brandName);
-
-      // Fetch and display live QuickCompany trademark registry filings
-      if (result.quickCompanyMatches && result.quickCompanyMatches.length > 0) {
-        renderQuickCompanyRecords(result.quickCompanyMatches, brandName);
-      } else {
-        fetchAndRenderQuickCompany(brandName);
-      }
-
-      if (result.status === 'Clear') {
-        showToast(`Trademark Clear in ${result.trademarkClass}! High registration likelihood.`, 'success', 3500);
-      } else if (result.status === 'Caution') {
-        showToast(`Trademark Caution: potential overlaps found in ${result.trademarkClass}`, 'warning', 3500);
-      } else {
-        showToast(`Trademark Conflict: registered mark detected in ${result.trademarkClass}!`, 'error', 3500);
-      }
-    } catch (err) {
-      console.error('Failed to check trademark:', err);
-      const fallback = proceduralTrademarkCheck(brandName, niche);
-      renderTrademarkStatus(fallback, brandName);
-      fetchAndRenderQuickCompany(brandName);
-      showToast('Trademark audited (Smart Procedural Fallback)', 'info', 3000);
-    } finally {
-      state.isCheckingTrademark = false;
-      if (elements.btnCheckTrademark) elements.btnCheckTrademark.disabled = false;
-      if (elements.trademarkSpinner) elements.trademarkSpinner.classList.add('hidden');
-      if (elements.trademarkBtnText) elements.trademarkBtnText.textContent = "Check Trademark";
-    }
-  }
-
-  // =========================================================================
-  // Live QuickCompany Indian Trademark Data Fetcher & Renderer
-  // =========================================================================
-  function parseQuickCompanyResultsClient(html = '', query = '') {
-    const matches = [];
-    if (!html || typeof html !== 'string') return matches;
-
-    const seen = new Set();
-    const linkRegex = /<a[^>]+href=["'](\/trademarks\/([0-9]+)-([^"']+))["'][^>]*>([\s\S]*?)<\/a>/gi;
-    let linkMatch;
-
-    while ((linkMatch = linkRegex.exec(html)) !== null && matches.length < 8) {
-      const relativeUrl = linkMatch[1];
-      const appNumber = linkMatch[2];
-      let rawTitle = linkMatch[4].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-
-      if (!rawTitle || rawTitle.length < 2) continue;
-      const lower = rawTitle.toLowerCase();
-      if (lower.includes('view all') || lower.includes('quickcompany') || lower.includes('trademark search') || lower.includes('filter')) {
-        continue;
-      }
-
-      if (seen.has(lower)) continue;
-      seen.add(lower);
-
-      const idx = linkMatch.index;
-      const context = html.slice(Math.max(0, idx - 200), Math.min(html.length, idx + 600));
-
-      const classMatch = context.match(/Class\s*([0-9]{1,2})/i);
-      const classStr = classMatch ? `Class ${classMatch[1]}` : 'Class 30';
-
-      const statusMatch = context.match(/\b(Registered|Objected|Opposed|Pending|Abandoned|Refused|Accepted &amp; Advertised|Advertised|Accepted|Formalities Chk Pass)\b/i);
-      const statusStr = statusMatch ? statusMatch[1].replace('&amp;', '&') : 'Active Filing';
-
-      const appMatch = context.match(/(?:Proprietor|Applicant|By)\s*[:\-]?\s*<[^>]+>([^<]+)<\/[^>]+>/i)
-        || context.match(/(?:Proprietor|Applicant|Owner)\s*[:\-]?\s*([A-Za-z0-9\s,\.]{3,45})/i);
-      const applicantStr = appMatch ? appMatch[1].trim() : 'Registered Proprietor';
-
-      matches.push({
-        name: rawTitle,
-        applicationNumber: appNumber || 'TM Record',
-        trademarkClass: classStr,
-        status: statusStr,
-        applicant: applicantStr,
-        url: `https://www.quickcompany.in${relativeUrl}`
-      });
-    }
-
-    return matches;
-  }
-
-  async function fetchQuickCompanyData(brandName = '') {
-    const query = (brandName || '').trim();
-    if (!query) return [];
-
-    // 1. Try dedicated Netlify quickcompany serverless function
-    try {
-      const res = await fetch(`/.netlify/functions/quickcompany?q=${encodeURIComponent(query)}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && Array.isArray(data.results) && data.results.length > 0) {
-          return data.results;
-        }
-      }
-    } catch (e) {
-      console.warn('Could not query /.netlify/functions/quickcompany:', e.message);
-    }
-
-    // 2. Try Netlify trademark endpoint quickCompanyMatches
-    try {
-      const res = await fetch('/.netlify/functions/trademark', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brandName: query, niche: 'General' })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data && Array.isArray(data.quickCompanyMatches) && data.quickCompanyMatches.length > 0) {
-          return data.quickCompanyMatches;
-        }
-      }
-    } catch (e) {
-      console.warn('Netlify trademark endpoint query error:', e.message);
-    }
-
-    // 3. Resilient client-side CORS proxy (AllOrigins / corsproxy)
-    try {
-      const targetUrl = `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(query)}`;
-      const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-      const res = await fetch(proxyUrl, { signal: controller.signal });
-      clearTimeout(timeoutId);
-
-      if (res.ok) {
-        const html = await res.text();
-        const matches = parseQuickCompanyResultsClient(html, query);
-        if (matches && matches.length > 0) {
-          return matches;
-        }
-      }
-    } catch (proxyErr) {
-      console.warn('CORS proxy query to QuickCompany failed / offline:', proxyErr.message);
-    }
-
-    // 4. Registry database fallback for 100+ major Indian marks
-    const dbMatch = checkDatabaseTrademarkCollision(query);
-    if (dbMatch) {
-      return [{
-        name: dbMatch.matchedBrand.toUpperCase(),
-        applicationNumber: 'IP India Verified Filing',
-        trademarkClass: `Class ${dbMatch.primaryClasses[0]}`,
-        status: 'Registered',
-        applicant: dbMatch.owner,
-        url: `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(dbMatch.matchedBrand)}`,
-        verified: true
-      }];
-    }
-
-    return [];
-  }
-
-  function renderQuickCompanyRecords(records = [], brandName = '') {
-    if (!elements.tmQcResultsList) return;
-
-    if (elements.tmQcCountBadge) {
-      elements.tmQcCountBadge.textContent = `${records.length} Found`;
-    }
-
-    if (!records || records.length === 0) {
-      elements.tmQcResultsList.innerHTML = '';
-      if (elements.tmQcEmpty) elements.tmQcEmpty.classList.remove('hidden');
-      if (elements.tmQcEmptyText) {
-        elements.tmQcEmptyText.textContent = `No conflicting active filings found on QuickCompany for "${brandName}". Mark appears available for registration.`;
-      }
-      return;
-    }
-
-    if (elements.tmQcEmpty) elements.tmQcEmpty.classList.add('hidden');
-
-    elements.tmQcResultsList.innerHTML = records.map(r => {
-      const statusKey = (r.status || 'registered').toLowerCase().replace(/[^a-z]/g, '');
-      let statusClass = 'status-pending';
-      if (statusKey.includes('registered') || statusKey.includes('accepted')) statusClass = 'status-registered';
-      else if (statusKey.includes('refused') || statusKey.includes('abandoned')) statusClass = 'status-refused';
-
-      return `
-        <div class="tm-qc-card">
-          <div class="tm-qc-card-top">
-            <span class="tm-qc-card-title">${r.name}</span>
-            <div class="tm-qc-card-badges">
-              <span class="tm-qc-badge-app">App #${r.applicationNumber || 'TM'}</span>
-              <span class="tm-qc-badge-class">${r.trademarkClass || 'Class 30'}</span>
-              <span class="tm-qc-status-pill ${statusClass}">${r.status || 'Active'}</span>
-            </div>
-          </div>
-          <div class="tm-qc-card-proprietor">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span><strong>Proprietor:</strong> ${r.applicant || 'Registered Entity'}</span>
-          </div>
-          <a href="${r.url || `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(brandName)}`}" target="_blank" rel="noopener noreferrer" class="tm-qc-card-link" title="Open full filing details on QuickCompany">
-            <span>View Record on QuickCompany.in</span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          </a>
-        </div>
-      `;
-    }).join('');
-  }
-
-  async function fetchAndRenderQuickCompany(brandName) {
-    if (!elements.tmQuickCompanyWrap) return;
-    const currentName = (brandName || (elements.inputBrandName ? elements.inputBrandName.value.trim() : '')).trim();
-    if (!currentName) return;
-
-    if (elements.tmQcLoading) elements.tmQcLoading.classList.remove('hidden');
-    if (elements.qcFetchSpinner) elements.qcFetchSpinner.classList.remove('hidden');
-    if (elements.qcFetchIcon) elements.qcFetchIcon.classList.add('hidden');
-    if (elements.btnFetchQuickcompany) elements.btnFetchQuickcompany.disabled = true;
-
-    try {
-      const records = await fetchQuickCompanyData(currentName);
-      renderQuickCompanyRecords(records, currentName);
-    } catch (err) {
-      console.warn('Error fetching QuickCompany data:', err);
-      renderQuickCompanyRecords([], currentName);
-    } finally {
-      if (elements.tmQcLoading) elements.tmQcLoading.classList.add('hidden');
-      if (elements.qcFetchSpinner) elements.qcFetchSpinner.classList.add('hidden');
-      if (elements.qcFetchIcon) elements.qcFetchIcon.classList.remove('hidden');
-      if (elements.btnFetchQuickcompany) elements.btnFetchQuickcompany.disabled = false;
     }
   }
 
@@ -6488,7 +5595,7 @@ Return a SINGLE valid JSON object matching this schema strictly:
       pill.type = 'button';
       pill.className = 'name-pill';
       pill.setAttribute('data-name', item.name);
-      pill.setAttribute('title', `Use "${item.name}" (${archLabel}) & check trademark clearance`);
+      pill.setAttribute('title', `Use "${item.name}" (${archLabel})`);
       pill.innerHTML = `
         <div class="name-pill-header">
           <span class="name-pill-arch">${archIcon} ${archLabel}</span>
@@ -6503,8 +5610,7 @@ Return a SINGLE valid JSON object matching this schema strictly:
           elements.inputBrandName.value = item.name;
           elements.inputBrandName.focus();
         }
-        showToast(`Selected "${item.name}"! Auditing live QuickCompany, Wikipedia & NICE Class clearance...`, 'info', 2500);
-        handleCheckTrademark(item.name);
+        showToast(`Selected "${item.name}" (${archLabel})!`, 'info', 1800);
       });
 
       elements.suggestedNamesList.appendChild(pill);
@@ -7101,9 +6207,6 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
       elements.inputBrandName.value = '';
       elements.inputBrandName.focus();
     }
-    if (elements.trademarkStatusCard) {
-      elements.trademarkStatusCard.classList.add('hidden');
-    }
     if (elements.nameSuggestionsTray) {
       elements.nameSuggestionsTray.classList.add('hidden');
     }
@@ -7640,37 +6743,65 @@ STRICT CONSTRAINTS:
   // 17b. Social Campaign Templates & Tagline Vault Controller
   // =========================================================================
   function getProceduralCampaignKit(brand) {
-    const name = brand?.name || "BrandDNA Venture";
+    const name = brand?.name || "BrandDNA Studio";
     const niche = brand?.industry || "Design";
-    const audience = brand?.audience || "creatives";
+    const audience = brand?.audience || "discerning clients";
     const cleanCode = ((name || 'DROP').replace(/[^A-Za-z]/g, '').slice(0, 6).toUpperCase() || 'LAUNCH') + '25';
+    const cleanNiche = niche.split('&')[0].replace(/[\/]/g, '').trim();
 
     return {
       campaignTemplates: {
         launch: {
           kicker: "GLOBAL DROP • PHASE 01",
-          headline: `Introducing ${name}: Redefining Modern ${niche.split('&')[0].trim()}.`,
+          headline: `Introducing ${name}: Redefining Modern ${cleanNiche}.`,
           subtext: `Architected for ${audience.toLowerCase()}. Discover tactile intention, uncompromising poise, and modern aesthetic gravity.`,
           cta: "Shop Debut Collection ➔"
         },
         drop: {
-          badge: "EXCLUSIVE ACCESS • 48 HRS ONLY",
-          offer: "25% OFF FIRST ORDER",
+          badge: "FLASH DROP • 48 HRS ONLY",
+          offer: "25% OFF DEBUT",
           code: cleanCode,
-          hook: `Unlock priority tier access for the ${name} debut. Enter promo code at checkout.`
+          hook: `Unlock priority access to the inaugural studio edition of ${name}.`
         },
         testimonial: {
+          badge: "EDITORIAL SPOTLIGHT",
           quote: `“${name} is an extraordinary synthesis of purpose, tactile refinement, and singular vision. A revelation for the industry.”`,
-          author: "Monocle & Atelier Review",
-          title: "Senior Design Editor",
+          author: "Architectural Digest",
+          title: "Design Critic • Tokyo Dispatch",
           rating: "★★★★★"
+        },
+        founder: {
+          badge: "BEHIND THE CRAFT • ISSUE 01",
+          chapter: "CHAPTER 01 // ORIGINS",
+          headline: `Why We Spent 18 Months Perfecting A Single Seam.`,
+          subtext: `Mass production took the soul out of daily rituals. We founded ${name} to restore slow, intentional artistry to the objects you touch every day.`,
+          author: "Founder’s Journal • 3 Min Read"
+        },
+        infographic: {
+          badge: "DID YOU KNOW? • MASTERCLASS",
+          headline: `3 Industry Truths Most Brands Keep Secret.`,
+          point1: `Natural textures reduce cortisol & restore cognitive clarity.`,
+          point2: `Circadian warmth beats harsh lux: light temperature dictates focus.`,
+          point3: `Less is regenerative: fewer objects, infinitely higher craft.`,
+          footerHint: `Save this post for your weekly mindful ritual 🔖`
+        },
+        countdown: {
+          badge: "COMMUNITY DROP • LAUNCH DAY",
+          timer: "T-MINUS 72 HOURS // LAUNCH PROTOCOL",
+          headline: `The Curated Vault Opens This Friday.`,
+          subtext: `We're gifting 3 Founding Member Bundles ($450 value) to celebrate our debut. Tap notify to join the private guestlist.`,
+          cta: "Enter Founding Giveaway ➔"
         }
       },
       taglineVault: {
-        bold: `Command the standard. Own ${name}.`,
-        minimal: `Quiet intention. Pure form.`,
-        emotional: `Made for the moments that truly stay with you.`,
-        playful: `Seriously exceptional craftsmanship for delightfully ambitious days.`
+        bold: `Command the room. Set the standard.`,
+        minimal: `Quiet precision. Pure form.`,
+        emotional: `Made for moments that linger forever.`,
+        playful: `Seriously good design for delightfully chaotic days.`,
+        benefit: `Engineered for effortless daily clarity and peak performance.`,
+        rebel: `Break the ordinary. Rewrite the category from scratch.`,
+        heritage: `Generational integrity. Built to outlive every passing trend.`,
+        poetic: `Where quiet stillness meets uncompromising craft.`
       }
     };
   }
@@ -7680,8 +6811,12 @@ STRICT CONSTRAINTS:
     const launch = kit.launch || {};
     const drop = kit.drop || {};
     const test = kit.testimonial || {};
+    const founder = kit.founder || {};
+    const info = kit.infographic || {};
+    const countdown = kit.countdown || {};
 
     const pPrimary = (brand.palette && brand.palette[0]?.hex) || '#2563EB';
+    const pSecondary = (brand.palette && brand.palette[1]?.hex) || '#0D9488';
     const pDark = (brand.palette && brand.palette[4]?.hex) || '#0F172A';
 
     const lightLogoHtml = brand.customLogoUrl
@@ -7692,7 +6827,7 @@ STRICT CONSTRAINTS:
       ? `<img src="${brand.customLogoUrl}" alt="${brand.name}" style="max-height: 24px; max-width: 70px; object-fit: contain;">`
       : `<span style="font-family:'${cleanFontName(brand.headingFont)}', serif; font-weight: 800; font-size: 0.95rem; color: ${pPrimary};">${brand.name}</span>`;
 
-    // 1. Launch Banner
+    // 1. Launch Banner (1:1 Hero)
     if (elements.campaignLaunchLogo) elements.campaignLaunchLogo.innerHTML = lightLogoHtml;
     if (elements.campaignLaunchKicker) elements.campaignLaunchKicker.textContent = launch.kicker || "GLOBAL DROP • PHASE 01";
     if (elements.campaignLaunchHeadline) {
@@ -7707,13 +6842,11 @@ STRICT CONSTRAINTS:
       elements.campaignLaunchCta.innerHTML = `<span>${launch.cta || 'Explore Collection'}</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>`;
       elements.campaignLaunchCta.style.background = pPrimary;
     }
-
-    const launchCard = document.getElementById('campaign-card-launch');
-    if (launchCard) {
-      launchCard.style.background = `linear-gradient(135deg, ${pDark}, #1E293B)`;
+    if (elements.campaignCardLaunch) {
+      elements.campaignCardLaunch.style.background = `linear-gradient(135deg, ${pDark}, #1E293B)`;
     }
 
-    // 2. Drop Story Card
+    // 2. Drop Story Card (9:16 Vertical)
     if (elements.campaignDropLogo) elements.campaignDropLogo.innerHTML = lightLogoHtml;
     if (elements.campaignDropBadge) elements.campaignDropBadge.textContent = drop.badge || "FLASH DROP • 48 HRS ONLY";
     if (elements.campaignDropOffer) {
@@ -7727,43 +6860,617 @@ STRICT CONSTRAINTS:
     if (elements.campaignDropCode) {
       elements.campaignDropCode.textContent = drop.code || ((brand.name || 'DROP').toUpperCase().slice(0, 6) + '25');
     }
-
-    const dropCard = document.getElementById('campaign-card-drop');
-    if (dropCard) {
-      dropCard.style.background = `linear-gradient(135deg, #0F172A, ${pPrimary})`;
+    if (elements.campaignCardDrop) {
+      elements.campaignCardDrop.style.background = `linear-gradient(135deg, #0F172A, ${pPrimary})`;
     }
 
-    // 3. Testimonial Card
+    // 3. Testimonial Card (Editorial Square)
     if (elements.campaignTestLogo) elements.campaignTestLogo.innerHTML = darkLogoHtml;
+    if (elements.campaignTestBadge) elements.campaignTestBadge.textContent = test.badge || "EDITORIAL SPOTLIGHT";
     if (elements.campaignTestRating) elements.campaignTestRating.textContent = test.rating || "★★★★★";
     if (elements.campaignTestQuote) {
       elements.campaignTestQuote.textContent = `“${(test.quote || '').replace(/^["“”']|["“”']$/g, '')}”`;
       elements.campaignTestQuote.style.fontFamily = `'${brand.fonts.heading}', serif`;
       elements.campaignTestQuote.style.borderLeftColor = pPrimary;
     }
-    if (elements.campaignTestAuthor) elements.campaignTestAuthor.textContent = test.author || "Elena Vance";
-    if (elements.campaignTestTitle) elements.campaignTestTitle.textContent = test.title || "Design Critic • Architectural Digest";
+    if (elements.campaignTestAuthor) elements.campaignTestAuthor.textContent = test.author || "Architectural Digest";
+    if (elements.campaignTestTitle) elements.campaignTestTitle.textContent = test.title || "Design Critic • Tokyo Dispatch";
+
+    // 4. Founder Story (Carousel Cover 4:5)
+    if (elements.campaignFounderLogo) elements.campaignFounderLogo.innerHTML = darkLogoHtml;
+    if (elements.campaignFounderBadge) elements.campaignFounderBadge.textContent = founder.badge || "BEHIND THE CRAFT • ISSUE 01";
+    if (elements.campaignFounderChapter) elements.campaignFounderChapter.textContent = founder.chapter || "CHAPTER 01 // ORIGINS";
+    if (elements.campaignFounderHeadline) {
+      elements.campaignFounderHeadline.textContent = founder.headline || "Why We Spent 18 Months Perfecting A Single Seam.";
+      elements.campaignFounderHeadline.style.fontFamily = `'${brand.fonts.heading}', serif`;
+    }
+    if (elements.campaignFounderSubtext) {
+      elements.campaignFounderSubtext.textContent = founder.subtext || "Mass production took the soul out of daily rituals. We founded this studio to restore slow, intentional artistry.";
+      elements.campaignFounderSubtext.style.fontFamily = `'${brand.fonts.body}', sans-serif`;
+    }
+    if (elements.campaignFounderAuthor) elements.campaignFounderAuthor.textContent = founder.author || "Founder’s Journal • 3 Min Read";
+
+    // 5. Educational Infographic
+    if (elements.campaignInfoLogo) elements.campaignInfoLogo.innerHTML = darkLogoHtml;
+    if (elements.campaignInfoBadge) elements.campaignInfoBadge.textContent = info.badge || "DID YOU KNOW? • MASTERCLASS";
+    if (elements.campaignInfoHeadline) {
+      elements.campaignInfoHeadline.textContent = info.headline || "3 Industry Truths Most Brands Keep Secret.";
+      elements.campaignInfoHeadline.style.fontFamily = `'${brand.fonts.heading}', serif`;
+    }
+    if (elements.campaignInfoPoint1) elements.campaignInfoPoint1.textContent = info.point1 || "Natural textures reduce cortisol & restore cognitive clarity.";
+    if (elements.campaignInfoPoint2) elements.campaignInfoPoint2.textContent = info.point2 || "Circadian warmth beats harsh lux: light temperature dictates focus.";
+    if (elements.campaignInfoPoint3) elements.campaignInfoPoint3.textContent = info.point3 || "Less is regenerative: fewer objects, infinitely higher craft.";
+    if (elements.campaignInfoFooterText) elements.campaignInfoFooterText.textContent = info.footerHint || "Save this post for your weekly mindful ritual 🔖";
+
+    // 6. Community Giveaway / Launch Countdown
+    if (elements.campaignCountdownLogo) elements.campaignCountdownLogo.innerHTML = lightLogoHtml;
+    if (elements.campaignCountdownBadge) elements.campaignCountdownBadge.textContent = countdown.badge || "COMMUNITY DROP • LAUNCH DAY";
+    if (elements.campaignCountdownTimer) elements.campaignCountdownTimer.textContent = countdown.timer || "T-MINUS 72 HOURS // LAUNCH PROTOCOL";
+    if (elements.campaignCountdownHeadline) {
+      elements.campaignCountdownHeadline.textContent = countdown.headline || "The Curated Vault Opens This Friday.";
+      elements.campaignCountdownHeadline.style.fontFamily = `'${brand.fonts.heading}', serif`;
+    }
+    if (elements.campaignCountdownSubtext) {
+      elements.campaignCountdownSubtext.textContent = countdown.subtext || "We're gifting 3 Founding Member Bundles ($450 value) to celebrate our inaugural drop. Tap notify to enter the private guestlist.";
+      elements.campaignCountdownSubtext.style.fontFamily = `'${brand.fonts.body}', sans-serif`;
+    }
+    if (elements.campaignCountdownCta) {
+      elements.campaignCountdownCta.innerHTML = `<span>${countdown.cta || 'Enter Founding Giveaway'}</span> <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+      elements.campaignCountdownCta.style.background = `linear-gradient(135deg, ${pPrimary}, ${pSecondary})`;
+    }
+    if (elements.campaignCardCountdown) {
+      elements.campaignCardCountdown.style.background = `linear-gradient(135deg, #090D16, ${pDark})`;
+    }
   }
 
   function renderTaglineVault(brand) {
     const vault = brand.taglineVault || getProceduralCampaignKit(brand).taglineVault;
+    state.taglineCount = 8;
 
     if (elements.taglineTextBold) {
-      elements.taglineTextBold.textContent = vault.bold || `Command the standard. Own ${brand.name}.`;
+      elements.taglineTextBold.textContent = vault.bold || `Command the room. Set the standard.`;
       elements.taglineTextBold.style.fontFamily = `'${brand.fonts.heading}', serif`;
     }
     if (elements.taglineTextMinimal) {
-      elements.taglineTextMinimal.textContent = vault.minimal || `Quiet intention. Pure form.`;
+      elements.taglineTextMinimal.textContent = vault.minimal || `Quiet precision. Pure form.`;
       elements.taglineTextMinimal.style.fontFamily = `'${brand.fonts.heading}', serif`;
     }
     if (elements.taglineTextEmotional) {
-      elements.taglineTextEmotional.textContent = vault.emotional || `Made for the moments that truly stay with you.`;
+      elements.taglineTextEmotional.textContent = vault.emotional || `Made for moments that linger forever.`;
       elements.taglineTextEmotional.style.fontFamily = `'${brand.fonts.heading}', serif`;
     }
     if (elements.taglineTextPlayful) {
-      elements.taglineTextPlayful.textContent = vault.playful || `Seriously exceptional design for delightfully ambitious days.`;
+      elements.taglineTextPlayful.textContent = vault.playful || `Seriously good design for delightfully chaotic days.`;
       elements.taglineTextPlayful.style.fontFamily = `'${brand.fonts.heading}', serif`;
     }
+    if (elements.taglineTextBenefit) {
+      elements.taglineTextBenefit.textContent = vault.benefit || `Engineered for effortless daily clarity and peak performance.`;
+      elements.taglineTextBenefit.style.fontFamily = `'${brand.fonts.heading}', serif`;
+    }
+    if (elements.taglineTextRebel) {
+      elements.taglineTextRebel.textContent = vault.rebel || `Break the ordinary. Rewrite the category from scratch.`;
+      elements.taglineTextRebel.style.fontFamily = `'${brand.fonts.heading}', serif`;
+    }
+    if (elements.taglineTextHeritage) {
+      elements.taglineTextHeritage.textContent = vault.heritage || `Generational integrity. Built to outlive every passing trend.`;
+      elements.taglineTextHeritage.style.fontFamily = `'${brand.fonts.heading}', serif`;
+    }
+    if (elements.taglineTextPoetic) {
+      elements.taglineTextPoetic.textContent = vault.poetic || `Where quiet stillness meets uncompromising craft.`;
+      elements.taglineTextPoetic.style.fontFamily = `'${brand.fonts.heading}', serif`;
+    }
+
+    if (elements.taglinesCountBadge) {
+      elements.taglinesCountBadge.textContent = '8 Angles Ready';
+    }
+  }
+
+  async function downloadCampaignTemplateAsPNG(templateIndex) {
+    const brand = state.currentBrand || getProceduralBrand("Komorebi Living", "minimalist-luxury", "Home Goods & Ceramics", "Connoisseurs");
+    const kit = brand.campaignTemplates || getProceduralCampaignKit(brand).campaignTemplates;
+    const pPrimary = (brand.palette && brand.palette[0]?.hex) || '#2563EB';
+    const pSecondary = (brand.palette && brand.palette[1]?.hex) || '#0D9488';
+    const pDark = (brand.palette && brand.palette[4]?.hex) || '#0F172A';
+    const headingFont = brand.fonts?.heading || 'Plus Jakarta Sans';
+    const bodyFont = brand.fonts?.body || 'Plus Jakarta Sans';
+
+    let width = 1080;
+    let height = 1080;
+    let filename = `${(brand.name || 'Brand').replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+    if (templateIndex === 2) {
+      width = 1080;
+      height = 1920;
+      filename += '_Promo_Story';
+    } else if (templateIndex === 4) {
+      width = 1080;
+      height = 1350;
+      filename += '_Founder_Story';
+    } else if (templateIndex === 1) {
+      filename += '_Launch_Banner';
+    } else if (templateIndex === 3) {
+      filename += '_Editorial_Review';
+    } else if (templateIndex === 5) {
+      filename += '_Infographic_Guide';
+    } else if (templateIndex === 6) {
+      filename += '_Launch_Countdown';
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    function wrapText(context, text, x, y, maxWidth, lineHeight) {
+      const words = String(text || '').split(' ');
+      let line = '';
+      let curY = y;
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = context.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          context.fillText(line.trim(), x, curY);
+          line = words[n] + ' ';
+          curY += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      context.fillText(line.trim(), x, curY);
+      return curY + lineHeight;
+    }
+
+    function fillRoundedRect(context, x, y, w, h, radius, fillStyle) {
+      context.beginPath();
+      context.moveTo(x + radius, y);
+      context.lineTo(x + w - radius, y);
+      context.quadraticCurveTo(x + w, y, x + w, y + radius);
+      context.lineTo(x + w, y + h - radius);
+      context.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+      context.lineTo(x + radius, y + h);
+      context.quadraticCurveTo(x, y + h, x, y + h - radius);
+      context.lineTo(x, y + radius);
+      context.quadraticCurveTo(x, y, x + radius, y);
+      context.closePath();
+      context.fillStyle = fillStyle;
+      context.fill();
+    }
+
+    let logoImg = null;
+    if (brand.customLogoUrl) {
+      try {
+        logoImg = await new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => resolve(img);
+          img.onerror = () => resolve(null);
+          img.src = brand.customLogoUrl;
+        });
+      } catch (e) {
+        logoImg = null;
+      }
+    }
+
+    if (templateIndex === 1) {
+      // 1. Hero Product Drop Banner (1080x1080)
+      const grad = ctx.createLinearGradient(0, 0, width, height);
+      grad.addColorStop(0, pDark);
+      grad.addColorStop(1, '#090D16');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+
+      const radial = ctx.createRadialGradient(width * 0.8, height * 0.2, 50, width * 0.8, height * 0.2, 600);
+      radial.addColorStop(0, pPrimary + '44');
+      radial.addColorStop(1, 'transparent');
+      ctx.fillStyle = radial;
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(60, 60, width - 120, height - 120);
+
+      if (logoImg) {
+        ctx.drawImage(logoImg, 100, 110, 160, 50);
+      } else {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `bold 38px '${headingFont}', sans-serif`;
+        ctx.fillText(brand.name, 100, 150);
+      }
+
+      fillRoundedRect(ctx, width - 380, 115, 280, 48, 24, pPrimary);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = `bold 16px '${bodyFont}', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(kit.launch?.kicker || 'GLOBAL DROP • PHASE 01', width - 240, 145);
+      ctx.textAlign = 'left';
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = `800 58px '${headingFont}', sans-serif`;
+      let nextY = wrapText(ctx, kit.launch?.headline || `Introducing ${brand.name}`, 100, 380, width - 200, 72);
+
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = `400 28px '${bodyFont}', sans-serif`;
+      nextY = wrapText(ctx, kit.launch?.subtext || '', 100, nextY + 30, width - 200, 44);
+
+      fillRoundedRect(ctx, 100, Math.min(nextY + 60, height - 190), 320, 72, 36, pPrimary);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = `bold 24px '${bodyFont}', sans-serif`;
+      ctx.fillText(kit.launch?.cta || 'Explore Collection ➔', 140, Math.min(nextY + 60, height - 190) + 45);
+
+    } else if (templateIndex === 2) {
+      // 2. Flash Offer Story (1080x1920)
+      const grad = ctx.createLinearGradient(0, 0, 0, height);
+      grad.addColorStop(0, '#0F172A');
+      grad.addColorStop(0.5, pPrimary);
+      grad.addColorStop(1, '#090D16');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+
+      if (logoImg) {
+        ctx.drawImage(logoImg, (width - 240) / 2, 220, 240, 75);
+      } else {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `bold 52px '${headingFont}', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(brand.name, width / 2, 270);
+      }
+
+      ctx.textAlign = 'center';
+      fillRoundedRect(ctx, (width - 460) / 2, 420, 460, 56, 28, 'rgba(255, 255, 255, 0.15)');
+      ctx.fillStyle = '#FDE047';
+      ctx.font = `bold 20px '${bodyFont}', sans-serif`;
+      ctx.fillText(kit.drop?.badge || 'FLASH DROP • 48 HRS ONLY', width / 2, 456);
+
+      ctx.fillStyle = '#FDE047';
+      ctx.font = `900 110px '${headingFont}', sans-serif`;
+      ctx.fillText(kit.drop?.offer || '25% OFF DEBUT', width / 2, 750);
+
+      ctx.fillStyle = '#E2E8F0';
+      ctx.font = `500 34px '${bodyFont}', sans-serif`;
+      wrapText(ctx, kit.drop?.hook || '', 120, 880, width - 240, 52);
+
+      fillRoundedRect(ctx, 160, 1140, width - 320, 160, 24, 'rgba(255, 255, 255, 0.1)');
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(160, 1140, width - 320, 160);
+
+      ctx.fillStyle = '#93C5FD';
+      ctx.font = `bold 22px '${bodyFont}', sans-serif`;
+      ctx.fillText('PROMO CODE', width / 2, 1190);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = `bold 52px monospace`;
+      ctx.fillText(kit.drop?.code || 'DEBUT25', width / 2, 1260);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.font = `600 24px '${bodyFont}', sans-serif`;
+      ctx.fillText('Tap or Visit Website to Claim ➔', width / 2, height - 180);
+      ctx.textAlign = 'left';
+
+    } else if (templateIndex === 3) {
+      // 3. Editorial Spotlight / Customer Review (1080x1080)
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, width, height);
+
+      const topGrad = ctx.createLinearGradient(0, 0, width, 0);
+      topGrad.addColorStop(0, pPrimary);
+      topGrad.addColorStop(1, pSecondary);
+      ctx.fillStyle = topGrad;
+      ctx.fillRect(0, 0, width, 16);
+
+      if (logoImg) {
+        ctx.drawImage(logoImg, 100, 90, 180, 55);
+      } else {
+        ctx.fillStyle = pPrimary;
+        ctx.font = `bold 38px '${headingFont}', sans-serif`;
+        ctx.fillText(brand.name, 100, 130);
+      }
+
+      fillRoundedRect(ctx, width - 380, 95, 280, 48, 24, '#F1F5F9');
+      ctx.fillStyle = '#475569';
+      ctx.font = `bold 16px '${bodyFont}', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(kit.testimonial?.badge || 'EDITORIAL SPOTLIGHT', width - 240, 125);
+      ctx.textAlign = 'left';
+
+      ctx.fillStyle = '#EAB308';
+      ctx.font = `44px sans-serif`;
+      ctx.fillText(kit.testimonial?.rating || '★★★★★', 100, 260);
+
+      ctx.fillStyle = pPrimary;
+      ctx.fillRect(100, 310, 8, 380);
+
+      ctx.fillStyle = '#0F172A';
+      ctx.font = `italic 600 44px '${headingFont}', serif`;
+      const cleanQ = (kit.testimonial?.quote || '').replace(/^["“”']|["“”']$/g, '');
+      const endY = wrapText(ctx, `“${cleanQ}”`, 140, 360, width - 260, 64);
+
+      ctx.fillStyle = '#0F172A';
+      ctx.font = `bold 32px '${bodyFont}', sans-serif`;
+      ctx.fillText(kit.testimonial?.author || 'Architectural Digest', 140, Math.max(endY + 60, 780));
+
+      ctx.fillStyle = '#64748B';
+      ctx.font = `500 24px '${bodyFont}', sans-serif`;
+      ctx.fillText(kit.testimonial?.title || 'Design Critic • Global Dispatch', 140, Math.max(endY + 105, 825));
+
+    } else if (templateIndex === 4) {
+      // 4. Founder Story / Behind-the-Craft (1080x1350)
+      ctx.fillStyle = '#FAF9F6';
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.strokeStyle = '#E7E5E4';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(50, 50, width - 100, height - 100);
+
+      if (logoImg) {
+        ctx.drawImage(logoImg, 100, 100, 180, 55);
+      } else {
+        ctx.fillStyle = '#1C1917';
+        ctx.font = `bold 36px '${headingFont}', sans-serif`;
+        ctx.fillText(brand.name, 100, 140);
+      }
+
+      fillRoundedRect(ctx, width - 400, 105, 300, 48, 24, '#FEF3C7');
+      ctx.fillStyle = '#B45309';
+      ctx.font = `bold 15px '${bodyFont}', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(kit.founder?.badge || 'BEHIND THE CRAFT • 01', width - 250, 135);
+      ctx.textAlign = 'left';
+
+      ctx.fillStyle = '#D97706';
+      ctx.font = `bold 22px '${bodyFont}', sans-serif`;
+      ctx.fillText(kit.founder?.chapter || 'CHAPTER 01 // ORIGINS', 100, 290);
+
+      ctx.fillStyle = '#1C1917';
+      ctx.font = `800 56px '${headingFont}', sans-serif`;
+      let curY = wrapText(ctx, kit.founder?.headline || "Why We Spent 18 Months Perfecting A Single Seam.", 100, 380, width - 200, 72);
+
+      ctx.strokeStyle = pPrimary;
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(100, curY + 20);
+      ctx.lineTo(220, curY + 20);
+      ctx.stroke();
+
+      ctx.fillStyle = '#57534E';
+      ctx.font = `400 32px '${bodyFont}', sans-serif`;
+      curY = wrapText(ctx, kit.founder?.subtext || '', 100, curY + 90, width - 200, 52);
+
+      fillRoundedRect(ctx, 100, height - 180, width - 200, 64, 12, '#FFFFFF');
+      ctx.strokeStyle = '#E7E5E4';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(100, height - 180, width - 200, 64);
+
+      ctx.fillStyle = '#78716C';
+      ctx.font = `600 22px '${bodyFont}', sans-serif`;
+      ctx.fillText(kit.founder?.author || 'Founder’s Journal • 3 Min Read', 130, height - 140);
+
+    } else if (templateIndex === 5) {
+      // 5. 'Did You Know?' Educational Infographic (1080x1080)
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, width, height);
+
+      if (logoImg) {
+        ctx.drawImage(logoImg, 90, 80, 180, 55);
+      } else {
+        ctx.fillStyle = pPrimary;
+        ctx.font = `bold 36px '${headingFont}', sans-serif`;
+        ctx.fillText(brand.name, 90, 120);
+      }
+
+      fillRoundedRect(ctx, width - 390, 85, 300, 48, 24, '#E0F2FE');
+      ctx.fillStyle = '#0369A1';
+      ctx.font = `bold 15px '${bodyFont}', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(kit.infographic?.badge || 'DID YOU KNOW? • GUIDE', width - 240, 115);
+      ctx.textAlign = 'left';
+
+      ctx.fillStyle = '#0F172A';
+      ctx.font = `800 46px '${headingFont}', sans-serif`;
+      let nextY = wrapText(ctx, kit.infographic?.headline || "3 Industry Truths Most Brands Keep Secret.", 90, 230, width - 180, 60);
+
+      const points = [
+        kit.infographic?.point1 || 'Natural textures reduce cortisol & calm daily cognitive load.',
+        kit.infographic?.point2 || 'Circadian warmth beats harsh lux: light temperature dictates focus.',
+        kit.infographic?.point3 || 'Less is regenerative: fewer objects, infinitely higher craft.'
+      ];
+
+      nextY = Math.max(nextY + 30, 360);
+      points.forEach((pt, idx) => {
+        fillRoundedRect(ctx, 90, nextY, width - 180, 110, 16, '#F8FAFC');
+        ctx.strokeStyle = '#E2E8F0';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(90, nextY, width - 180, 110);
+
+        fillRoundedRect(ctx, 115, nextY + 30, 50, 48, 8, pPrimary);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `bold 20px monospace`;
+        ctx.textAlign = 'center';
+        ctx.fillText(`0${idx + 1}`, 140, nextY + 62);
+        ctx.textAlign = 'left';
+
+        ctx.fillStyle = '#1E293B';
+        ctx.font = `600 24px '${bodyFont}', sans-serif`;
+        wrapText(ctx, pt.replace(/^[0-9]+\s*\/\s*/, ''), 190, nextY + 62, width - 320, 34);
+
+        nextY += 135;
+      });
+
+      ctx.fillStyle = '#0D9488';
+      ctx.font = `600 22px '${bodyFont}', sans-serif`;
+      ctx.fillText(kit.infographic?.footerHint || 'Save this post for your weekly ritual 🔖', 90, height - 80);
+
+    } else if (templateIndex === 6) {
+      // 6. Community Giveaway / Launch Countdown (1080x1080)
+      const grad = ctx.createLinearGradient(0, 0, width, height);
+      grad.addColorStop(0, '#090D16');
+      grad.addColorStop(0.6, pDark);
+      grad.addColorStop(1, '#1E293B');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+
+      if (logoImg) {
+        ctx.drawImage(logoImg, 90, 90, 180, 55);
+      } else {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `bold 36px '${headingFont}', sans-serif`;
+        ctx.fillText(brand.name, 90, 130);
+      }
+
+      fillRoundedRect(ctx, width - 390, 95, 300, 48, 24, '#FEE2E2');
+      ctx.fillStyle = '#DC2626';
+      ctx.font = `bold 15px '${bodyFont}', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(kit.countdown?.badge || 'COMMUNITY DROP', width - 240, 125);
+      ctx.textAlign = 'left';
+
+      fillRoundedRect(ctx, 90, 240, 440, 50, 10, 'rgba(239, 68, 68, 0.2)');
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(90, 240, 440, 50);
+
+      ctx.fillStyle = '#EF4444';
+      ctx.font = `bold 20px monospace`;
+      ctx.fillText(kit.countdown?.timer || 'T-MINUS 72 HOURS // LAUNCH PROTOCOL', 115, 273);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = `800 58px '${headingFont}', sans-serif`;
+      let nextY = wrapText(ctx, kit.countdown?.headline || "The Curated Vault Opens This Friday.", 90, 390, width - 180, 72);
+
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = `400 28px '${bodyFont}', sans-serif`;
+      nextY = wrapText(ctx, kit.countdown?.subtext || '', 90, nextY + 30, width - 180, 44);
+
+      fillRoundedRect(ctx, 90, Math.min(nextY + 60, height - 180), 380, 72, 36, pPrimary);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = `bold 24px '${bodyFont}', sans-serif`;
+      ctx.fillText(kit.countdown?.cta || 'Enter Founding Giveaway ➔', 125, Math.min(nextY + 60, height - 180) + 45);
+    }
+
+    try {
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${filename}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast(`Exported high-res PNG for ${filename.replace(/_/g, ' ')}! 🎨`, 'success', 3000);
+      }, 'image/png');
+    } catch (err) {
+      console.error('PNG export error:', err);
+      showToast('Could not export PNG image. Please try again.', 'warning');
+    }
+  }
+
+  async function handleGenerateMoreTaglines() {
+    const brand = state.currentBrand || getProceduralBrand("Komorebi Living", "minimalist-luxury", "Home Goods & Ceramics", "Connoisseurs");
+    if (!elements.taglineVaultGrid) return;
+
+    if (elements.btnGenerateMoreTaglines) elements.btnGenerateMoreTaglines.disabled = true;
+    if (elements.moreTaglinesSpinner) elements.moreTaglinesSpinner.classList.remove('hidden');
+    if (elements.btnMoreTaglinesText) elements.btnMoreTaglinesText.textContent = "Writing 4 More...";
+
+    const currentCount = state.taglineCount || 8;
+    const name = brand.name || "Brand";
+    const niche = brand.industry || "Design";
+    const vibe = brand.vibe || "minimalist-luxury";
+
+    const freshArchetypes = [
+      { badgeClass: 'badge-benefit', icon: '🎯', label: 'Precision & Focus', text: `Engineered without compromise. Designed for ${name}.` },
+      { badgeClass: 'badge-minimal', icon: '✦', label: 'Understated Poise', text: `True confidence never needs to raise its voice.` },
+      { badgeClass: 'badge-poetic', icon: '🌊', label: 'Sensory Resonance', text: `Craft you experience long before you speak.` },
+      { badgeClass: 'badge-rebel', icon: '🔥', label: 'Category Disruptor', text: `The new rules of ${niche.split('&')[0].trim()} begin right here.` },
+      { badgeClass: 'badge-heritage', icon: '🏛️', label: 'Timeless Gravity', text: `Built for permanence in an era of disposable noise.` },
+      { badgeClass: 'badge-bold', icon: '⚡', label: 'High Velocity', text: `Accelerate into distinction. Never look back.` },
+      { badgeClass: 'badge-playful', icon: '🎉', label: 'Clever Wit', text: `Impossibly high standards, delightfully low pretense.` },
+      { badgeClass: 'badge-emotional', icon: '♥', label: 'Human Connection', text: `For the daily rituals that define who you become.` }
+    ];
+
+    const startIndex = (currentCount - 8) % freshArchetypes.length;
+    const selected4 = [];
+    for (let i = 0; i < 4; i++) {
+      selected4.push(freshArchetypes[(startIndex + i) % freshArchetypes.length]);
+    }
+
+    const apiKey = getStoredApiKey();
+    if (apiKey) {
+      try {
+        const promptText = `
+You are a legendary Brand Strategist & Copywriter.
+Create 4 additional novel, punchy taglines for:
+- Brand Name: "${name}"
+- Sector: "${niche}"
+- Brand Vibe: "${vibe}"
+
+Return JSON matching this schema:
+[
+  { "label": "Angle Name (e.g. Futuristic Vision)", "icon": "🚀", "badgeClass": "badge-benefit", "text": "Punchy 4-8 word tagline." },
+  { "label": "Angle Name (e.g. Quiet Confidence)", "icon": "✦", "badgeClass": "badge-minimal", "text": "Punchy 4-8 word tagline." },
+  { "label": "Angle Name (e.g. Visceral Craft)", "icon": "🌊", "badgeClass": "badge-poetic", "text": "Punchy 4-8 word tagline." },
+  { "label": "Angle Name (e.g. Bold Defiance)", "icon": "🔥", "badgeClass": "badge-rebel", "text": "Punchy 4-8 word tagline." }
+]
+`.trim();
+
+        const data = await callGeminiEndpoint({
+          contents: [{ parts: [{ text: promptText }] }],
+          generationConfig: { temperature: 0.8, responseMimeType: "application/json" }
+        });
+        const parsed = extractJsonFromGeminiResponse(data);
+        if (Array.isArray(parsed) && parsed.length >= 4) {
+          selected4.forEach((item, idx) => {
+            if (parsed[idx] && parsed[idx].text) {
+              item.text = parsed[idx].text;
+              if (parsed[idx].label) item.label = parsed[idx].label;
+            }
+          });
+        }
+      } catch (err) {
+        console.warn('AI more taglines fallback to procedural:', err);
+      }
+    }
+
+    selected4.forEach((angle, idx) => {
+      const card = document.createElement('div');
+      card.className = 'tagline-angle-card';
+      card.style.animation = 'fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both';
+      const angleId = `tagline-more-${currentCount + idx + 1}`;
+
+      card.innerHTML = `
+        <div class="angle-header">
+          <span class="angle-badge ${angle.badgeClass}">${angle.icon} ${angle.label}</span>
+          <button type="button" class="btn-copy-idea btn-copy-angle" id="btn-copy-${angleId}" title="Copy tagline">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy</span>
+          </button>
+        </div>
+        <p class="tagline-text" id="text-${angleId}" style="font-family:'${brand.fonts?.heading || 'Plus Jakarta Sans'}', serif;">${angle.text}</p>
+      `;
+
+      elements.taglineVaultGrid.appendChild(card);
+
+      const copyBtn = card.querySelector(`#btn-copy-${angleId}`);
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          copyToClipboard(angle.text, `${angle.label} Tagline copied!`);
+        });
+      }
+    });
+
+    state.taglineCount = currentCount + 4;
+    if (elements.taglinesCountBadge) {
+      elements.taglinesCountBadge.textContent = `${state.taglineCount} Angles Ready`;
+    }
+
+    showToast(`Generated 4 new strategic taglines! Total: ${state.taglineCount}`, 'success', 2500);
+
+    if (elements.btnGenerateMoreTaglines) elements.btnGenerateMoreTaglines.disabled = false;
+    if (elements.moreTaglinesSpinner) elements.moreTaglinesSpinner.classList.add('hidden');
+    if (elements.btnMoreTaglinesText) elements.btnMoreTaglinesText.textContent = "+ Generate 4 More Taglines";
   }
 
   // =========================================================================
@@ -7954,17 +7661,44 @@ STRICT CONSTRAINTS:
           hook: `Unlock priority access to the new ${name} collection. Enter promo code at checkout.`
         },
         testimonial: {
+          badge: "EDITORIAL SPOTLIGHT",
           quote: `“${name} continues to set the benchmark in modern execution. Distinct, tactile, and immediately recognizable.”`,
           author: "Monocle Design Review",
           title: "Senior Contributing Editor",
           rating: "★★★★★"
+        },
+        founder: {
+          badge: "BEHIND THE CRAFT • ISSUE 01",
+          chapter: "CHAPTER 01 // ORIGINS",
+          headline: `Why We Built ${name} From The Ground Up.`,
+          subtext: desc || `We founded ${name} to restore slow, intentional artistry to the modern landscape.`,
+          author: "Founder’s Journal • 3 Min Read"
+        },
+        infographic: {
+          badge: "DID YOU KNOW? • MASTERCLASS",
+          headline: `3 Principles Behind The ${name} Standard.`,
+          point1: `Obsessive precision in every tangible touchpoint.`,
+          point2: `Timeless aesthetics engineered to outlast micro-trends.`,
+          point3: `Uncompromising material integrity from concept to release.`,
+          footerHint: `Save this post for your weekly mindful ritual 🔖`
+        },
+        countdown: {
+          badge: "COMMUNITY DROP • LAUNCH DAY",
+          timer: "T-MINUS 72 HOURS // LAUNCH PROTOCOL",
+          headline: `The New ${name} Edition Unveils This Friday.`,
+          subtext: `Priority access opens to our founding members. Reserve your place now.`,
+          cta: "Join Founding Guestlist ➔"
         }
       },
       taglineVault: {
         bold: `Command the standard. Own ${name}.`,
         minimal: `Pure form. Uncompromising intention.`,
         emotional: `Crafted for the connections that outlast trends.`,
-        playful: `Seriously exceptional design for delightfully ambitious ventures.`
+        playful: `Seriously exceptional design for delightfully ambitious ventures.`,
+        benefit: `Engineered for effortless distinction and peak operational clarity.`,
+        rebel: `Reject the cookie-cutter standard. Build what endures.`,
+        heritage: `Rooted in authentic craft. Built for generations.`,
+        poetic: `Quiet excellence that speaks in every nuance.`
       },
       sampleHeadline: `${name}: Engineered for distinction.`,
       sampleBody: desc || `Crafted for modern connoisseurs who value intentional craftsmanship and distinct character.`,
@@ -8022,17 +7756,44 @@ Generate high-conversion growth campaign assets and tagline angles in strict JSO
       "hook": "Urgent drop hook sentence"
     },
     "testimonial": {
+      "badge": "EDITORIAL SPOTLIGHT",
       "quote": "Glowing editorial endorsement quote speaking to the craft",
       "author": "Publication or customer name",
       "title": "Critic or verified collector title",
       "rating": "★★★★★"
+    },
+    "founder": {
+      "badge": "BEHIND THE CRAFT • ISSUE 01",
+      "chapter": "CHAPTER 01 // ORIGINS",
+      "headline": "Personal, compelling founder/maker revelation headline",
+      "subtext": "Rich 2-sentence manifesto on why this brand was founded",
+      "author": "Founder’s Journal • 3 Min Read"
+    },
+    "infographic": {
+      "badge": "DID YOU KNOW? • MASTERCLASS",
+      "headline": "Educational 3-pillar truth headline",
+      "point1": "Insightful industry pillar 1",
+      "point2": "Insightful industry pillar 2",
+      "point3": "Insightful industry pillar 3",
+      "footerHint": "Save this post for your weekly ritual 🔖"
+    },
+    "countdown": {
+      "badge": "COMMUNITY DROP • LAUNCH DAY",
+      "timer": "T-MINUS 72 HOURS // LAUNCH PROTOCOL",
+      "headline": "Urgent launch/vault opening headline",
+      "subtext": "Prize or exclusive debut allocation terms",
+      "cta": "Enter Founding Giveaway ➔"
     }
   },
   "taglineVault": {
     "bold": "A bold, commanding, unapologetic tagline angle.",
     "minimal": "A quiet, poetic, minimalist tagline angle.",
     "emotional": "A deep, evocative, emotional tagline angle.",
-    "playful": "A clever, witty, delightful tagline angle."
+    "playful": "A clever, witty, delightful tagline angle.",
+    "benefit": "A crisp, benefit-driven outcome tagline.",
+    "rebel": "A category-disrupting rebel tagline.",
+    "heritage": "A timeless trust and craft heritage tagline.",
+    "poetic": "A rhythmic, evocative poetic tagline."
   }
 }
 
@@ -8281,30 +8042,6 @@ Return ONLY valid JSON with NO commentary.
       });
     }
 
-    if (elements.btnCheckTrademark) {
-      elements.btnCheckTrademark.addEventListener('click', () => handleCheckTrademark());
-    }
-
-    if (elements.tmVerifyLink) {
-      elements.tmVerifyLink.addEventListener('click', () => {
-        const currentName = (elements.inputBrandName ? elements.inputBrandName.value.trim() : '') || 'Brand';
-        elements.tmVerifyLink.href = `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(currentName)}`;
-      });
-    }
-
-    if (elements.btnFetchQuickcompany) {
-      elements.btnFetchQuickcompany.addEventListener('click', () => {
-        const currentName = (elements.inputBrandName ? elements.inputBrandName.value.trim() : '');
-        if (!currentName) {
-          showToast('Enter a brand name to fetch QuickCompany filings', 'warning');
-          if (elements.inputBrandName) elements.inputBrandName.focus();
-          return;
-        }
-        showToast(`Fetching live records for "${currentName}" from QuickCompany...`, 'info', 2000);
-        fetchAndRenderQuickCompany(currentName);
-      });
-    }
-
     if (elements.btnGenerate) {
       elements.btnGenerate.addEventListener('click', handleGenerate);
     }
@@ -8534,7 +8271,7 @@ ${(b.palette || b.colors).map(c => `- **${c.hex}** | ${c.name} (${c.role}): ${c.
       });
     }
 
-    // Campaign Templates Copy Buttons
+    // Campaign Templates: 6 Copy Template Copy Buttons
     if (elements.btnCopyLaunchCopy) {
       elements.btnCopyLaunchCopy.addEventListener('click', () => {
         const kicker = elements.campaignLaunchKicker ? elements.campaignLaunchKicker.textContent.trim() : '';
@@ -8568,33 +8305,81 @@ ${(b.palette || b.colors).map(c => `- **${c.hex}** | ${c.name} (${c.role}): ${c.
       });
     }
 
-    // Tagline Vault Copy Buttons
-    if (elements.btnCopyTaglineBold) {
-      elements.btnCopyTaglineBold.addEventListener('click', () => {
-        const text = elements.taglineTextBold ? elements.taglineTextBold.textContent.trim() : '';
-        if (text) copyToClipboard(text, 'Bold Tagline copied!');
+    if (elements.btnCopyFounderCopy) {
+      elements.btnCopyFounderCopy.addEventListener('click', () => {
+        const badge = elements.campaignFounderBadge ? elements.campaignFounderBadge.textContent.trim() : '';
+        const chapter = elements.campaignFounderChapter ? elements.campaignFounderChapter.textContent.trim() : '';
+        const headline = elements.campaignFounderHeadline ? elements.campaignFounderHeadline.textContent.trim() : '';
+        const subtext = elements.campaignFounderSubtext ? elements.campaignFounderSubtext.textContent.trim() : '';
+        const author = elements.campaignFounderAuthor ? elements.campaignFounderAuthor.textContent.trim() : '';
+        const fullText = `${badge} | ${chapter}\n\n${headline}\n\n${subtext}\n\n${author}`;
+        copyToClipboard(fullText, 'Founder Story copy copied to clipboard!');
       });
     }
 
-    if (elements.btnCopyTaglineMinimal) {
-      elements.btnCopyTaglineMinimal.addEventListener('click', () => {
-        const text = elements.taglineTextMinimal ? elements.taglineTextMinimal.textContent.trim() : '';
-        if (text) copyToClipboard(text, 'Minimal Tagline copied!');
+    if (elements.btnCopyInfoCopy) {
+      elements.btnCopyInfoCopy.addEventListener('click', () => {
+        const badge = elements.campaignInfoBadge ? elements.campaignInfoBadge.textContent.trim() : '';
+        const headline = elements.campaignInfoHeadline ? elements.campaignInfoHeadline.textContent.trim() : '';
+        const p1 = elements.campaignInfoPoint1 ? elements.campaignInfoPoint1.textContent.trim() : '';
+        const p2 = elements.campaignInfoPoint2 ? elements.campaignInfoPoint2.textContent.trim() : '';
+        const p3 = elements.campaignInfoPoint3 ? elements.campaignInfoPoint3.textContent.trim() : '';
+        const hint = elements.campaignInfoFooterText ? elements.campaignInfoFooterText.textContent.trim() : '';
+        const fullText = `${badge}\n\n${headline}\n\n01 / ${p1}\n02 / ${p2}\n03 / ${p3}\n\n${hint}`;
+        copyToClipboard(fullText, 'Infographic copy copied to clipboard!');
       });
     }
 
-    if (elements.btnCopyTaglineEmotional) {
-      elements.btnCopyTaglineEmotional.addEventListener('click', () => {
-        const text = elements.taglineTextEmotional ? elements.taglineTextEmotional.textContent.trim() : '';
-        if (text) copyToClipboard(text, 'Emotional Tagline copied!');
+    if (elements.btnCopyCountdownCopy) {
+      elements.btnCopyCountdownCopy.addEventListener('click', () => {
+        const badge = elements.campaignCountdownBadge ? elements.campaignCountdownBadge.textContent.trim() : '';
+        const timer = elements.campaignCountdownTimer ? elements.campaignCountdownTimer.textContent.trim() : '';
+        const headline = elements.campaignCountdownHeadline ? elements.campaignCountdownHeadline.textContent.trim() : '';
+        const subtext = elements.campaignCountdownSubtext ? elements.campaignCountdownSubtext.textContent.trim() : '';
+        const cta = elements.campaignCountdownCta ? elements.campaignCountdownCta.textContent.trim() : '';
+        const fullText = `${badge} [${timer}]\n\n${headline}\n\n${subtext}\n\nCTA: ${cta}`;
+        copyToClipboard(fullText, 'Countdown Giveaway copy copied to clipboard!');
       });
     }
 
-    if (elements.btnCopyTaglinePlayful) {
-      elements.btnCopyTaglinePlayful.addEventListener('click', () => {
-        const text = elements.taglineTextPlayful ? elements.taglineTextPlayful.textContent.trim() : '';
-        if (text) copyToClipboard(text, 'Playful Tagline copied!');
-      });
+    // Campaign Templates: 6 High-Res PNG Download Buttons
+    if (elements.btnDownloadLaunchPng) {
+      elements.btnDownloadLaunchPng.addEventListener('click', () => downloadCampaignTemplateAsPNG(1));
+    }
+    if (elements.btnDownloadDropPng) {
+      elements.btnDownloadDropPng.addEventListener('click', () => downloadCampaignTemplateAsPNG(2));
+    }
+    if (elements.btnDownloadTestPng) {
+      elements.btnDownloadTestPng.addEventListener('click', () => downloadCampaignTemplateAsPNG(3));
+    }
+    if (elements.btnDownloadFounderPng) {
+      elements.btnDownloadFounderPng.addEventListener('click', () => downloadCampaignTemplateAsPNG(4));
+    }
+    if (elements.btnDownloadInfoPng) {
+      elements.btnDownloadInfoPng.addEventListener('click', () => downloadCampaignTemplateAsPNG(5));
+    }
+    if (elements.btnDownloadCountdownPng) {
+      elements.btnDownloadCountdownPng.addEventListener('click', () => downloadCampaignTemplateAsPNG(6));
+    }
+
+    // Tagline Vault: 8 Tone Angle Copy Buttons
+    const copyTagline = (el, label) => {
+      const text = el ? el.textContent.trim() : '';
+      if (text) copyToClipboard(text, `${label} Tagline copied!`);
+    };
+
+    if (elements.btnCopyTaglineBold) elements.btnCopyTaglineBold.addEventListener('click', () => copyTagline(elements.taglineTextBold, 'Bold & Punchy'));
+    if (elements.btnCopyTaglineMinimal) elements.btnCopyTaglineMinimal.addEventListener('click', () => copyTagline(elements.taglineTextMinimal, 'Minimalist Luxury'));
+    if (elements.btnCopyTaglineEmotional) elements.btnCopyTaglineEmotional.addEventListener('click', () => copyTagline(elements.taglineTextEmotional, 'Emotional & Warm'));
+    if (elements.btnCopyTaglinePlayful) elements.btnCopyTaglinePlayful.addEventListener('click', () => copyTagline(elements.taglineTextPlayful, 'Playful & Gen-Z'));
+    if (elements.btnCopyTaglineBenefit) elements.btnCopyTaglineBenefit.addEventListener('click', () => copyTagline(elements.taglineTextBenefit, 'Benefit-Driven'));
+    if (elements.btnCopyTaglineRebel) elements.btnCopyTaglineRebel.addEventListener('click', () => copyTagline(elements.taglineTextRebel, 'Rebel / Disruptor'));
+    if (elements.btnCopyTaglineHeritage) elements.btnCopyTaglineHeritage.addEventListener('click', () => copyTagline(elements.taglineTextHeritage, 'Heritage & Trust'));
+    if (elements.btnCopyTaglinePoetic) elements.btnCopyTaglinePoetic.addEventListener('click', () => copyTagline(elements.taglineTextPoetic, 'Poetic / Rhythmic'));
+
+    // Tagline Vault: + Generate 4 More Button
+    if (elements.btnGenerateMoreTaglines) {
+      elements.btnGenerateMoreTaglines.addEventListener('click', handleGenerateMoreTaglines);
     }
   }
 
