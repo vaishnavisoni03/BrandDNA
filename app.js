@@ -1484,7 +1484,80 @@ Guidelines:
     return null;
   }
 
-  function proceduralTrademarkCheck(brandName = '', niche = '') {
+  // Live Wikidata / Wikipedia Global Brand & Trademark Search Client Engine (CORS-friendly)
+  async function queryWikipediaBrandSearchClient(brandName = '') {
+    const query = (brandName || '').trim();
+    if (!query) return [];
+
+    const targetUrl = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=5&format=json&origin=*`;
+
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+      const response = await fetch(targetUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) return [];
+
+      const data = await response.json();
+      if (!Array.isArray(data) || data.length < 4) return [];
+
+      const [, titles, descs, urls] = data;
+      const matches = [];
+
+      const commercialKeywords = /\b(company|startup|brand|business|corporation|firm|enterprise|retail|retailer|conglomerate|platform|app|application|service|software|chain|store|manufacturer|brewery|patisserie|restaurant|e-commerce|fintech|agency|holdings|inc|ltd|llc|pvt|co\.)\b/i;
+
+      const cleanQuery = query.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      for (let i = 0; i < Math.min(titles.length, 5); i++) {
+        const title = titles[i] || '';
+        if (!title) continue;
+
+        let desc = (descs[i] || '').trim();
+        const url = urls[i] || `https://en.wikipedia.org/wiki/${encodeURIComponent(title)}`;
+        const cleanTitle = title.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        const isExactMatch = cleanTitle === cleanQuery || title.toLowerCase() === query.toLowerCase();
+        const isPartialMatch = cleanTitle.includes(cleanQuery) || cleanQuery.includes(cleanTitle);
+
+        // If description was empty, attempt quick REST summary fetch for exact or top titles
+        if (!desc && (isExactMatch || i < 2)) {
+          try {
+            const sumCtrl = new AbortController();
+            const sumTimeout = setTimeout(() => sumCtrl.abort(), 1800);
+            const sumRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`, {
+              signal: sumCtrl.signal
+            });
+            clearTimeout(sumTimeout);
+            if (sumRes.ok) {
+              const sumJson = await sumRes.json();
+              desc = sumJson.description || (sumJson.extract ? sumJson.extract.slice(0, 160) : '');
+            }
+          } catch (sumErr) {}
+        }
+
+        const isCommercial = commercialKeywords.test(desc) || commercialKeywords.test(title);
+
+        if (isExactMatch || isCommercial || isPartialMatch) {
+          matches.push({
+            title,
+            description: desc || 'Wikipedia global entity entry',
+            url,
+            isExactMatch,
+            isCommercial
+          });
+        }
+      }
+
+      return matches;
+    } catch (err) {
+      console.warn('Client-side Wikipedia search error / timeout:', err.message);
+      return [];
+    }
+  }
+
+  function proceduralTrademarkCheck(brandName = '', niche = '', wikiMatches = []) {
     const cleanName = (brandName || '').trim();
     const lower = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '');
     const nice = getNiceClassForNiche(niche);
@@ -1502,7 +1575,32 @@ Guidelines:
       });
     }
 
-    // 2. Check phonetic / generic caution terms
+    // 2. Check live Wikipedia / Wikidata global entity records
+    if (Array.isArray(wikiMatches) && wikiMatches.length > 0) {
+      wikiMatches.forEach(wiki => {
+        if (wiki.isExactMatch && wiki.isCommercial) {
+          status = 'Conflict';
+          conflicts.unshift({
+            name: `${wiki.title} (Live Global Entity / Brand Record)`,
+            reason: `Existing registered commercial company or brand identified via global encyclopedia & entity archives: "${wiki.description}". Direct trademark conflict.`
+          });
+        } else if (wiki.isExactMatch) {
+          if (status !== 'Conflict') status = 'Caution';
+          conflicts.push({
+            name: `${wiki.title} (Global Entity Record)`,
+            reason: `Exact title match with existing public global entity: "${wiki.description}". May face prior-use objection.`
+          });
+        } else if (wiki.isCommercial) {
+          if (status === 'Clear') status = 'Caution';
+          conflicts.push({
+            name: `${wiki.title} (Commercial Entity Overlap)`,
+            reason: `Phonetically / conceptually similar commercial entity operating: "${wiki.description}".`
+          });
+        }
+      });
+    }
+
+    // 3. Check phonetic / generic caution terms
     if (status !== 'Conflict') {
       const genericWords = ['coffee', 'cafe', 'tech', 'studio', 'pay', 'mart', 'kart', 'super', 'hyper', 'aura', 'urban', 'luxe'];
       const matchedGeneric = genericWords.find(w => lower === w || lower === w + 's' || lower === 'the' + w);
@@ -1522,7 +1620,7 @@ Guidelines:
       }
     }
 
-    // 3. Smart Alternative Generator based on niche
+    // 4. Smart Alternative Generator based on niche
     const nameBase = cleanName.replace(/Living|Studio|Lab|Venture|Co|Club|Craft|House|Roasters/gi, '').trim() || 'Veritas';
     let alternatives = [];
 
@@ -1547,7 +1645,8 @@ Guidelines:
       classDesc: nice.desc,
       conflicts: conflicts,
       alternatives: alternatives,
-      quickCompanyUrl: `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(cleanName)}`
+      quickCompanyUrl: `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(cleanName)}`,
+      wikiMatches: wikiMatches || []
     };
   }
 
@@ -1557,6 +1656,9 @@ Guidelines:
 
     // 1. Direct registry database collision test
     const dbMatch = checkDatabaseTrademarkCollision(brandName);
+
+    // 2. Query Wikipedia search concurrently
+    const clientWikiPromise = queryWikipediaBrandSearchClient(brandName);
 
     try {
       const res = await fetch('/.netlify/functions/trademark', {
@@ -1591,10 +1693,21 @@ Guidelines:
       console.warn('Could not reach /.netlify/functions/trademark, engaging procedural fallback:', fetchErr);
     }
 
+    const wikiMatches = await clientWikiPromise;
+
     // Direct Gemini REST client fallback if header key is provided
     if (hasHeaderKey) {
       try {
         const niceClass = getNiceClassForNiche(niche);
+
+        let wikiPrompt = '';
+        if (wikiMatches && wikiMatches.length > 0) {
+          wikiPrompt = `
+LIVE WIKIDATA / WIKIPEDIA BRAND RECORDS:
+${wikiMatches.map(m => `- "${m.title}": ${m.description} (Commercial: ${m.isCommercial ? 'Yes' : 'No'})`).join('\n')}
+`;
+        }
+
         const promptText = `
 You are a senior Intellectual Property & Trademark Attorney specializing in Indian Trademark Law (IP India) and QuickCompany live registry audits.
 Evaluate trademark registration availability, phonetic similarity, and conflict risk for:
@@ -1602,6 +1715,7 @@ Evaluate trademark registration availability, phonetic similarity, and conflict 
 - Sector / Niche: "${niche}"
 - Mapped NICE Trademark Class: "${niceClass.label}: ${niceClass.desc}"
 ${dbMatch ? `CRITICAL: The name matches registered brand "${dbMatch.matchedBrand}" owned by "${dbMatch.owner}". Set status to "Conflict".` : ''}
+${wikiPrompt}
 
 Return a SINGLE valid JSON object matching this schema strictly:
 {
@@ -1609,10 +1723,13 @@ Return a SINGLE valid JSON object matching this schema strictly:
   "trademarkClass": "${niceClass.label}",
   "classDesc": "${niceClass.desc}",
   "conflicts": [
-    { "name": "Existing Conflicting Mark or Legal Ground", "reason": "Clear explanation of identical/phonetic overlap or Section 9 objection" }
+    { "name": "Existing Conflicting Mark or Legal Ground", "reason": "Clear explanation of identical/phonetic overlap, commercial existence or Section 9 objection" }
   ],
   "alternatives": ["CoinedAlternative1", "CoinedAlternative2", "CoinedAlternative3"]
 }
+
+Rules:
+- If "${brandName}" matches any existing company, startup, D2C brand, app or mark, status MUST be "Conflict".
 `;
         const payload = {
           contents: [{ parts: [{ text: promptText }] }],
@@ -1633,14 +1750,31 @@ Return a SINGLE valid JSON object matching this schema strictly:
           }
         }
 
+        // Enforce Wikipedia commercial entity collision
+        if (wikiMatches && wikiMatches.length > 0) {
+          wikiMatches.forEach(wiki => {
+            const already = conflictsList.some(c => c.name.toLowerCase().includes(wiki.title.toLowerCase()));
+            if (wiki.isExactMatch && wiki.isCommercial) {
+              finalStatus = 'Conflict';
+              if (!already) {
+                conflictsList.unshift({
+                  name: `${wiki.title} (Live Global Entity / Brand Record)`,
+                  reason: `Existing registered commercial company or brand identified: "${wiki.description}". Direct trademark conflict.`
+                });
+              }
+            }
+          });
+        }
+
         return {
           status: finalStatus,
           statusLabel: finalStatus === 'Conflict' ? 'Conflict — Existing Trademark Detected' : (finalStatus === 'Caution' ? 'Caution — Potential Overlap' : 'Clear — High Likelihood of Registration'),
           trademarkClass: parsed.trademarkClass || niceClass.label,
           classDesc: parsed.classDesc || niceClass.desc,
           conflicts: conflictsList,
-          alternatives: Array.isArray(parsed.alternatives) && parsed.alternatives.length >= 3 ? parsed.alternatives.slice(0, 3) : proceduralTrademarkCheck(brandName, niche).alternatives,
-          quickCompanyUrl: `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(brandName)}`
+          alternatives: Array.isArray(parsed.alternatives) && parsed.alternatives.length >= 3 ? parsed.alternatives.slice(0, 3) : proceduralTrademarkCheck(brandName, niche, wikiMatches).alternatives,
+          quickCompanyUrl: `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(brandName)}`,
+          wikiMatches: wikiMatches || []
         };
       } catch (geminiErr) {
         console.warn('Direct Gemini trademark check failed:', geminiErr);
@@ -1648,7 +1782,7 @@ Return a SINGLE valid JSON object matching this schema strictly:
     }
 
     // Procedural Fallback Engine
-    return proceduralTrademarkCheck(brandName, niche);
+    return proceduralTrademarkCheck(brandName, niche, wikiMatches);
   }
 
   function renderTrademarkStatus(result, brandName = null) {
@@ -1987,310 +2121,4221 @@ Return a SINGLE valid JSON object matching this schema strictly:
   }
 
   // =========================================================================
-  // 9c. AI Business Name Generator Engine (Gemini + Smart Procedural Fallback)
+  // 9c. 8 Distinct Archetypes AI & Procedural Business Name Generator Engine
   // =========================================================================
-  const NICHE_NAME_DICTIONARIES = {
-    "coffee-chai": {
-      roots: ["Komorebi", "Aroma", "Chai", "Velvet", "Roast", "Drip", "Steam", "Elevation", "Kavita", "Saffron", "Terroir", "Amber", "Kafique", "Brim", "Crema", "Moka", "Solstice", "Infusion"],
-      modifiers: ["Roasters", "Brew Lab", "Botanical Chai", "Coffee Bar", "Collective", "Atelier", "Craft Co.", "Social", "Boutique", "Press", "House"],
-      compounds: ["Chaikarma", "VelourBean", "Roastology", "AromaCraft", "ChaiKulture", "CaelumRoasters", "KomorebiChai", "SolsticeBrew", "ArtisanChai", "TerraRoast", "DripHouse", "KavitaTea"],
-      rationales: [
-        "Artisanal • Roasted • Slow-Crafted",
-        "Heritage • Spiced • Warm",
-        "Elevation • Single-Origin • Pure",
-        "Circadian • Tactile • Grounded",
-        "Modern • Infused • Conscious",
-        "Boutique • Steamed • Rich",
-        "Velvet • Handcrafted • Comfort",
-        "Community • Aromatic • Distinct"
-      ]
-    },
-    "bakery-kitchen": {
-      roots: ["Brioche", "Crumb", "Artisan", "Flourish", "Sourdough", "Maison", "Golden", "Oven", "Whisk", "Patisserie", "Crumble", "Veloute", "Rustic", "Hearth", "Butter", "Pastry"],
-      modifiers: ["Bakery", "Patisserie", "Cloud Kitchen", "Bakehouse", "Atelier", "Table", "Provisions", "Oven", "Craft Bake", "Kitchen"],
-      compounds: ["CrumbCrafters", "MaisonBrioche", "FlourishBake", "GoldenCrust", "OvenCraft", "PatisserieLuxe", "HearthstoneBake", "WhiskTable", "VelvetPastry", "ArtisanLoaf", "BakeTheory", "SourdoughCo"],
-      rationales: [
-        "Flaky • Butter-Rich • Artisanal",
-        "Slow-Ferment • Golden • Warm",
-        "Patisserie • Refined • Crafted",
-        "Comfort • Fresh-Baked • Tactile",
-        "Rustic • Woodfired • Wholesome",
-        "French-Inspired • Delicate • Pure",
-        "Cloud-Crafted • Gourmet • Fresh",
-        "Bespoke • Indulgent • Crisp"
-      ]
-    },
-    "craft-beverages": {
-      roots: ["Ferment", "Botanica", "Kombu", "Elixir", "Wild", "Tonic", "Nectar", "Spark", "Fizz", "Flora", "Aura", "Citrus", "Living", "Infuse", "Zest", "Draft"],
-      modifiers: ["Brewing", "Botanicals", "Elixirs", "Tonics", "Ferments", "Craft Co.", "Labs", "Living Drinks", "Social", "Alchemy"],
-      compounds: ["KombuCraft", "WildElixir", "LivingFerment", "BotanicaFizz", "AuraTonic", "NectarDraft", "SparkFlora", "ZestAlchemy", "CitrusBotanicals", "InfuseLab", "PureFerment", "VerveTonics"],
-      rationales: [
-        "Living • Fermented • Effervescent",
-        "Botanical • Adaptogenic • Crisp",
-        "Craft-Brewed • Clean • Functional",
-        "Raw • Micro-Batch • Vibrant",
-        "Herbal • Sparkling • Refreshing",
-        "Probiotic • Pure • Restorative",
-        "Artisanal • Cold-Pressed • Wild",
-        "Elevated • Social • Tonic"
-      ]
-    },
-    "vegan-health": {
-      roots: ["Sprout", "Verdant", "Nativa", "PlantBase", "Harvest", "Pure", "Flora", "Greenery", "Vital", "Root", "Nutri", "Bounty", "Earthly", "Elysian", "Seed", "Organix"],
-      modifiers: ["Kitchen", "Table", "Organics", "Harvest", "Nourish", "Clean Foods", "Pantry", "Bowl Co.", "Vitality", "Eats"],
-      compounds: ["VerdantTable", "SproutHarvest", "NourishOrganics", "PlantCraft", "FloraKitchen", "VitalGreen", "EarthlyBowl", "CleanRoot", "NutriHarvest", "VitalSeed", "BountyVegan", "PurePantry"],
-      rationales: [
-        "Nourishing • Plant-Based • Honest",
-        "Clean-Label • Wholesome • Fresh",
-        "Earth-Forward • Vibrant • Whole",
-        "Nutrient-Dense • Healing • Green",
-        "Conscious • Compassionate • Pure",
-        "Regenerative • Farm-to-Table • Real",
-        "Vital • Vibrant • Sustainable",
-        "Crisp • Restorative • Guilt-Free"
-      ]
-    },
-    "organic-skincare": {
-      roots: ["Botanica", "Sylvan", "Nativa", "Floralis", "Aura", "BioHaven", "Cura", "Lumina", "Derma", "Cellular", "Earthen", "Velvet", "Glow", "Radiance", "Soothe", "Oasis"],
-      modifiers: ["Skin", "Botanicals", "Rituals", "Atelier", "Laboratory", "Aesthetics", "Care", "Essence", "Therapy", "Naturals"],
-      compounds: ["BotanicaRituals", "NativaSkin", "FloralisLab", "LuminaAura", "CuraBotanics", "CellularGlow", "SylvanSkin", "EarthenEssence", "BioRadiance", "VelvetDerma", "PureSoothe", "OasisAesthetics"],
-      rationales: [
-        "Restorative • Botanical • Dewy",
-        "Clean • Biophilic • Calming",
-        "Dermatological • Pure • Radiant",
-        "Circadian • Earthen • Glowing",
-        "Active-Botanical • Gentle • Clinical",
-        "Holistic • Barrier-Repair • Velvet",
-        "Adaptive • Plant-Powered • Pure",
-        "Conscious • Minimalist • Nourishing"
-      ]
-    },
-    "streetwear-fashion": {
-      roots: ["Verve", "Atelier", "Archive", "Knit", "Chroma", "Raw", "Flux", "Drop", "Volt", "District", "Silhouette", "Thread", "Monolith", "Drift", "Loom", "Structure"],
-      modifiers: ["Apparel", "Archive", "Studio", "Worldwide", "Drop", "Club", "Collective", "Goods", "Wear", "Edition"],
-      compounds: ["ArchiveVerve", "RawChroma", "VibeDrop", "AtelierThread", "MonolithWear", "VoltDistrict", "FluxSilhouette", "LoomCollective", "DriftApparel", "UrbanKnit", "AethelApparel", "ApexStreet"],
-      rationales: [
-        "Heavyweight • Raw • Structured",
-        "Monochrome • Archival • Underground",
-        "Kinetic • High-Street • Bold",
-        "Minimalist • Tactile • Tailored",
-        "Subcultural • Drop-Only • Sharp",
-        "Sustainable • Heavy-Cotton • Timeless",
-        "Oversized • Gritty • Distinctive",
-        "Contemporary • Modular • Pure"
-      ]
-    },
-    "luxury-jewelry": {
-      roots: ["Aurelia", "Caviar", "Velour", "Sovereign", "Solstice", "Nocturne", "Valmont", "Vesper", "Elysian", "Crest", "Gemina", "Orum", "Prism", "Carat", "Lustre", "Bespoke"],
-      modifiers: ["Jewels", "Maison", "Fine Jewelry", "Atelier", "Archive", "Gems", "Bespoke", "Orum", "Timepieces", "Paris"],
-      compounds: ["MaisonAurelia", "VesperJewels", "SovereignGems", "ElysianOrum", "CaviarAtelier", "SolsticeLustre", "NocturneCarat", "ValmontFine", "PrismBespoke", "GeminaArchive", "AethelJewels", "OpusOrum"],
-      rationales: [
-        "Heirloom • Sovereign • 18K-Solid",
-        "Bespoke • Poised • Sculptural",
-        "Understated • Archival • Luminous",
-        "Timeless • Hand-Set • Lustrous",
-        "Artisanal • Rare-Gem • Pure",
-        "Monastic • Precision • Precious",
-        "Sovereign • Polished • Enduring",
-        "Haute-Joaillerie • Refined • Sleek"
-      ]
-    },
-    "fitness-yoga": {
-      roots: ["Kinetix", "Prana", "Aura", "Movement", "Pulse", "Form", "Apex", "Flow", "Align", "Core", "Verve", "Zenith", "Somatics", "Rhythm", "Tempo", "Motion"],
-      modifiers: ["Studio", "Athletics", "Movement", "Yoga Lab", "Collective", "Space", "Club", "Sanctuary", "Dynamics", "Perform"],
-      compounds: ["PranaMovement", "KinetixFlow", "AuraAlign", "ApexAthletics", "PulseYoga", "CoreZenith", "SomaticsSpace", "TempoStudio", "MotionCollective", "FormSanctuary", "VervePerform", "AlignAthletics"],
-      rationales: [
-        "Biomechanical • Mindful • Powerful",
-        "Breathwork • Dynamic • Centered",
-        "High-Performance • Kinetic • Crisp",
-        "Holistic • Restorative • Aligned",
-        "Endurance • Conditioning • Flow",
-        "Athletic • Functional • Elevate",
-        "Vibrant • Somatic • Strength",
-        "Calm • Grounded • Intentional"
-      ]
-    },
-    "mental-health": {
-      roots: ["MindHaven", "Aura", "Stillness", "Serena", "Breathe", "Calm", "Solace", "Komorebi", "Equanimity", "Sanctuary", "Zenith", "Pause", "Clarity", "Lucid", "Haven", "Soothe"],
-      modifiers: ["Mind", "Health", "Mindfulness", "Sanctuary", "App", "Therapy", "Space", "Collective", "Rituals", "Wellbeing"],
-      compounds: ["MindHaven", "StillnessSpace", "SerenaMind", "ClarityPause", "EquanimityApp", "LucidSanctuary", "CalmHaven", "SolaceRituals", "BreatheWell", "AuraMindfulness", "MindZenith", "SootheHealth"],
-      rationales: [
-        "Centering • Evidence-Based • Gentle",
-        "Mindful • Compassionate • Serene",
-        "Circadian • Grounding • Peaceful",
-        "Cognitive • Soothing • Restorative",
-        "Accessible • Therapeutic • Clear",
-        "Private • Sanctuary • Supportive",
-        "Equanimous • Quiet • Empathetic",
-        "Deep-Breath • Safe • Healing"
-      ]
-    },
-    "pet-care": {
-      roots: ["Pawsome", "Canine", "Feline", "TailWag", "Bark", "Whiskers", "Fauna", "Kibble", "Paws", "Companion", "Haven", "Hound", "Nuzzle", "Fur", "PetVerve", "Noble"],
-      modifiers: ["Pet Care", "Atelier", "Grooming", "Provisions", "Club", "Collective", "Sanctuary", "Wellness", "Co.", "Living"],
-      compounds: ["PawsomeClub", "CanineHaven", "FaunaPet", "HoundAtelier", "NuzzleGrooming", "WhiskersProvisions", "NoblePet", "CompanionCare", "TailWagWellness", "BarkCollective", "FurSanctuary", "PetVerveCo"],
-      rationales: [
-        "Playful • Premium • Compassionate",
-        "Veterinary-Approved • Gentle • Loving",
-        "Tail-Wagging • Wholesome • Pure",
-        "Artisanal • Hypoallergenic • Soft",
-        "Companion-First • Reliable • Warm",
-        "Nutritious • Gourmet • Healthy",
-        "Spa-Grade • Pampered • Clean",
-        "Modern • Breed-Specific • Caring"
-      ]
-    },
-    "interior-design": {
-      roots: ["Atelier", "Habitus", "Spatial", "Maison", "Earthen", "Arch", "Studio", "Forma", "Proportions", "Loom", "Terra", "Vesper", "Luxe", "Haven", "Aura", "Veritas"],
-      modifiers: ["Interiors", "Studio", "Design Lab", "Atelier", "Living", "Spaces", "Architecture", "Collective", "Home", "Bespoke"],
-      compounds: ["HabitusStudio", "SpatialAtelier", "FormaInteriors", "MaisonTerra", "ArchLiving", "ProportionsDesign", "LoomSpaces", "TerraHaven", "VesperHome", "AtelierAura", "VeritasInteriors", "EarthenHabitus"],
-      rationales: [
-        "Tactile • Monastic • Organic-Luxe",
-        "Warm-Minimalist • Biophilic • Calm",
-        "Architectural • Sculptural • Pure",
-        "Curated • Bespoke • Harmonic",
-        "Earthy • Stone & Wood • Textural",
-        "Understated • Timeless • Balanced",
-        "Tailored • Proportional • Refined",
-        "Contemporary • Light-Filled • Serene"
-      ]
-    },
-    "event-planning": {
-      roots: ["Solstice", "Occasion", "Curated", "Aura", "Celebration", "Maison", "Verve", "Fete", "Gala", "Lumiere", "Elysian", "Affair", "Soiree", "Velvet", "Opus", "Ceremony"],
-      modifiers: ["Events", "Weddings", "Experiences", "Atelier", "Productions", "Collective", "Design Co.", "Soirees", "Occasions", "Studio"],
-      compounds: ["SolsticeEvents", "FeteAtelier", "CuratedAffair", "LumiereSoiree", "MaisonGala", "ElysianWeddings", "VelvetOccasion", "OpusProductions", "VerveCelebrations", "AuraExperiences", "CeremonyStudio", "FeteCollective"],
-      rationales: [
-        "Cinematic • Bespoke • Unforgettable",
-        "Graceful • High-Touch • Seamless",
-        "Romantic • Curated • Luxurious",
-        "Tailored • Precision-Planned • Warm",
-        "Vibrant • Immersive • Joyful",
-        "Artisanal • Memorable • Polished",
-        "Atmospheric • Elegant • Timeless",
-        "Celebratory • Modern • Flawless"
-      ]
-    },
-    "eco-travel": {
-      roots: ["Wander", "Terra", "Haven", "Nomad", "Solstice", "Roam", "Earthen", "Wilderness", "Sanctuary", "Retreat", "Verdant", "Aura", "Drift", "Lodge", "Canopy", "Komorebi"],
-      modifiers: ["Stays", "Travel", "Escapes", "Retreats", "Lodges", "Expeditions", "Sanctuaries", "Eco-Resorts", "Collective", "Outposts"],
-      compounds: ["TerraHaven", "NomadRetreats", "WildCanopy", "WanderSanctuary", "SolsticeStays", "RoamLodges", "VerdantEscapes", "KomorebiRetreats", "CanopyOutposts", "EarthenLodges", "AuraExpeditions", "DriftStays"],
-      rationales: [
-        "Off-Grid • Regenerative • Biophilic",
-        "Slow-Travel • Immersive • Earthen",
-        "Wilderness • Mindful • Restorative",
-        "Boutique • Low-Impact • Sacred",
-        "Curated • Serene • Architectural",
-        "Unplugged • Pristine • Soulful",
-        "Sustainable • Elevated • Native",
-        "Panoramic • Tranquil • Conscious"
-      ]
-    },
-    "creator-media": {
-      roots: ["Aura", "Wave", "Cast", "Signal", "Studio", "Chroma", "Echo", "Voice", "Current", "Lens", "Frequency", "Pulse", "Broadcast", "Prism", "Verve", "Fable"],
-      modifiers: ["Media", "Podcasts", "Productions", "Studios", "Network", "Collective", "Content", "Audio", "Creative Lab", "Broadcast"],
-      compounds: ["AuraCast", "SignalEcho", "ChromaMedia", "WaveCurrent", "LensFrequency", "PulseBroadcast", "PrismVoice", "VerveStudios", "FableNetwork", "EchoProductions", "CurrentMedia", "CastCollective"],
-      rationales: [
-        "High-Fidelity • Authentic • Resonant",
-        "Culture-Shaping • Narrative • Crisp",
-        "Unfiltered • Kinetic • Engaging",
-        "Cinematic • Engaging • Viral",
-        "Thought-Provoking • Sharp • Dynamic",
-        "Episodic • Compelling • Clean",
-        "Vibrant • Multichannel • Impactful",
-        "Story-Driven • Sonically-Rich • Bold"
-      ]
-    },
-    "ai-saas": {
-      roots: ["Synapse", "Tensor", "Neural", "Exa", "Omni", "Quantum", "Nexus", "Aether", "Cortex", "Vector", "Optima", "Compute", "Logic", "Kestrel", "Prism", "Cognitive"],
-      modifiers: ["AI", "Logic", "Systems", "Automation", "Labs", "Compute", "Dynamics", "Platform", "Intelligence", "Engine"],
-      compounds: ["SynapseAI", "TensorLogic", "NexusCompute", "OmniCortex", "QuantumVector", "OptimaAutomation", "AetherNeural", "KestrelLogic", "ExaCompute", "NeuralNexus", "CognitiveEngine", "VectorLabs"],
-      rationales: [
-        "Algorithmic • Neural • Scalable",
-        "Photonic • Next-Era • Latency-Zero",
-        "Silicon • Protocol • High-Throughput",
-        "Autonomous • Self-Optimizing • Crisp",
-        "Enterprise • Predictive • Seamless",
-        "Cognitive • Cloud-Native • Precision",
-        "Intelligent • Deterministic • Fast",
-        "Adaptive • High-Velocity • Pure"
-      ]
-    },
-    "fintech-crypto": {
-      roots: ["Ledger", "Apex", "Vault", "Solvent", "Prime", "Kite", "Fount", "Stasis", "Equiti", "Trust", "Yield", "Mint", "Cipher", "Sovereign", "Meridian", "Capital"],
-      modifiers: ["Capital", "Pay", "Financial", "Vault", "Protocol", "Ledger", "Assets", "Exchange", "Technologies", "Credit"],
-      compounds: ["ApexLedger", "VaultPrime", "CipherCapital", "SolventPay", "MeridianTrust", "YieldSovereign", "KiteFinancial", "StasisProtocol", "FountAssets", "MintCredit", "EquitiVault", "PrimeExchange"],
-      rationales: [
-        "Institutional-Grade • Solvent • Swift",
-        "Decentralized • Immutable • Cryptographic",
-        "Algorithmic • High-Yield • Protected",
-        "Seamless • Frictionless • Modern",
-        "Audited • Sovereign • Trust-Engine",
-        "Next-Gen • Zero-Fee • Transparent",
-        "Capital-Efficient • Secure • Fast",
-        "Compliant • Sovereign • Robust"
-      ]
-    },
-    "cybersecurity": {
-      roots: ["Sentinel", "Shield", "Fortress", "Bastion", "Cipher", "Ironclad", "Aegis", "Vanguard", "ZeroTrust", "Parapet", "Kestrel", "Ward", "Crypta", "Bulwark", "Lock", "Enclave"],
-      modifiers: ["Security", "Defense", "Cyber", "Labs", "Shield", "Threat Intel", "Technologies", "Protocol", "Systems", "Networks"],
-      compounds: ["SentinelDefense", "BastionCyber", "AegisSecurity", "IroncladLabs", "CipherShield", "ZeroTrustSystems", "BulwarkNetworks", "VanguardProtocol", "CryptaEnclave", "FortressDefense", "WardSecurity", "ParapetLabs"],
-      rationales: [
-        "Zero-Trust • Military-Grade • Resilient",
-        "Cryptographic • Hardened • Proactive",
-        "Threat-Neutralizing • Quantum-Safe • Fast",
-        "Defensive • Automated • Unbreachable",
-        "Continuous • Air-Gapped • Secure",
-        "Enterprise-Fortified • Vigilant • Pure",
-        "Adaptive • Autonomous • Armored",
-        "Kernel-Level • Immutable • Vigilant"
-      ]
-    },
-    "edtech-learning": {
-      roots: ["Scholar", "Cognitive", "Synapse", "Academy", "Pedagogy", "Luminary", "Mentor", "Ascend", "Brainwave", "Mastery", "Aethel", "Curio", "Knowledge", "Skill", "Nexus", "Insight"],
-      modifiers: ["Learning", "Academy", "EdTech", "Institute", "Classrooms", "Interactive", "Skills", "Platform", "Labs", "Mastery"],
-      compounds: ["CognitiveScholar", "AscendAcademy", "LuminaryLearn", "CurioEdTech", "MasterySkills", "SynapseClassrooms", "PedagogyLabs", "BrainwaveInstitute", "ScholarNexus", "MentorInteractive", "KnowledgeAscend", "InsightAcademy"],
-      rationales: [
-        "Pedagogical • Adaptive • Empowering",
-        "Cognitive • Skill-First • Accelerated",
-        "Gamified • Mastery-Based • Engaging",
-        "Inclusive • Self-Paced • Transformative",
-        "Intuitive • Career-Ready • Dynamic",
-        "Evidence-Based • Mentorship • Inspiring",
-        "Interactive • Immersive • Future-Proof",
-        "Empowering • Insightful • Accessible"
-      ]
-    },
-    "gaming-esports": {
-      roots: ["Vortex", "Apex", "Nova", "Glitch", "Pulse", "Cyber", "Titan", "Rogue", "Respawn", "Pixel", "Havoc", "Hyper", "Overdrive", "Arcade", "Shadow", "Vector"],
-      modifiers: ["Gaming", "Esports", "Studios", "Interactive", "Arena", "Clan", "Labs", "Play", "Worlds", "Protocol"],
-      compounds: ["VortexEsports", "ApexGaming", "NovaStudios", "GlitchArena", "CyberHavoc", "TitanRespawn", "PixelOverdrive", "HyperGlitch", "RogueInteractive", "ShadowEsports", "ArcadeWorlds", "VectorPlay"],
-      rationales: [
-        "Low-Latency • High-FPS • Adrenaline",
-        "Competitive • Immersive • Electric",
-        "Cinematic • Unreal • Next-Gen",
-        "Tactical • High-Stakes • Kinetic",
-        "Esports-Ready • Cyber • Hyper-Charged",
-        "Community-Driven • Dynamic • Sharp",
-        "Uncompromising • Neon • Intense",
-        "Multiplayer • Futuristic • Fast"
-      ]
-    },
-    "developer-tools": {
-      roots: ["Stack", "Kernel", "Compiler", "Daemon", "Byte", "Syntax", "Pipe", "Branch", "Commit", "Thread", "Prompt", "Binary", "Deploy", "Runtime", "Loom", "Terminal"],
-      modifiers: ["Dev", "Tools", "Engine", "CLI", "Cloud", "Systems", "Labs", "Kit", "Infra", "Protocol"],
-      compounds: ["StackKernel", "SyntaxCLI", "DeployLoom", "DaemonTools", "ByteCompiler", "RuntimeDev", "PipeInfra", "CommitCloud", "PromptTerminal", "BranchKit", "BinarySystems", "ThreadEngine"],
-      rationales: [
-        "Developer-First • High-Throughput • Clean",
-        "Type-Safe • Low-Overhead • Declarative",
-        "CLI-Native • Blazing-Fast • Modular",
-        "Cloud-Native • Extensible • Ergonomic",
-        "Zero-Config • Distributed • Resilient",
-        "Open-Standard • Scalable • Expressive",
-        "Deterministic • Frictionless • Powerful",
-        "Automated • Git-Native • Intuitive"
-      ]
-    }
-  };
+  const NAMING_ARCHETYPES = [
+    { id: 'short-coined', label: 'Short Coined', icon: '⚡', desc: '4–5 letter punchy invented name' },
+    { id: 'two-word-metaphor', label: 'Two-Word Metaphor', icon: '🌿', desc: 'Poetic, evocative imagery pairing' },
+    { id: 'sanskrit-latin', label: 'Sanskrit / Latin Root', icon: '🏛️', desc: 'Ancient root word with timeless depth' },
+    { id: 'sensory-texture', label: 'Sensory & Texture', icon: '✨', desc: 'Tactile, visceral, sensory-evoking word' },
+    { id: 'action-verb', label: 'Action Verb', icon: '🚀', desc: 'Active, kinetic, forward-motion command' },
+    { id: 'cultural-heritage', label: 'Cultural & Heritage', icon: '🏺', desc: 'Authentic regional or artisanal tribute' },
+    { id: 'minimalist-compound', label: 'Minimalist Compound', icon: '📐', desc: 'Clean juxtaposition of two concrete nouns' },
+    { id: 'modern-playful', label: 'Modern Playful', icon: '🎨', desc: 'High-energy, witty, contemporary twist' }
+  ];
+
+  const NICHE_ARCHETYPE_POOLS = {
+  "coffee-chai": {
+    "short-coined": [
+      {
+        "name": "Kaffo",
+        "rationale": "Punchy • Coined • Modern"
+      },
+      {
+        "name": "Chaiku",
+        "rationale": "Minimal • Coined • Warm"
+      },
+      {
+        "name": "Velo",
+        "rationale": "Fluid • Sleek • Distinctive"
+      },
+      {
+        "name": "Brimm",
+        "rationale": "Compact • Crisp • Fresh"
+      },
+      {
+        "name": "Zora",
+        "rationale": "Luminous • Short • Memorable"
+      },
+      {
+        "name": "Roav",
+        "rationale": "Kinetic • Roastery • Bold"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Solstice & Bean",
+        "rationale": "Celestial • Warm • Poetic"
+      },
+      {
+        "name": "Amber & Hearth",
+        "rationale": "Tactile • Spiced • Grounded"
+      },
+      {
+        "name": "Quiet Ember",
+        "rationale": "Atmospheric • Slow • Rich"
+      },
+      {
+        "name": "Distant Sun",
+        "rationale": "Evocative • Luminous • Serene"
+      },
+      {
+        "name": "Golden Steep",
+        "rationale": "Radiant • Artisanal • Deep"
+      },
+      {
+        "name": "Velvet Hearth",
+        "rationale": "Comfort • Roasted • Mellow"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Kavita Brew",
+        "rationale": "Poetic • Sanskrit • Heritage"
+      },
+      {
+        "name": "Terroir Craft",
+        "rationale": "Latin Root • Earth • Origin"
+      },
+      {
+        "name": "Prana Infusion",
+        "rationale": "Vital Force • Ancient • Pure"
+      },
+      {
+        "name": "Caelum Roasters",
+        "rationale": "Latin Sky • Celestial • Elevated"
+      },
+      {
+        "name": "Amrita Chai",
+        "rationale": "Nectar • Traditional • Sacred"
+      },
+      {
+        "name": "Sylvan Bean",
+        "rationale": "Forest-Grown • Pure • Wild"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Velvety Roast",
+        "rationale": "Visceral • Smooth • Indulgent"
+      },
+      {
+        "name": "Silken Drip",
+        "rationale": "Fluid • Tactile • Refined"
+      },
+      {
+        "name": "Crisp Crema",
+        "rationale": "Aromatic • Fresh • Distinct"
+      },
+      {
+        "name": "Smoky Cardamom",
+        "rationale": "Sensory • Rich • Pungent"
+      },
+      {
+        "name": "Warm Froth",
+        "rationale": "Comforting • Tactile • Fluffy"
+      },
+      {
+        "name": "Glazed Bean",
+        "rationale": "Glossy • Caramelized • Sweet"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "SteepCraft",
+        "rationale": "Active • Kinetic • Methodical"
+      },
+      {
+        "name": "Awaken Co.",
+        "rationale": "Command • Inspiring • Fresh"
+      },
+      {
+        "name": "Stirwell",
+        "rationale": "Balanced • Purposeful • Pure"
+      },
+      {
+        "name": "Brewrise",
+        "rationale": "Ascending • Dynamic • Bold"
+      },
+      {
+        "name": "Pourwise",
+        "rationale": "Deliberate • Precision • Craft"
+      },
+      {
+        "name": "Pressforward",
+        "rationale": "Forward-Moving • Energetic • Sleek"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Malabar Steeps",
+        "rationale": "Monsoon • Western Ghats • Origin"
+      },
+      {
+        "name": "Deccan Chai",
+        "rationale": "Historic • Southern • Authentic"
+      },
+      {
+        "name": "Kashi Spiceworks",
+        "rationale": "Ancient • Artisanal • Sacred"
+      },
+      {
+        "name": "Nilgiri Mist",
+        "rationale": "High-Grown • Fresh • Fragrant"
+      },
+      {
+        "name": "Darjeeling Hearth",
+        "rationale": "Single-Estate • Heritage • Fine"
+      },
+      {
+        "name": "Coorg Roasters",
+        "rationale": "Estate-Grown • Shaded • Rich"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "BeanVault",
+        "rationale": "Concrete • Minimal • Industrial"
+      },
+      {
+        "name": "ChaiPress",
+        "rationale": "Functional • Clean • Direct"
+      },
+      {
+        "name": "SteamLine",
+        "rationale": "Architectural • Linear • Crisp"
+      },
+      {
+        "name": "DripHouse",
+        "rationale": "Pure • Structured • Grounded"
+      },
+      {
+        "name": "RoastLab",
+        "rationale": "Experimental • Clean • Scientific"
+      },
+      {
+        "name": "LeafWard",
+        "rationale": "Protected • Botanical • Modern"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "SipHappens",
+        "rationale": "Witty • GenZ • Energetic"
+      },
+      {
+        "name": "WiredChai",
+        "rationale": "Electric • Funky • Modern"
+      },
+      {
+        "name": "DailyDrip Co.",
+        "rationale": "Habitual • Approachable • Upbeat"
+      },
+      {
+        "name": "HappyBean",
+        "rationale": "Cheerful • Friendly • Vibrant"
+      },
+      {
+        "name": "Chaiwala Club",
+        "rationale": "Playful Nod • Community • High-Energy"
+      },
+      {
+        "name": "FrothBomb",
+        "rationale": "Expressive • Bold • Pop"
+      }
+    ]
+  },
+  "bakery-kitchen": {
+    "short-coined": [
+      {
+        "name": "Briox",
+        "rationale": "Coined • French-Nod • Punchy"
+      },
+      {
+        "name": "Krum",
+        "rationale": "Tactile • Minimal • Crisp"
+      },
+      {
+        "name": "Flou",
+        "rationale": "Soft • Coined • Modern"
+      },
+      {
+        "name": "Loafy",
+        "rationale": "Friendly • Distinct • Warm"
+      },
+      {
+        "name": "Ovn",
+        "rationale": "Sleek • Abstract • Compact"
+      },
+      {
+        "name": "Bakey",
+        "rationale": "Playful • Short • Clear"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Golden Crust",
+        "rationale": "Warm • Oven-Baked • Radiant"
+      },
+      {
+        "name": "Warm Hearth",
+        "rationale": "Comfort • Communal • Wholesome"
+      },
+      {
+        "name": "Whispering Grain",
+        "rationale": "Poetic • Farm-Fresh • Earthy"
+      },
+      {
+        "name": "Velvet Crumb",
+        "rationale": "Tactile • Decadent • Soft"
+      },
+      {
+        "name": "Sunlit Flour",
+        "rationale": "Luminous • Natural • Pure"
+      },
+      {
+        "name": "Amber Loaf",
+        "rationale": "Slow-Ferment • Rich • Honest"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Annapurna Table",
+        "rationale": "Sanskrit Nourishment • Sacred • Warm"
+      },
+      {
+        "name": "Panis Craft",
+        "rationale": "Latin Bread • Traditional • Honest"
+      },
+      {
+        "name": "Artis Terra",
+        "rationale": "Latin Earth • Wholesome • Slow"
+      },
+      {
+        "name": "Farina Atelier",
+        "rationale": "Latin Flour • Refined • Artisanal"
+      },
+      {
+        "name": "Rustica Maison",
+        "rationale": "Heritage • Rustic • Timeless"
+      },
+      {
+        "name": "Aethel Sourdough",
+        "rationale": "Noble • Fermented • Distinct"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Flaky Butter",
+        "rationale": "Visceral • Pastry-Rich • Crisp"
+      },
+      {
+        "name": "Toasted Brioche",
+        "rationale": "Sensory • Rich • Golden"
+      },
+      {
+        "name": "Airy Crumb",
+        "rationale": "Light • Sourdough • Open"
+      },
+      {
+        "name": "Buttery Glaze",
+        "rationale": "Indulgent • Shiny • Sweet"
+      },
+      {
+        "name": "Silken Choux",
+        "rationale": "Delicate • French • Precise"
+      },
+      {
+        "name": "Crispy Crust",
+        "rationale": "Textural • Fresh-Baked • Sound"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "RiseCraft",
+        "rationale": "Ascending • Ferment • Active"
+      },
+      {
+        "name": "Kneadwell",
+        "rationale": "Purposeful • Methodical • Hand-Worked"
+      },
+      {
+        "name": "Bakeforward",
+        "rationale": "Kinetic • Modern • Ambitious"
+      },
+      {
+        "name": "Whiskworks",
+        "rationale": "Dynamic • Craft • Energetic"
+      },
+      {
+        "name": "Provewise",
+        "rationale": "Patient • Precision • True"
+      },
+      {
+        "name": "Hearthfire",
+        "rationale": "Passionate • Woodfired • Warm"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Bandra Bakehouse",
+        "rationale": "Iconic Mumbai • Portuguese Nod • Heritage"
+      },
+      {
+        "name": "Old Delhi Hearth",
+        "rationale": "Historic • Fragrant • Rich"
+      },
+      {
+        "name": "French Quarter Ovens",
+        "rationale": "Pondicherry • Colonial • Artisanal"
+      },
+      {
+        "name": "Goa Pao Atelier",
+        "rationale": "Traditional • Wood-Fired • Distinct"
+      },
+      {
+        "name": "Parisian Crumb",
+        "rationale": "European Patisserie • Classic • Fine"
+      },
+      {
+        "name": "Bengaluru Loaf Co.",
+        "rationale": "Contemporary Hub • Fresh • Local"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "CrumbVault",
+        "rationale": "Industrial • Solid • Minimal"
+      },
+      {
+        "name": "FlourBox",
+        "rationale": "Clean • Structured • Direct"
+      },
+      {
+        "name": "HearthStone",
+        "rationale": "Grounded • Earthy • Architectural"
+      },
+      {
+        "name": "LoafCraft",
+        "rationale": "Modern • Concrete • Sharp"
+      },
+      {
+        "name": "OvenLine",
+        "rationale": "Linear • Precision • Warm"
+      },
+      {
+        "name": "CrustLab",
+        "rationale": "Experimental • Scientific • Fresh"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "RollingScones",
+        "rationale": "Witty Pun • British • Cheerful"
+      },
+      {
+        "name": "DoughReMi",
+        "rationale": "Musical • Catchy • Friendly"
+      },
+      {
+        "name": "BakeMyDay",
+        "rationale": "Pop • Approachable • Upbeat"
+      },
+      {
+        "name": "BatterUp",
+        "rationale": "Sporty • Energetic • Fast"
+      },
+      {
+        "name": "CrumbTogether",
+        "rationale": "Communal • Warm • Humorous"
+      },
+      {
+        "name": "GlazeSquad",
+        "rationale": "GenZ • Sweet • High-Energy"
+      }
+    ]
+  },
+  "craft-beverages": {
+    "short-coined": [
+      {
+        "name": "Fizzo",
+        "rationale": "Bubbly • Coined • Punchy"
+      },
+      {
+        "name": "Tonik",
+        "rationale": "Clean • Modern • Functional"
+      },
+      {
+        "name": "Kombu",
+        "rationale": "Raw • Fermented • Compact"
+      },
+      {
+        "name": "Verva",
+        "rationale": "Effervescent • Alive • Sleek"
+      },
+      {
+        "name": "Zyma",
+        "rationale": "Ferment-Root • Greek • Short"
+      },
+      {
+        "name": "Nekt",
+        "rationale": "Juicy • Coined • Fresh"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Wild Elixir",
+        "rationale": "Untamed • Botanical • Pure"
+      },
+      {
+        "name": "Botanical Spark",
+        "rationale": "Herbal • Effervescent • Luminous"
+      },
+      {
+        "name": "Liquid Flora",
+        "rationale": "Plant-Powered • Flowing • Fresh"
+      },
+      {
+        "name": "Forest Nectar",
+        "rationale": "Earthy • Shaded • Restorative"
+      },
+      {
+        "name": "Living Amber",
+        "rationale": "Fermented • Golden • Vital"
+      },
+      {
+        "name": "Dawn Dew",
+        "rationale": "Pristine • Morning-Cold • Clean"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Rasayana Craft",
+        "rationale": "Sanskrit Rejuvenation • Vital • Deep"
+      },
+      {
+        "name": "Amrita Botanics",
+        "rationale": "Sacred Nectar • Herbal • Pure"
+      },
+      {
+        "name": "Aqua Vitae",
+        "rationale": "Latin Water of Life • Potent • Fine"
+      },
+      {
+        "name": "Fermentum Flora",
+        "rationale": "Latin Ferment • Living • Wild"
+      },
+      {
+        "name": "Herbarium Tonics",
+        "rationale": "Botanical Archive • Preserved • Crisp"
+      },
+      {
+        "name": "Soma Sips",
+        "rationale": "Ancient Elixir • Celestial • Calming"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Effervescent Zest",
+        "rationale": "Sparkling • Citrus • Electric"
+      },
+      {
+        "name": "Crisp Juniper",
+        "rationale": "Piney • Dry • Refreshing"
+      },
+      {
+        "name": "Tart Berry",
+        "rationale": "Tangy • Visceral • Bright"
+      },
+      {
+        "name": "Bubbly Citrus",
+        "rationale": "Sensory • Punchy • Alive"
+      },
+      {
+        "name": "Herbal Spark",
+        "rationale": "Aromatic • Tingling • Restorative"
+      },
+      {
+        "name": "Velvet Kombucha",
+        "rationale": "Smooth Ferment • Probiotic • Rich"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "BrewCraft",
+        "rationale": "Kinetic • Methodical • Pure"
+      },
+      {
+        "name": "Infusewell",
+        "rationale": "Balanced • Plant-Extracted • Deep"
+      },
+      {
+        "name": "Sparkforward",
+        "rationale": "Bright • Dynamic • Uplifting"
+      },
+      {
+        "name": "Fermentwise",
+        "rationale": "Scientific • Controlled • Living"
+      },
+      {
+        "name": "Quenchworks",
+        "rationale": "Direct • Thirst-Relieving • Bold"
+      },
+      {
+        "name": "DistilPure",
+        "rationale": "Clarified • Clean • Focused"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Himalayan Elixirs",
+        "rationale": "High-Altitude • Mineral • Pristine"
+      },
+      {
+        "name": "Coorg Botanics",
+        "rationale": "Spiced Estate • Rainforest • Wild"
+      },
+      {
+        "name": "Malabar Tonics",
+        "rationale": "Spice-Coast • Traditional • Healing"
+      },
+      {
+        "name": "Konkan Shrub",
+        "rationale": "Coastal • Kokum-Infused • Heritage"
+      },
+      {
+        "name": "Vedic Ferments",
+        "rationale": "Ancient Recipe • Fermented • Restorative"
+      },
+      {
+        "name": "Assam Botanicals",
+        "rationale": "Tea-Origin • Rain-Fed • Deep"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "TonicVault",
+        "rationale": "Modern • Solid • Shielded"
+      },
+      {
+        "name": "FloraPress",
+        "rationale": "Botanical • Industrial • Fresh"
+      },
+      {
+        "name": "FermentLab",
+        "rationale": "Scientific • Clean • Experimental"
+      },
+      {
+        "name": "SparkLine",
+        "rationale": "Linear • Effervescent • Minimal"
+      },
+      {
+        "name": "DraftCold",
+        "rationale": "Chilled • Crisp • Unfiltered"
+      },
+      {
+        "name": "HerbWater",
+        "rationale": "Elementary • Pure • Honest"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "PopCulture Tonics",
+        "rationale": "Witty • Double-Meaning • Trendy"
+      },
+      {
+        "name": "SipWild",
+        "rationale": "Carefree • Outdoorsy • Energetic"
+      },
+      {
+        "name": "BubbleTrouble",
+        "rationale": "GenZ • Funky • Punchy"
+      },
+      {
+        "name": "KombuchaClub",
+        "rationale": "Community • Modern • Approachable"
+      },
+      {
+        "name": "FizzPops",
+        "rationale": "Playful • Sparkly • Colorful"
+      },
+      {
+        "name": "DailyElixir",
+        "rationale": "Habit • Wellness • Easy"
+      }
+    ]
+  },
+  "vegan-health": {
+    "short-coined": [
+      {
+        "name": "Natu",
+        "rationale": "Pure • Coined • Earthy"
+      },
+      {
+        "name": "Sprow",
+        "rationale": "Sprouting • Kinetic • Compact"
+      },
+      {
+        "name": "Verd",
+        "rationale": "Green • Root-Word • Crisp"
+      },
+      {
+        "name": "Pura",
+        "rationale": "Clean-Label • Direct • Honest"
+      },
+      {
+        "name": "Seedz",
+        "rationale": "Modern • Wholesome • Snappy"
+      },
+      {
+        "name": "Tofik",
+        "rationale": "Coined • Plant-Based • Fresh"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Verdant Table",
+        "rationale": "Lush • Abundant • Wholesome"
+      },
+      {
+        "name": "Honest Harvest",
+        "rationale": "Authentic • Transparent • Earthy"
+      },
+      {
+        "name": "Clean Soil",
+        "rationale": "Regenerative • Grounded • Pure"
+      },
+      {
+        "name": "Living Earth",
+        "rationale": "Biophilic • Circular • Deep"
+      },
+      {
+        "name": "Green Canopy",
+        "rationale": "Shaded • Organic • Protective"
+      },
+      {
+        "name": "Sunlit Sprout",
+        "rationale": "Vibrant • Seed-Grown • Fresh"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Prakriti Bowl",
+        "rationale": "Sanskrit Nature • Wholesome • Ancient"
+      },
+      {
+        "name": "Ahimsa Clean",
+        "rationale": "Compassionate • Non-Harm • Pure"
+      },
+      {
+        "name": "Nativa Greens",
+        "rationale": "Latin Native • Untouched • Wild"
+      },
+      {
+        "name": "Terra Vitalis",
+        "rationale": "Latin Living Earth • Robust • Strong"
+      },
+      {
+        "name": "Annapurna Vegan",
+        "rationale": "Goddess of Nourishment • Bountiful • Real"
+      },
+      {
+        "name": "Sylvan Harvest",
+        "rationale": "Forest-Grown • Biophilic • Clean"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Crunchy Sprout",
+        "rationale": "Tactile • Fresh • Audible"
+      },
+      {
+        "name": "Crisp Leaf",
+        "rationale": "Sensory • Garden-Picked • Snappy"
+      },
+      {
+        "name": "Creamy Cashew",
+        "rationale": "Smooth • Decadent • Plant-Rich"
+      },
+      {
+        "name": "Earthen Root",
+        "rationale": "Grounded • Nutrient-Dense • Warm"
+      },
+      {
+        "name": "Silken Tofu",
+        "rationale": "Delicate • Protein-Dense • Soft"
+      },
+      {
+        "name": "Juicy Botanicals",
+        "rationale": "Hydrating • Sun-Ripened • Vivid"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "NourishCraft",
+        "rationale": "Methodical • Sustaining • Healing"
+      },
+      {
+        "name": "GrowForward",
+        "rationale": "Ascending • Future-Focused • Real"
+      },
+      {
+        "name": "Harvestwell",
+        "rationale": "Conscious • Bountiful • Honest"
+      },
+      {
+        "name": "SproutWorks",
+        "rationale": "Active • Germinating • Alive"
+      },
+      {
+        "name": "Healwise",
+        "rationale": "Mindful • Restorative • Scientific"
+      },
+      {
+        "name": "SeedClean",
+        "rationale": "Elementary • Unadulterated • Direct"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Sattvic Table",
+        "rationale": "Ayurvedic Purity • Balanced • Mindful"
+      },
+      {
+        "name": "Kerala Plantfood",
+        "rationale": "Coconut-Rich • Coastal • Ancestral"
+      },
+      {
+        "name": "Deccan Harvest",
+        "rationale": "Millet-Forward • Drought-Resilient • Heritage"
+      },
+      {
+        "name": "Malwa Roots",
+        "rationale": "Central Plains • Wholesome • Organic"
+      },
+      {
+        "name": "Indus Greenery",
+        "rationale": "Ancient Agriculture • Fertile • True"
+      },
+      {
+        "name": "Nilgiri Organics",
+        "rationale": "Hill-Grown • Clean-Air • Native"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "PlantVault",
+        "rationale": "Concrete • Protected • Minimal"
+      },
+      {
+        "name": "CleanRoot",
+        "rationale": "Elementary • Soil-Grown • Honest"
+      },
+      {
+        "name": "GreenPantry",
+        "rationale": "Domestic • Wholesome • Direct"
+      },
+      {
+        "name": "SproutLab",
+        "rationale": "Microgreens • Precision • Fresh"
+      },
+      {
+        "name": "SeedBowl",
+        "rationale": "Everyday • Nourishing • Clean"
+      },
+      {
+        "name": "NutriLine",
+        "rationale": "Structured • Functional • Pure"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "Plantastic Co.",
+        "rationale": "Exclamatory • Joyful • Approachable"
+      },
+      {
+        "name": "HolyKale",
+        "rationale": "GenZ Pun • Witty • Green"
+      },
+      {
+        "name": "GreenBeast",
+        "rationale": "Energetic • Protein-Packed • Bold"
+      },
+      {
+        "name": "VeggieVibes",
+        "rationale": "Upbeat • Friendly • Casual"
+      },
+      {
+        "name": "PeaPlease",
+        "rationale": "Playful Rhyme • High-Protein • Fun"
+      },
+      {
+        "name": "EarthBaby",
+        "rationale": "Affectionate • Eco-Conscious • Warm"
+      }
+    ]
+  },
+  "organic-skincare": {
+    "short-coined": [
+      {
+        "name": "Curo",
+        "rationale": "Care • Latin Root • Punchy"
+      },
+      {
+        "name": "Flor",
+        "rationale": "Botanical • Crisp • Compact"
+      },
+      {
+        "name": "Derma",
+        "rationale": "Clinical • Pure • Direct"
+      },
+      {
+        "name": "Lumie",
+        "rationale": "Glowing • Light • Soft"
+      },
+      {
+        "name": "Sylv",
+        "rationale": "Forest-Inspired • Minimal • Sleek"
+      },
+      {
+        "name": "Aura",
+        "rationale": "Luminous • Distinct • Elegant"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Dewy Dawn",
+        "rationale": "Hydrating • Morning Light • Pristine"
+      },
+      {
+        "name": "Botanical Veil",
+        "rationale": "Protective • Plant-Powered • Soft"
+      },
+      {
+        "name": "Velvet Petal",
+        "rationale": "Visceral • Floral • Tender"
+      },
+      {
+        "name": "Liquid Silk",
+        "rationale": "Sensory • Gliding • Restorative"
+      },
+      {
+        "name": "Forest Remedy",
+        "rationale": "Herbal • Ancient • Grounding"
+      },
+      {
+        "name": "Golden Nectar",
+        "rationale": "Nourishing • Glow-Inducing • Rich"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Soundarya Rituals",
+        "rationale": "Sanskrit Radiance • Royal • Ancestral"
+      },
+      {
+        "name": "Nativa Derma",
+        "rationale": "Latin Native • Barrier-Repair • Clean"
+      },
+      {
+        "name": "Floralis Lab",
+        "rationale": "Botanical Science • Active • Pure"
+      },
+      {
+        "name": "Ojas Skin",
+        "rationale": "Vital Radiance • Inner Glow • Ancient"
+      },
+      {
+        "name": "Curatio Atelier",
+        "rationale": "Latin Healing • Bespoke • Clinical"
+      },
+      {
+        "name": "Botanica Aethel",
+        "rationale": "Noble Flora • Biophilic • Prestigious"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Velvety Dew",
+        "rationale": "Hydrating • Barrier-Support • Soft"
+      },
+      {
+        "name": "Silken Serum",
+        "rationale": "Fluid • Micro-Molecular • Gliding"
+      },
+      {
+        "name": "Balm Glaze",
+        "rationale": "Nourishing • Protective • Glossy"
+      },
+      {
+        "name": "Calming Mist",
+        "rationale": "Restorative • Micro-Fine • Cooling"
+      },
+      {
+        "name": "Whipped Butter",
+        "rationale": "Rich • Indulgent • Cocooning"
+      },
+      {
+        "name": "Dewy Petal",
+        "rationale": "Fresh • Hydrated • Plump"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "GlowCraft",
+        "rationale": "Active • Radiant • Intentional"
+      },
+      {
+        "name": "Soothewell",
+        "rationale": "Gentle • Anti-Inflammatory • Calm"
+      },
+      {
+        "name": "RadiateCo",
+        "rationale": "Luminous • Outward • Vibrant"
+      },
+      {
+        "name": "Repairwise",
+        "rationale": "Clinical • Cellular • Barrier-First"
+      },
+      {
+        "name": "BloomPure",
+        "rationale": "Flourishing • Natural • Clean"
+      },
+      {
+        "name": "Restorworks",
+        "rationale": "Scientific • Rejuvenating • Direct"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Kashmiri Saffron Skin",
+        "rationale": "High-Altitude Saffron • Royal • Ancient"
+      },
+      {
+        "name": "Kumkumadi Atelier",
+        "rationale": "16-Herb Ayurvedic Oil • Prestigious • Iconic"
+      },
+      {
+        "name": "Mysore Sandal Rituals",
+        "rationale": "Heritage Sandalwood • Calming • Sacred"
+      },
+      {
+        "name": "Nilgiri Botanicals",
+        "rationale": "Eucalyptus & Tea • Hill-Grown • Fresh"
+      },
+      {
+        "name": "Kerala Herbalist",
+        "rationale": "Monsoon Herbs • Traditional • Pure"
+      },
+      {
+        "name": "Udaipur Rose Water",
+        "rationale": "Palatial Distillation • Fragrant • Crisp"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "DewVault",
+        "rationale": "Moisture-Lock • Minimal • Strong"
+      },
+      {
+        "name": "DermaLab",
+        "rationale": "Clinical • Transparent • Modern"
+      },
+      {
+        "name": "SkinPress",
+        "rationale": "Cold-Pressed • Direct • Functional"
+      },
+      {
+        "name": "BotanicLine",
+        "rationale": "Linear • Clean-Label • Architectural"
+      },
+      {
+        "name": "GlowWard",
+        "rationale": "Protective • Illuminating • Sleek"
+      },
+      {
+        "name": "BalmHouse",
+        "rationale": "Artisanal • Cocooning • Honest"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "BareFaced Co.",
+        "rationale": "Confident • Makeup-Free • Fresh"
+      },
+      {
+        "name": "GlowGetter",
+        "rationale": "Ambitious • Vibrant • Pop"
+      },
+      {
+        "name": "DewYou",
+        "rationale": "Individualistic • Catchy • GenZ"
+      },
+      {
+        "name": "SkinPops",
+        "rationale": "Juicy • Fun • Approachable"
+      },
+      {
+        "name": "CheekyClean",
+        "rationale": "Witty • Honest • Playful"
+      },
+      {
+        "name": "SerumDrop",
+        "rationale": "Snappy • Habitual • Modern"
+      }
+    ]
+  },
+  "streetwear-fashion": {
+    "short-coined": [
+      {
+        "name": "Verv",
+        "rationale": "Kinetic • Punchy • Modern"
+      },
+      {
+        "name": "Strc",
+        "rationale": "Structural • Coined • Sharp"
+      },
+      {
+        "name": "Dropp",
+        "rationale": "Street-Culture • Snappy • Heavy"
+      },
+      {
+        "name": "Knyt",
+        "rationale": "Textile • Minimal • Edgy"
+      },
+      {
+        "name": "Raww",
+        "rationale": "Unfinished • Gritty • Bold"
+      },
+      {
+        "name": "Riff",
+        "rationale": "Subversive • Musical • Crisp"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Heavy Stitch",
+        "rationale": "Substantial • Industrial • Grounded"
+      },
+      {
+        "name": "Monolith Thread",
+        "rationale": "Monumental • Architectural • Dark"
+      },
+      {
+        "name": "Asphalt Drift",
+        "rationale": "Urban • Kinetic • Understated"
+      },
+      {
+        "name": "Raw Loom",
+        "rationale": "Authentic • Unwashed • Structural"
+      },
+      {
+        "name": "Iron Shadow",
+        "rationale": "Monochrome • Heavyweight • Bold"
+      },
+      {
+        "name": "Kinetic Warp",
+        "rationale": "Dynamic • Weft • Future-Street"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Vastra Studio",
+        "rationale": "Sanskrit Garment • Timeless • Pure"
+      },
+      {
+        "name": "Sutra Raw",
+        "rationale": "Sanskrit Thread • Minimal • Grounded"
+      },
+      {
+        "name": "Textura Atelier",
+        "rationale": "Latin Weave • Tactile • Tailored"
+      },
+      {
+        "name": "Opus Street",
+        "rationale": "Latin Masterpiece • High-Fashion • Sharp"
+      },
+      {
+        "name": "Fabrica Archive",
+        "rationale": "Latin Workshop • Archival • Raw"
+      },
+      {
+        "name": "Aethel Wear",
+        "rationale": "Noble • Underground • Premium"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Heavyweight Fleece",
+        "rationale": "450GSM • Dense • Cocooning"
+      },
+      {
+        "name": "Raw Denim",
+        "rationale": "Rigid • Selvedge • Character"
+      },
+      {
+        "name": "Distressed Canvas",
+        "rationale": "Worn • Tactile • Durable"
+      },
+      {
+        "name": "Boxy Cotton",
+        "rationale": "Drop-Shoulder • Structural • Crisp"
+      },
+      {
+        "name": "Ribbed Knit",
+        "rationale": "Textured • Elastic • Form"
+      },
+      {
+        "name": "Crisp Nylon",
+        "rationale": "Technical • Lightweight • Sound"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "DropCraft",
+        "rationale": "Urgent • Limited-Edition • Active"
+      },
+      {
+        "name": "Stitchwell",
+        "rationale": "Constructed • Built-to-Last • Honest"
+      },
+      {
+        "name": "Weaveforward",
+        "rationale": "Futuristic • Textile • Progressive"
+      },
+      {
+        "name": "Wearbold",
+        "rationale": "Empowering • Expressive • Direct"
+      },
+      {
+        "name": "Threadwise",
+        "rationale": "Technical • Smart • Crafted"
+      },
+      {
+        "name": "CutRaw",
+        "rationale": "Unhemmed • Brutalist • Sharp"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Dharavi Threads",
+        "rationale": "Iconic Mumbai Hub • Craft-Rich • Global"
+      },
+      {
+        "name": "Chanderi Street",
+        "rationale": "Handloom Heritage • Translucent • Bold"
+      },
+      {
+        "name": "Varanasi Loom",
+        "rationale": "Centuries-Old Weave • Royal • Urban"
+      },
+      {
+        "name": "Bombay Underground",
+        "rationale": "Subcultural • Gritty • Midnight"
+      },
+      {
+        "name": "Deccan Denim",
+        "rationale": "Cotton-Belt • Heavy • Authentic"
+      },
+      {
+        "name": "Kashmir Cashmere Lab",
+        "rationale": "Ultra-Soft • Mountain • Heirloom"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "ThreadVault",
+        "rationale": "Archival • Solid • Industrial"
+      },
+      {
+        "name": "RawDrop",
+        "rationale": "Instant • Concrete • Pure"
+      },
+      {
+        "name": "LoomArchive",
+        "rationale": "Historical • Curated • Clean"
+      },
+      {
+        "name": "StitchLab",
+        "rationale": "Experimental • Modular • Sharp"
+      },
+      {
+        "name": "ClothWard",
+        "rationale": "Protected • Structural • Minimal"
+      },
+      {
+        "name": "IronLine",
+        "rationale": "Linear • Heavy • Monochrome"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "DropDeadCool",
+        "rationale": "Bold • GenZ • Hype"
+      },
+      {
+        "name": "ThreadHeads",
+        "rationale": "Enthusiast • Community • Catchy"
+      },
+      {
+        "name": "OverSized Co.",
+        "rationale": "Literal • Relaxed • Trending"
+      },
+      {
+        "name": "OffGrid Wear",
+        "rationale": "Rebellious • Utilitarian • Modern"
+      },
+      {
+        "name": "StitchPlease",
+        "rationale": "Irreverent • Fun • Memorable"
+      },
+      {
+        "name": "HypeBox Studio",
+        "rationale": "Collectible • Street-First • High-Energy"
+      }
+    ]
+  },
+  "luxury-jewelry": {
+    "short-coined": [
+      {
+        "name": "Aure",
+        "rationale": "Golden • Coined • Elegant"
+      },
+      {
+        "name": "Orum",
+        "rationale": "Latin Gold • Compact • Noble"
+      },
+      {
+        "name": "Vespr",
+        "rationale": "Evening Star • Poetic • Sleek"
+      },
+      {
+        "name": "Glint",
+        "rationale": "Radiant • Crisp • Luminous"
+      },
+      {
+        "name": "Gemm",
+        "rationale": "Precious • Minimal • Punchy"
+      },
+      {
+        "name": "Cavr",
+        "rationale": "Luxury-Nod • Rare • Refined"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Sovereign Crest",
+        "rationale": "Imperial • Heirloom • Regal"
+      },
+      {
+        "name": "Nocturne Spark",
+        "rationale": "Midnight Gem • Starlit • Rare"
+      },
+      {
+        "name": "Sculpted Dawn",
+        "rationale": "Handcrafted • Sun-Gold • Luminous"
+      },
+      {
+        "name": "Heirloom Ember",
+        "rationale": "Generational • Warm • Enduring"
+      },
+      {
+        "name": "Gilded Horizon",
+        "rationale": "Panoramic • Polished • Prestigious"
+      },
+      {
+        "name": "Silent Karat",
+        "rationale": "Understated • Pure • Substantial"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Suvarna Atelier",
+        "rationale": "Sanskrit Pure Gold • Royal • Sacred"
+      },
+      {
+        "name": "Orum Maison",
+        "rationale": "Latin Aurum • Haute-Joaillerie • Fine"
+      },
+      {
+        "name": "Gemina Archive",
+        "rationale": "Latin Twin-Gems • Symmetry • Timeless"
+      },
+      {
+        "name": "Ratna Jewels",
+        "rationale": "Sanskrit Precious Stone • Vedic • Rare"
+      },
+      {
+        "name": "Aurum Imperial",
+        "rationale": "Regal Gold • Monastic • Enduring"
+      },
+      {
+        "name": "Elysian Carat",
+        "rationale": "Mythic Perfection • Bespoke • Poised"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Solid 18K",
+        "rationale": "Heavyweight • Rich • Uncompromising"
+      },
+      {
+        "name": "Hammered Gold",
+        "rationale": "Artisanal • Tactile • Textured"
+      },
+      {
+        "name": "Polished Lustre",
+        "rationale": "Mirror-Finish • Glossy • Flawless"
+      },
+      {
+        "name": "Pavé Shimmer",
+        "rationale": "Diamond-Set • Sparkling • Intricate"
+      },
+      {
+        "name": "Matte Platinum",
+        "rationale": "Muted-Luxe • Modern • Understated"
+      },
+      {
+        "name": "Faceted Prisms",
+        "rationale": "Light-Refracting • Geometric • Sharp"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "ForgeCraft",
+        "rationale": "Hand-Hammered • Fire • Permanent"
+      },
+      {
+        "name": "Castwell",
+        "rationale": "Molten-Metal • Exacting • Pure"
+      },
+      {
+        "name": "SetPrecious",
+        "rationale": "Prong-Setting • Master-Jeweler • Secure"
+      },
+      {
+        "name": "SculptGems",
+        "rationale": "Three-Dimensional • Wearable-Art • Fine"
+      },
+      {
+        "name": "CraftHeirloom",
+        "rationale": "Enduring • Timeless • Generational"
+      },
+      {
+        "name": "ShapeGold",
+        "rationale": "Fluid • Form-Giving • Sovereign"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Jaipur Gemworks",
+        "rationale": "World Polishing Capital • Royal • Colored-Stone"
+      },
+      {
+        "name": "Nizam Solitaire",
+        "rationale": "Hyderabad Royalty • Golconda • Iconic"
+      },
+      {
+        "name": "Chettinad Gold",
+        "rationale": "South Indian Temple Jewelry • Heavy • Sacred"
+      },
+      {
+        "name": "Mewar Atelier",
+        "rationale": "Rajasthan Royalty • Enamel • Heritage"
+      },
+      {
+        "name": "Varanasi Filigree",
+        "rationale": "Fine-Wire Silver • Ancient • Delicate"
+      },
+      {
+        "name": "Golconda Diamonds",
+        "rationale": "World-Famous Type IIa • Pure • Historic"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "KaratVault",
+        "rationale": "Solid • Fortified • Minimal"
+      },
+      {
+        "name": "GemHouse",
+        "rationale": "Prestigious • Architectural • Grounded"
+      },
+      {
+        "name": "GoldArchive",
+        "rationale": "Curated • Rare • Timeless"
+      },
+      {
+        "name": "PrismStudio",
+        "rationale": "Geometric • Precision • Light"
+      },
+      {
+        "name": "JewelWard",
+        "rationale": "Safeguarded • Pure • Clean"
+      },
+      {
+        "name": "CastLine",
+        "rationale": "Linear • Sculptural • Modern"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "KaratClub",
+        "rationale": "Exclusive • Casual • Modern"
+      },
+      {
+        "name": "GoldRush Co.",
+        "rationale": "Exciting • Adventurous • Pop"
+      },
+      {
+        "name": "BlingBling Maison",
+        "rationale": "High-Spirited • Glitzy • Witty"
+      },
+      {
+        "name": "RockStar Jewels",
+        "rationale": "Edgy • Fine • Approachable"
+      },
+      {
+        "name": "LittleGems Co.",
+        "rationale": "Charming • Delicate • Friendly"
+      },
+      {
+        "name": "ShineOn Fine",
+        "rationale": "Optimistic • Everyday-Luxe • Bright"
+      }
+    ]
+  },
+  "fitness-yoga": {
+    "short-coined": [
+      {
+        "name": "Kinet",
+        "rationale": "Movement • Kinetic • Punchy"
+      },
+      {
+        "name": "Pran",
+        "rationale": "Breath • Ancient • Compact"
+      },
+      {
+        "name": "Verve",
+        "rationale": "Vibrant • Energetic • Sharp"
+      },
+      {
+        "name": "Movv",
+        "rationale": "Kinetic • Minimal • Modern"
+      },
+      {
+        "name": "Pulx",
+        "rationale": "Heartbeat • High-Intensity • Sleek"
+      },
+      {
+        "name": "Stryd",
+        "rationale": "Stride • Dynamic • Grounded"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Centered Pulse",
+        "rationale": "Grounded • Cardiovascular • Aligned"
+      },
+      {
+        "name": "Kinetic Flow",
+        "rationale": "Fluid • Seamless • Dynamic"
+      },
+      {
+        "name": "Grounded Breath",
+        "rationale": "Rooted • Calming • Powerful"
+      },
+      {
+        "name": "Ascending Form",
+        "rationale": "Progressive • Postural • Clean"
+      },
+      {
+        "name": "Silent Apex",
+        "rationale": "Peak • Mindful • Disciplined"
+      },
+      {
+        "name": "Inner Core",
+        "rationale": "Central • Stabilizing • Unshakeable"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Prana Movement",
+        "rationale": "Sanskrit Life-Force • Breath • Pure"
+      },
+      {
+        "name": "Asana Dynamics",
+        "rationale": "Sanskrit Posture • Biomechanical • Flow"
+      },
+      {
+        "name": "Kinesis Athletics",
+        "rationale": "Greek Movement • High-Performance • Sharp"
+      },
+      {
+        "name": "Soma Flow",
+        "rationale": "Ancient Body-Mind • Vital • Restorative"
+      },
+      {
+        "name": "Vinyasa Lab",
+        "rationale": "Sequential Motion • Breath-Synchronized • Fine"
+      },
+      {
+        "name": "Zenith Somatics",
+        "rationale": "Peak • Bodily-Awareness • Precision"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Deep Stretch",
+        "rationale": "Visceral • Lengthening • Relieving"
+      },
+      {
+        "name": "Fluid Motion",
+        "rationale": "Gliding • Low-Impact • Seamless"
+      },
+      {
+        "name": "Rhythmic Pulse",
+        "rationale": "Audible • Cardiovascular • Pumping"
+      },
+      {
+        "name": "Grounded Posture",
+        "rationale": "Earthy • Stable • Solid"
+      },
+      {
+        "name": "Dynamic Core",
+        "rationale": "Tense • Stabilizing • Muscular"
+      },
+      {
+        "name": "Breathwork Heat",
+        "rationale": "Internal Fire • Cleansing • Deep"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "FlowCraft",
+        "rationale": "Sequential • Graceful • Intentional"
+      },
+      {
+        "name": "Alignwell",
+        "rationale": "Postural • Orthopedic • Balanced"
+      },
+      {
+        "name": "Stridewise",
+        "rationale": "Athletic • Forward • Rhythmic"
+      },
+      {
+        "name": "Breatheforward",
+        "rationale": "Oxygenated • Revitalizing • Progressive"
+      },
+      {
+        "name": "Movebold",
+        "rationale": "Courageous • High-Power • Confident"
+      },
+      {
+        "name": "Elevatworks",
+        "rationale": "Ascending • Conditioning • Functional"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Rishikesh Breathworks",
+        "rationale": "World Capital of Yoga • Himalayan • Pristine"
+      },
+      {
+        "name": "Mysore Ashtanga Lab",
+        "rationale": "Pioneering Ashtanga Tradition • Rigorous • Pure"
+      },
+      {
+        "name": "Himalayan Somatics",
+        "rationale": "High-Altitude • Mindful • Restorative"
+      },
+      {
+        "name": "Kerala Kalari Core",
+        "rationale": "Ancient Martial Discipline • Flexible • Deadly"
+      },
+      {
+        "name": "Vedic Movement",
+        "rationale": "Centuries-Old Body Science • Harmonic • Whole"
+      },
+      {
+        "name": "Ganges Flow Sanctuary",
+        "rationale": "River-Bank Stillness • Sacred • Calming"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "FlowVault",
+        "rationale": "Solid • Protective • Pure"
+      },
+      {
+        "name": "CoreStudio",
+        "rationale": "Clean • Functional • Structured"
+      },
+      {
+        "name": "PulseLab",
+        "rationale": "Scientific • Metric-Driven • Modern"
+      },
+      {
+        "name": "MoveWard",
+        "rationale": "Protective • Dedicated • Architectural"
+      },
+      {
+        "name": "FormLine",
+        "rationale": "Linear • Biomechanical • Sleek"
+      },
+      {
+        "name": "BreathHouse",
+        "rationale": "Sheltered • Oxygenated • Communal"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "SweatClub",
+        "rationale": "Direct • High-Energy • Social"
+      },
+      {
+        "name": "BendyBeast",
+        "rationale": "Fun • Flexible • Empowering"
+      },
+      {
+        "name": "PulsePunch",
+        "rationale": "Combative • Upbeat • Fast"
+      },
+      {
+        "name": "AlignMe",
+        "rationale": "Personal • Casual • Catchy"
+      },
+      {
+        "name": "FlexyCo",
+        "rationale": "Friendly • Modern • GenZ"
+      },
+      {
+        "name": "MatPack",
+        "rationale": "Tribal • Community • Snappy"
+      }
+    ]
+  },
+  "mental-health": {
+    "short-coined": [
+      {
+        "name": "Seren",
+        "rationale": "Serene • Coined • Gentle"
+      },
+      {
+        "name": "Mindu",
+        "rationale": "Cognitive • Soft • Approachable"
+      },
+      {
+        "name": "Solas",
+        "rationale": "Solace • Warm • Compact"
+      },
+      {
+        "name": "Calmo",
+        "rationale": "Calm • Italian-Nod • Peaceful"
+      },
+      {
+        "name": "Lucee",
+        "rationale": "Lucid • Light • Clear"
+      },
+      {
+        "name": "Aequ",
+        "rationale": "Equanimity • Latin • Short"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Still Horizon",
+        "rationale": "Expansive • Quiet • Grounding"
+      },
+      {
+        "name": "Quiet Sanctuary",
+        "rationale": "Safe • Protected • Peaceful"
+      },
+      {
+        "name": "Gentle Harbor",
+        "rationale": "Welcoming • Storm-Free • Steady"
+      },
+      {
+        "name": "Clear Clearing",
+        "rationale": "Uncluttered • Open • Forest-Light"
+      },
+      {
+        "name": "Lucid Haven",
+        "rationale": "Self-Aware • Restorative • Calm"
+      },
+      {
+        "name": "Unburdened Sky",
+        "rationale": "Weightless • Vast • Free"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Shanti Mind",
+        "rationale": "Sanskrit Peace • Soulful • Ancient"
+      },
+      {
+        "name": "Samadhi Calm",
+        "rationale": "Total Absorption • Still • Sacred"
+      },
+      {
+        "name": "Sukha Space",
+        "rationale": "Sanskrit Authentic Happiness • Warm • Ease"
+      },
+      {
+        "name": "Serena Psyche",
+        "rationale": "Latin Serenity • Evidence-Based • Clear"
+      },
+      {
+        "name": "Equanimity Health",
+        "rationale": "Balanced Mind • Resilient • Steady"
+      },
+      {
+        "name": "Ananda Haven",
+        "rationale": "Pure Bliss • Restorative • Safe"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Soft Sigh",
+        "rationale": "Audible Relief • Releasing • Gentle"
+      },
+      {
+        "name": "Calming Presence",
+        "rationale": "Subtle • Grounding • Empathetic"
+      },
+      {
+        "name": "Deep Breath",
+        "rationale": "Oxygenating • Diaphragmatic • Slow"
+      },
+      {
+        "name": "Quiet Space",
+        "rationale": "Noise-Free • Restful • Minimal"
+      },
+      {
+        "name": "Gentle Warmth",
+        "rationale": "Comforting • Supportive • Tender"
+      },
+      {
+        "name": "Uncluttered Mind",
+        "rationale": "Spacious • Clear • Light"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "PauseCraft",
+        "rationale": "Deliberate Stop • Mindful • Healthy"
+      },
+      {
+        "name": "Breathewell",
+        "rationale": "Respiratory • Grounding • Easy"
+      },
+      {
+        "name": "Groundwise",
+        "rationale": "Sensory Anchoring • Stable • Practical"
+      },
+      {
+        "name": "SootheForward",
+        "rationale": "Compassionate • Healing • Progressive"
+      },
+      {
+        "name": "HealMind",
+        "rationale": "Direct • Therapeutic • Kind"
+      },
+      {
+        "name": "MindClear",
+        "rationale": "Decluttering • Focused • Honest"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Vipassana Harbor",
+        "rationale": "Insight Meditation • Ancient • Silent"
+      },
+      {
+        "name": "Buddhist Stillness",
+        "rationale": "Mindfulness Tradition • Compassionate • Deep"
+      },
+      {
+        "name": "Ashoka Sanctuary",
+        "rationale": "Imperial Rest-Stops • Caring • Historical"
+      },
+      {
+        "name": "Vedic Mindfulness",
+        "rationale": "Consciousness Science • Grounding • Timeless"
+      },
+      {
+        "name": "Zen Compassion Lab",
+        "rationale": "Non-Judgmental • Minimalist • Clear"
+      },
+      {
+        "name": "Dhyana Retreats",
+        "rationale": "Deep Contemplation • Forest • Serene"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "CalmVault",
+        "rationale": "Protected Peace • Solid • Safe"
+      },
+      {
+        "name": "MindHaven",
+        "rationale": "Sheltered Mental Space • Warm • Pure"
+      },
+      {
+        "name": "PauseSpace",
+        "rationale": "Structured Break • Clean • Modern"
+      },
+      {
+        "name": "StillLab",
+        "rationale": "Clinical • Quiet • Scientific"
+      },
+      {
+        "name": "SolaceHouse",
+        "rationale": "Domestic Comfort • Supportive • Real"
+      },
+      {
+        "name": "PeaceWard",
+        "rationale": "Defended Wellbeing • Linear • Minimal"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "ChillPill Co.",
+        "rationale": "Colloquial • Friendly • Lighthearted"
+      },
+      {
+        "name": "BrainBuddy",
+        "rationale": "Empathetic • Accessible • Approachable"
+      },
+      {
+        "name": "DeepBreath Club",
+        "rationale": "Community • Actionable • Casual"
+      },
+      {
+        "name": "HeadSpacey",
+        "rationale": "Playful Twist • Relatable • Catchy"
+      },
+      {
+        "name": "MindOverMatter",
+        "rationale": "Empowering • Familiar • Upbeat"
+      },
+      {
+        "name": "HappyNoodle App",
+        "rationale": "Warm • Quirky • Non-Intimidating"
+      }
+    ]
+  },
+  "pet-care": {
+    "short-coined": [
+      {
+        "name": "Pawsy",
+        "rationale": "Affectionate • Short • Friendly"
+      },
+      {
+        "name": "Barko",
+        "rationale": "Canine-Nod • Playful • Punchy"
+      },
+      {
+        "name": "Feln",
+        "rationale": "Feline-Minimal • Modern • Sleek"
+      },
+      {
+        "name": "Kibo",
+        "rationale": "Kibble • Japanese-Sound • Compact"
+      },
+      {
+        "name": "Meww",
+        "rationale": "Cat-Sound • Whimsical • Snappy"
+      },
+      {
+        "name": "Tails",
+        "rationale": "Direct • Anatomical • Warm"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Noble Companion",
+        "rationale": "Loyal • Aristocratic • Cherished"
+      },
+      {
+        "name": "Wagging Hearth",
+        "rationale": "Domestic • Joyful • Warm"
+      },
+      {
+        "name": "Gentle Paw",
+        "rationale": "Tender • Caring • Soft"
+      },
+      {
+        "name": "Velvet Whisker",
+        "rationale": "Sensory • Delicate • Feline"
+      },
+      {
+        "name": "Loyal Shadow",
+        "rationale": "Devoted • Following • Constant"
+      },
+      {
+        "name": "Playful Meadow",
+        "rationale": "Outdoors • Energetic • Free"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Pashu Care",
+        "rationale": "Sanskrit Animals • Compassionate • Ancient"
+      },
+      {
+        "name": "Fauna Atelier",
+        "rationale": "Latin Animals • Bespoke • Refined"
+      },
+      {
+        "name": "Canis Haven",
+        "rationale": "Latin Dog • Protected • Clean"
+      },
+      {
+        "name": "Felis Pure",
+        "rationale": "Latin Cat • Elegant • Dedicated"
+      },
+      {
+        "name": "Mitra Pets",
+        "rationale": "Sanskrit Faithful Friend • Loyal • Warm"
+      },
+      {
+        "name": "Vayu Provisions",
+        "rationale": "Vital Energy • Nutritious • Fast"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Fluffy Fur",
+        "rationale": "Visceral • Huggable • Soft"
+      },
+      {
+        "name": "Silken Coat",
+        "rationale": "Groomed • Glossy • Healthy"
+      },
+      {
+        "name": "Soft Nuzzle",
+        "rationale": "Affectionate • Tactile • Loving"
+      },
+      {
+        "name": "Chewy Bite",
+        "rationale": "Satisfying • Dental-Clean • Palatable"
+      },
+      {
+        "name": "Warm Snuggle",
+        "rationale": "Cozy • Comforting • Safe"
+      },
+      {
+        "name": "Gentle Lick",
+        "rationale": "Playful • Friendly • Pure"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "WagCraft",
+        "rationale": "Joy-Inducing • Purposeful • Active"
+      },
+      {
+        "name": "Groomwell",
+        "rationale": "Clean • Professional • Pampering"
+      },
+      {
+        "name": "Fetchwise",
+        "rationale": "Playful • Intelligent • Agile"
+      },
+      {
+        "name": "Careforward",
+        "rationale": "Preventative • Veterinary • Modern"
+      },
+      {
+        "name": "NurturePets",
+        "rationale": "Compassionate • Wholesome • True"
+      },
+      {
+        "name": "PamperPure",
+        "rationale": "Spa-Grade • Chemical-Free • Gentle"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Mudhol Hound Co.",
+        "rationale": "Royal Indian Breed • Swift • Historic"
+      },
+      {
+        "name": "Rajapalayam Royals",
+        "rationale": "Ghost Hounds of Tamil Nadu • Majestic • Noble"
+      },
+      {
+        "name": "DesiPaws Sanctuary",
+        "rationale": "Indie Dog Love • Compassionate • Native"
+      },
+      {
+        "name": "Caravan Pets",
+        "rationale": "Deccan Plateau Working Dogs • Resilient • True"
+      },
+      {
+        "name": "Himalayan Mastiff Club",
+        "rationale": "Guardian Heritage • Strong • Loyal"
+      },
+      {
+        "name": "Kombai Guard Atelier",
+        "rationale": "Ancient Southern Breed • Fearless • Proud"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "PawVault",
+        "rationale": "Protected Nutrition • Minimal • Solid"
+      },
+      {
+        "name": "BarkHouse",
+        "rationale": "Communal • Domestic • Clean"
+      },
+      {
+        "name": "PetWard",
+        "rationale": "Safeguarded Wellness • Architectural • Pure"
+      },
+      {
+        "name": "TailLab",
+        "rationale": "Veterinary Science • Experimental • Sharp"
+      },
+      {
+        "name": "HoundBox",
+        "rationale": "Subscription • Curated • Practical"
+      },
+      {
+        "name": "FurLine",
+        "rationale": "Grooming Standard • Linear • Modern"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "GoodBoy Club",
+        "rationale": "Heartwarming Meme • Universal • Cheerful"
+      },
+      {
+        "name": "Zoomies Co.",
+        "rationale": "High-Energy Burst • Relatable • Fun"
+      },
+      {
+        "name": "BarkingMad",
+        "rationale": "Humorous British Pun • Quirky • Bold"
+      },
+      {
+        "name": "WhiskersUp",
+        "rationale": "Optimistic • Alert • Friendly"
+      },
+      {
+        "name": "PawsAndClaws",
+        "rationale": "Comprehensive • Catchy • Approachable"
+      },
+      {
+        "name": "FurReal Pets",
+        "rationale": "GenZ Slang Pun • Authentic • Playful"
+      }
+    ]
+  },
+  "interior-design": {
+    "short-coined": [
+      {
+        "name": "Habt",
+        "rationale": "Habitation • Minimal • Architectural"
+      },
+      {
+        "name": "Spat",
+        "rationale": "Spatial • Modern • Crisp"
+      },
+      {
+        "name": "Archy",
+        "rationale": "Architectural • Friendly • Compact"
+      },
+      {
+        "name": "Formx",
+        "rationale": "Sculptural • Geometric • Sharp"
+      },
+      {
+        "name": "Lomu",
+        "rationale": "Textile Loom • Warm • Compact"
+      },
+      {
+        "name": "Terx",
+        "rationale": "Terra • Earthen • Modern"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Sunlit Alcove",
+        "rationale": "Warm • Private • Architectural"
+      },
+      {
+        "name": "Sculpted Hearth",
+        "rationale": "Tactile • Central • Grounded"
+      },
+      {
+        "name": "Monastic Shadow",
+        "rationale": "Wabi-Sabi • Understated • Serene"
+      },
+      {
+        "name": "Tactile Dwelling",
+        "rationale": "Material-Driven • Sensory • Rich"
+      },
+      {
+        "name": "Balanced Horizon",
+        "rationale": "Harmonious • Proportional • Calm"
+      },
+      {
+        "name": "Quiet Arch",
+        "rationale": "Curved • Timeless • Monumental"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Vastu Living",
+        "rationale": "Vedic Spatial Harmony • Ancient • Energy"
+      },
+      {
+        "name": "Habitus Atelier",
+        "rationale": "Latin Dwelling • Sociological • Bespoke"
+      },
+      {
+        "name": "Spatia Maison",
+        "rationale": "Latin Space • French Elegance • Grand"
+      },
+      {
+        "name": "Forma Terra",
+        "rationale": "Earth-Shaped • Raw • Sculptural"
+      },
+      {
+        "name": "Structura Studio",
+        "rationale": "Architectural Bones • Linear • Pure"
+      },
+      {
+        "name": "Domus Aethel",
+        "rationale": "Noble Home • Enduring • Classical"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Honed Travertine",
+        "rationale": "Porous Stone • Matte • Luxurious"
+      },
+      {
+        "name": "Raw Linen",
+        "rationale": "Textured Weave • Draped • Breathable"
+      },
+      {
+        "name": "Brushed Brass",
+        "rationale": "Warm Metal • Patinated • Tactile"
+      },
+      {
+        "name": "Textured Plaster",
+        "rationale": "Hand-Troweled • Monastic • Organic"
+      },
+      {
+        "name": "Fluted Oak",
+        "rationale": "Linear Woodwork • Tactile • Tailored"
+      },
+      {
+        "name": "Earthen Clay",
+        "rationale": "Terracotta • Grounded • Warm"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "ShapeCraft",
+        "rationale": "Three-Dimensional • Sculptural • Intentional"
+      },
+      {
+        "name": "Curatewell",
+        "rationale": "Selective • Discerning • Harmonic"
+      },
+      {
+        "name": "Spaceforward",
+        "rationale": "Innovative Layout • Open-Plan • Modern"
+      },
+      {
+        "name": "AlignHome",
+        "rationale": "Symmetrical • Functional • Peaceful"
+      },
+      {
+        "name": "Buildwise",
+        "rationale": "Practical • Structural • Solid"
+      },
+      {
+        "name": "DesignPure",
+        "rationale": "Unadorned • Essence-First • Honest"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Chettinad Courtyards",
+        "rationale": "Pillared Athangudi Tiles • Grand • Heritage"
+      },
+      {
+        "name": "Jaipur Haveli Living",
+        "rationale": "Jharokha Screens • Carved Stone • Royal"
+      },
+      {
+        "name": "Kerala Thinnai Atelier",
+        "rationale": "Teak Verandahs • Monsoon-Proof • Communal"
+      },
+      {
+        "name": "Scandinavian Monastic",
+        "rationale": "Light-Filled Wood • Functional • Clean"
+      },
+      {
+        "name": "Kyoto Woodworks",
+        "rationale": "Joinery • Cedar • Minimalist"
+      },
+      {
+        "name": "Goa Portuguese Villa",
+        "rationale": "Oyster-Shell Windows • High Ceilings • Historic"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "SpatialVault",
+        "rationale": "Architectural • Monolithic • Clean"
+      },
+      {
+        "name": "FormStudio",
+        "rationale": "Geometric • Creative • Focused"
+      },
+      {
+        "name": "ArchHouse",
+        "rationale": "Structural • Sheltered • Modern"
+      },
+      {
+        "name": "HabitusLab",
+        "rationale": "Living Science • Experimental • Minimal"
+      },
+      {
+        "name": "RoomWard",
+        "rationale": "Protected Interior • Linear • Sharp"
+      },
+      {
+        "name": "TerraLine",
+        "rationale": "Earthy Materials • Architectural • Pure"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "Roomies Co.",
+        "rationale": "Friendly • Communal • Casual"
+      },
+      {
+        "name": "SpaceCadet Design",
+        "rationale": "Futuristic • Quirky • Imaginative"
+      },
+      {
+        "name": "LivingGood",
+        "rationale": "Optimistic • Lifestyle • Warm"
+      },
+      {
+        "name": "ArchDork Studio",
+        "rationale": "Self-Deprecating • Passionate • Nerdy"
+      },
+      {
+        "name": "CasaBlanca Lab",
+        "rationale": "Chic • Playful • Cosmopolitan"
+      },
+      {
+        "name": "CouchPotato Atelier",
+        "rationale": "Comfort-First • Witty • High-End"
+      }
+    ]
+  },
+  "event-planning": {
+    "short-coined": [
+      {
+        "name": "Feto",
+        "rationale": "Fête • Celebration • Compact"
+      },
+      {
+        "name": "Galx",
+        "rationale": "Gala • Cosmic • Punchy"
+      },
+      {
+        "name": "Vowz",
+        "rationale": "Matrimonial • Modern • Snappy"
+      },
+      {
+        "name": "Solx",
+        "rationale": "Solstice • Radiant • Short"
+      },
+      {
+        "name": "Lumy",
+        "rationale": "Lumiere • Light • Warm"
+      },
+      {
+        "name": "Evnt",
+        "rationale": "Minimal • Direct • Modern"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Golden Hour",
+        "rationale": "Cinematic • Perfect Light • Memorable"
+      },
+      {
+        "name": "Curated Soiree",
+        "rationale": "Intimate • Sophisticated • Bespoke"
+      },
+      {
+        "name": "Starlit Canopy",
+        "rationale": "Open-Air • Romantic • Celestial"
+      },
+      {
+        "name": "Velvet Prelude",
+        "rationale": "Anticipatory • Luxurious • Smooth"
+      },
+      {
+        "name": "Whispered Toast",
+        "rationale": "Poignant • Celebratory • Heartfelt"
+      },
+      {
+        "name": "Memorable Solstice",
+        "rationale": "Seasonal • Milestone • Epic"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Utsav Atelier",
+        "rationale": "Sanskrit Festival • Joyous • Grand"
+      },
+      {
+        "name": "Festum Maison",
+        "rationale": "Latin Feast • European Flair • Haute"
+      },
+      {
+        "name": "Vivaha Productions",
+        "rationale": "Sanskrit Sacred Union • Royal • Deep"
+      },
+      {
+        "name": "Elysian Affairs",
+        "rationale": "Mythic Elegance • Perfect • Bespoke"
+      },
+      {
+        "name": "Celebratio Design",
+        "rationale": "Latin Celebration • Formal • Classical"
+      },
+      {
+        "name": "Opus Soirees",
+        "rationale": "Masterpiece Gatherings • Grand • Distinct"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Sparkling Champagne",
+        "rationale": "Effervescent • Bubbly • Luxury"
+      },
+      {
+        "name": "Candlelit Warmth",
+        "rationale": "Atmospheric • Romantic • Soft"
+      },
+      {
+        "name": "Velvet Drapes",
+        "rationale": "Theatrical • Heavy • Decadent"
+      },
+      {
+        "name": "Floral Cascade",
+        "rationale": "Botanical Overflow • Fragrant • Lush"
+      },
+      {
+        "name": "Crisp Satin",
+        "rationale": "Smooth • Bridal • Shimmering"
+      },
+      {
+        "name": "Crystal Clink",
+        "rationale": "Audible Toast • Toasting • Festive"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "GatherCraft",
+        "rationale": "Communal • Hand-Crafted • Warm"
+      },
+      {
+        "name": "Hostwell",
+        "rationale": "Gracious • Seamless • Attentive"
+      },
+      {
+        "name": "Celebratwise",
+        "rationale": "Joyful • Strategic • Coordinated"
+      },
+      {
+        "name": "CurateMagic",
+        "rationale": "Enchanting • Precision-Staged • Special"
+      },
+      {
+        "name": "Planforward",
+        "rationale": "Flawless Execution • Forward • Calm"
+      },
+      {
+        "name": "SparkEvents",
+        "rationale": "Igniting Joy • Dynamic • Fast"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Udaipur Royal Weddings",
+        "rationale": "Lake Palaces • Regal Shehnai • Legendary"
+      },
+      {
+        "name": "Goa Sunkissed Galas",
+        "rationale": "Beachside Romance • Sunset • Breezy"
+      },
+      {
+        "name": "Varanasi Ghat Soirees",
+        "rationale": "Diya-Lit River • Spiritual • Sacred"
+      },
+      {
+        "name": "Delhi Darbar Fetes",
+        "rationale": "Mughal Splendor • Grand Banquets • Historic"
+      },
+      {
+        "name": "Jaipur Palatial Events",
+        "rationale": "Amber Fort Royalty • Marigold • Grand"
+      },
+      {
+        "name": "Chettinad Mansion Weddings",
+        "rationale": "Heritage Pillar Halls • Traditional • Deep"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "EventVault",
+        "rationale": "Curated • Structured • Impeccable"
+      },
+      {
+        "name": "FeteStudio",
+        "rationale": "Creative • Modern • Artistic"
+      },
+      {
+        "name": "SoireeHouse",
+        "rationale": "Warm Hospitality • Intimate • Clean"
+      },
+      {
+        "name": "GalaLab",
+        "rationale": "Experimental Production • High-Tech • Sharp"
+      },
+      {
+        "name": "OccasionWard",
+        "rationale": "Safeguarded Memories • Linear • Minimal"
+      },
+      {
+        "name": "ToastLine",
+        "rationale": "Linear Flow • Coordinated • Sleek"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "PartyPeople Co.",
+        "rationale": "Social • High-Spirited • Fun"
+      },
+      {
+        "name": "BigDay Squad",
+        "rationale": "Friendly Team • Wedding-First • Energetic"
+      },
+      {
+        "name": "ConfettiPop",
+        "rationale": "Explosive Joy • Colorful • Pop"
+      },
+      {
+        "name": "KnotKidding",
+        "rationale": "Wedding Pun • Irreverent • GenZ"
+      },
+      {
+        "name": "BashMakers",
+        "rationale": "Dynamic • Celebratory • Loud"
+      },
+      {
+        "name": "HighVibe Events",
+        "rationale": "Electric • Positive • Modern"
+      }
+    ]
+  },
+  "eco-travel": {
+    "short-coined": [
+      {
+        "name": "Roamm",
+        "rationale": "Movement • Wanderlust • Compact"
+      },
+      {
+        "name": "Wandr",
+        "rationale": "Exploration • Minimal • Modern"
+      },
+      {
+        "name": "Nomd",
+        "rationale": "Nomad • Global • Snappy"
+      },
+      {
+        "name": "Trekk",
+        "rationale": "Active • Mountain • Strong"
+      },
+      {
+        "name": "Lodg",
+        "rationale": "Sheltered • Eco • Clean"
+      },
+      {
+        "name": "Canpy",
+        "rationale": "Canopy • Treetop • Compact"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Cloud Sanctuary",
+        "rationale": "High-Altitude • Misty • Protected"
+      },
+      {
+        "name": "Forest Outpost",
+        "rationale": "Wilderness Edge • Remote • Minimal"
+      },
+      {
+        "name": "Silent Ridge",
+        "rationale": "Panoramic • Wind-Swept • Still"
+      },
+      {
+        "name": "River Crossing",
+        "rationale": "Threshold • Flowing • Natural"
+      },
+      {
+        "name": "Starlit Glade",
+        "rationale": "Zero Light-Pollution • Night Sky • Pure"
+      },
+      {
+        "name": "Wilderness Hearth",
+        "rationale": "Warm Fire • Campfire • Untamed"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Yatra Stays",
+        "rationale": "Sanskrit Pilgrimage • Mindful Journey • Deep"
+      },
+      {
+        "name": "Terra Nomada",
+        "rationale": "Latin Roaming Earth • Free • Biophilic"
+      },
+      {
+        "name": "Vana Sanctuary",
+        "rationale": "Sanskrit Forest • Sacred Grove • Untouched"
+      },
+      {
+        "name": "Aranya Lodges",
+        "rationale": "Sanskrit Deep Woods • Wilderness • Quiet"
+      },
+      {
+        "name": "Silva Expeditions",
+        "rationale": "Latin Forest • Exploratory • Pure"
+      },
+      {
+        "name": "Pravas Retreats",
+        "rationale": "Sanskrit Travel • Transformative • Restful"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Pine Scent",
+        "rationale": "Aromatic • Mountain • Fresh"
+      },
+      {
+        "name": "Mountain Breeze",
+        "rationale": "Crisp • Cold • Invigorating"
+      },
+      {
+        "name": "Woodsmoke Air",
+        "rationale": "Campfire • Nostalgic • Grounding"
+      },
+      {
+        "name": "Mossy Trail",
+        "rationale": "Soft Footing • Rainforest • Green"
+      },
+      {
+        "name": "Starlit Chill",
+        "rationale": "Night Air • Zero-Pollution • Clear"
+      },
+      {
+        "name": "Crisp Riverbed",
+        "rationale": "Glacial Stones • Flowing • Clean"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "WanderCraft",
+        "rationale": "Intentional Exploration • Slow • Deep"
+      },
+      {
+        "name": "Roamwell",
+        "rationale": "Respectful Travel • Sustainable • Mindful"
+      },
+      {
+        "name": "Escapewise",
+        "rationale": "Smart Retreat • Unplugged • Healthy"
+      },
+      {
+        "name": "Trekforward",
+        "rationale": "Ascending Trail • Determined • Active"
+      },
+      {
+        "name": "ExplorePure",
+        "rationale": "Leave No Trace • Untainted • Honest"
+      },
+      {
+        "name": "SeekWild",
+        "rationale": "Untamed Discovery • Adventurous • Direct"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Spiti High Outposts",
+        "rationale": "Tibetan Plateau • Mud-Brick • Zero-Waste"
+      },
+      {
+        "name": "Western Ghats Glamping",
+        "rationale": "Biodiversity Hotspot • Rainforest • Cloud"
+      },
+      {
+        "name": "Coorg Coffee Estates",
+        "rationale": "Canopy-Shaded Coffee • Waterfalls • Heritage"
+      },
+      {
+        "name": "Ladakh Nomad Lodges",
+        "rationale": "Solar-Powered • High-Desert • Monastic"
+      },
+      {
+        "name": "Sundarbans Canopy",
+        "rationale": "Mangrove Sanctuary • Tiger Trail • Eco-First"
+      },
+      {
+        "name": "Kerala Backwater Stays",
+        "rationale": "Solar Houseboats • Silent • Ancestral"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "NomadVault",
+        "rationale": "Off-Grid Base • Protected • Industrial"
+      },
+      {
+        "name": "TrailHouse",
+        "rationale": "Rustic Minimal • Wayfarer • Clean"
+      },
+      {
+        "name": "RidgeWard",
+        "rationale": "Panoramic • Elevated • Architectural"
+      },
+      {
+        "name": "CabinLab",
+        "rationale": "Compact Living • Sustainable • Sharp"
+      },
+      {
+        "name": "OutpostLine",
+        "rationale": "Remote Nodes • Connected • Linear"
+      },
+      {
+        "name": "ForestStays",
+        "rationale": "Direct • Honest • Biophilic"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "OffGridGo",
+        "rationale": "Adventurous • Fast • Digital-Detox"
+      },
+      {
+        "name": "WildNFree Co.",
+        "rationale": "Spontaneous • Youthful • Energetic"
+      },
+      {
+        "name": "CampVibes",
+        "rationale": "Relaxed • Cozy • Community"
+      },
+      {
+        "name": "TrailBlaze Pack",
+        "rationale": "Pioneering • Fast • High-Spirit"
+      },
+      {
+        "name": "LostAndFound Stays",
+        "rationale": "Witty • Introspective • Fun"
+      },
+      {
+        "name": "HappyCamper Lab",
+        "rationale": "Optimistic • Cheerful • Modern"
+      }
+    ]
+  },
+  "creator-media": {
+    "short-coined": [
+      {
+        "name": "Podx",
+        "rationale": "Podcast • Variable • Punchy"
+      },
+      {
+        "name": "Castr",
+        "rationale": "Broadcast • Modern • Sleek"
+      },
+      {
+        "name": "Chrom",
+        "rationale": "Color Spectrum • Visual • Sharp"
+      },
+      {
+        "name": "Micc",
+        "rationale": "Microphone • Intimate • Snappy"
+      },
+      {
+        "name": "Echoo",
+        "rationale": "Resonant Sound • Repetitive • Warm"
+      },
+      {
+        "name": "Vibe",
+        "rationale": "Culture • Energy • Direct"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Resonant Signal",
+        "rationale": "Clear • Authentic • High-Reach"
+      },
+      {
+        "name": "Cultural Current",
+        "rationale": "Flowing • Trend-Shaping • Dynamic"
+      },
+      {
+        "name": "Broad Spectrum",
+        "rationale": "Diverse Perspectives • Vibrant • Deep"
+      },
+      {
+        "name": "Silver Frequency",
+        "rationale": "Electromagnetic • Clear • Acoustic"
+      },
+      {
+        "name": "Kinetic Voice",
+        "rationale": "Actionable Commentary • Strong • Bold"
+      },
+      {
+        "name": "Prism Channel",
+        "rationale": "Refracting Light • Multichannel • Crisp"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Dhwani Media",
+        "rationale": "Sanskrit Sound • Reverberating • Pure"
+      },
+      {
+        "name": "Vani Broadcast",
+        "rationale": "Sanskrit Goddess of Speech • Eloquent • Clear"
+      },
+      {
+        "name": "Vox Collective",
+        "rationale": "Latin Voice • Plural • Democratic"
+      },
+      {
+        "name": "Chroma Network",
+        "rationale": "Visual Richness • High-Fidelity • Modern"
+      },
+      {
+        "name": "Sonus Productions",
+        "rationale": "Latin Acoustic Sound • Sonic • Fine"
+      },
+      {
+        "name": "Katha Studios",
+        "rationale": "Sanskrit Narrative & Story • Deep • Ancient"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Crisp Audio",
+        "rationale": "Noise-Free • High-Fidelity • Sharp"
+      },
+      {
+        "name": "Deep Bass",
+        "rationale": "Visceral • Resonating • Rhythmic"
+      },
+      {
+        "name": "Warm Tube-Mic",
+        "rationale": "Analog • Intimate • Velvet"
+      },
+      {
+        "name": "Studio Acoustics",
+        "rationale": "Padded • Echo-Free • Isolated"
+      },
+      {
+        "name": "High-Definition Stream",
+        "rationale": "Crystal Clear • Low-Buffer • Fluid"
+      },
+      {
+        "name": "Resonant Vocal",
+        "rationale": "Rich Pitch • Carrying • Clear"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "CastCraft",
+        "rationale": "Methodical Podcasting • Polished • Active"
+      },
+      {
+        "name": "Speakwell",
+        "rationale": "Articulate • Thoughtful • Authentic"
+      },
+      {
+        "name": "Broadcastwise",
+        "rationale": "Smart Distribution • Omnichannel • Fast"
+      },
+      {
+        "name": "Streamforward",
+        "rationale": "Live-Action • Future-Oriented • Kinetic"
+      },
+      {
+        "name": "RecordPure",
+        "rationale": "Unfiltered • Honest • High-Quality"
+      },
+      {
+        "name": "TuneIn Co.",
+        "rationale": "Engaging • Audience-Focused • Catchy"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "DesiNarratives",
+        "rationale": "South Asian Perspectives • Rooted • Global"
+      },
+      {
+        "name": "Bombay Studio Lot",
+        "rationale": "Bollywood Heritage • Cinematic • Energetic"
+      },
+      {
+        "name": "Deccan Voices",
+        "rationale": "Southern Stories • Plural • Authentic"
+      },
+      {
+        "name": "Delhi Dialogue Co.",
+        "rationale": "Political & Cultural Discourse • Bold • Sharp"
+      },
+      {
+        "name": "Indus Radio Network",
+        "rationale": "Ancient River Valley • Broad • Timeless"
+      },
+      {
+        "name": "Calcutta Chronicle",
+        "rationale": "Literary Hub • Intellectual • Deep"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "SignalVault",
+        "rationale": "Archival • High-Bitrate • Minimal"
+      },
+      {
+        "name": "CastStudio",
+        "rationale": "Functional • Dedicated • Clean"
+      },
+      {
+        "name": "WaveHouse",
+        "rationale": "Acoustic Shelter • Communal • Modern"
+      },
+      {
+        "name": "AudioLab",
+        "rationale": "Experimental Sound • Precision • Sharp"
+      },
+      {
+        "name": "VoiceWard",
+        "rationale": "Protected Opinion • Linear • Pure"
+      },
+      {
+        "name": "MediaLine",
+        "rationale": "Linear Network • Modern • Direct"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "MicDrop Co.",
+        "rationale": "Decisive Statement • Pop Culture • Bold"
+      },
+      {
+        "name": "LoudMouths Studio",
+        "rationale": "Unapologetic • High-Energy • Fun"
+      },
+      {
+        "name": "PodCulture",
+        "rationale": "Community • Trendy • Approachable"
+      },
+      {
+        "name": "EarCandy Network",
+        "rationale": "Sweet Sound • Bingeable • Catchy"
+      },
+      {
+        "name": "TalkyTalk",
+        "rationale": "Informal • Friendly • Chatty"
+      },
+      {
+        "name": "StudioBinge",
+        "rationale": "Addictive Content • Marathon • GenZ"
+      }
+    ]
+  },
+  "ai-saas": {
+    "short-coined": [
+      {
+        "name": "Synx",
+        "rationale": "Synapse • Neural • Punchy"
+      },
+      {
+        "name": "Neur",
+        "rationale": "Neuron • Minimal • Sleek"
+      },
+      {
+        "name": "Tensr",
+        "rationale": "Tensor • Linear Algebra • Fast"
+      },
+      {
+        "name": "Exaa",
+        "rationale": "Exascale • Supercomputing • Bold"
+      },
+      {
+        "name": "Crtx",
+        "rationale": "Cortex • Intelligence • Compact"
+      },
+      {
+        "name": "Optm",
+        "rationale": "Optimization • Mathematical • Clean"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Neural Horizon",
+        "rationale": "Frontier Intelligence • Expansive • Deep"
+      },
+      {
+        "name": "Autonomous Engine",
+        "rationale": "Self-Driving Logic • Reliable • Active"
+      },
+      {
+        "name": "Cognitive Protocol",
+        "rationale": "Machine Thinking • Structured • Formal"
+      },
+      {
+        "name": "Silent Compute",
+        "rationale": "Background Efficiency • Zero-Noise • Swift"
+      },
+      {
+        "name": "Quantum Synapse",
+        "rationale": "Next-Generation Processing • Interconnected • Rapid"
+      },
+      {
+        "name": "Vector Lattice",
+        "rationale": "Multi-Dimensional Space • Precision • Clean"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Budhi Systems",
+        "rationale": "Sanskrit Intellect & Wisdom • Ancient • Deep"
+      },
+      {
+        "name": "Yantra AI",
+        "rationale": "Sanskrit Sacred Mechanism • Algorithmic • Powerful"
+      },
+      {
+        "name": "Cortex Logic",
+        "rationale": "Latin Cerebral Cortex • Reasoning • High-Speed"
+      },
+      {
+        "name": "Cogito Neural",
+        "rationale": "Latin I Think • Philosophical • Modern"
+      },
+      {
+        "name": "Machina Protocol",
+        "rationale": "Latin Machine • Deterministic • Robust"
+      },
+      {
+        "name": "Nexus Intelligentia",
+        "rationale": "Latin Hub of Intelligence • Enterprise • Scalable"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Zero-Latency",
+        "rationale": "Sub-Millisecond • Instantaneous • Crisp"
+      },
+      {
+        "name": "Silicon Logic",
+        "rationale": "Semiconductor Grade • Hardened • Exacting"
+      },
+      {
+        "name": "Deterministic Flow",
+        "rationale": "Predictable • Reproducible • Robust"
+      },
+      {
+        "name": "Photonic Speed",
+        "rationale": "Light-Based • Ultra-Fast • Limitless"
+      },
+      {
+        "name": "High-Throughput",
+        "rationale": "Bulk Processing • High-Volume • Dense"
+      },
+      {
+        "name": "Seamless Pipeline",
+        "rationale": "Frictionless Integration • Continuous • Fluid"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "ComputeCraft",
+        "rationale": "Engineered Algorithms • Methodical • Strong"
+      },
+      {
+        "name": "Automatewell",
+        "rationale": "Self-Healing • Error-Free • Purposeful"
+      },
+      {
+        "name": "ScaleForward",
+        "rationale": "High-Growth Infrastructure • Future-First • Resilient"
+      },
+      {
+        "name": "Inferwise",
+        "rationale": "Intelligent Inference • Low-Token • Efficient"
+      },
+      {
+        "name": "OptimizePure",
+        "rationale": "Algorithmic Efficiency • Lean • Direct"
+      },
+      {
+        "name": "PredictEngine",
+        "rationale": "Forecasting Accuracy • Machine-Driven • Sharp"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Aryabhata Logic",
+        "rationale": "Ancient Indian Mathematician • Zero Pioneer • Deep"
+      },
+      {
+        "name": "Bengaluru Silicon Labs",
+        "rationale": "India's Tech Capital • Innovation Hub • Elite"
+      },
+      {
+        "name": "Ramanujan Math Systems",
+        "rationale": "Infinite Formulas • Intuitive • Pure Genius"
+      },
+      {
+        "name": "Indus AI Research",
+        "rationale": "Ancient Civilization • Structured • Timeless"
+      },
+      {
+        "name": "Deccan Neural Labs",
+        "rationale": "Southern Tech Corridor • High-Velocity • Sound"
+      },
+      {
+        "name": "Cyberabad Cloud",
+        "rationale": "Hyderabad Tech Metropolis • Scalable • Modern"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "TensorVault",
+        "rationale": "Encrypted Weights • Monolithic • Safe"
+      },
+      {
+        "name": "LogicBox",
+        "rationale": "Deterministic Compute • Clean • Structured"
+      },
+      {
+        "name": "NeuralLab",
+        "rationale": "Experimental AI • Research-Grade • Sharp"
+      },
+      {
+        "name": "VectorWard",
+        "rationale": "Embedding Space • Protected • Minimal"
+      },
+      {
+        "name": "CortexLine",
+        "rationale": "Linear Inference • Pipeline • Modern"
+      },
+      {
+        "name": "ModelHouse",
+        "rationale": "Registry of Models • Central • Solid"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "SmartyPants AI",
+        "rationale": "Cheeky • Hyper-Intelligent • Approachable"
+      },
+      {
+        "name": "BrainyBot Co.",
+        "rationale": "Friendly Assistant • Catchy • Clear"
+      },
+      {
+        "name": "SuperFast AI",
+        "rationale": "Benefit-Driven • Literal • High-Conversion"
+      },
+      {
+        "name": "AlgoRhythm",
+        "rationale": "Musical Pun • Harmonious Data • Clever"
+      },
+      {
+        "name": "NextGenie",
+        "rationale": "Wish-Fulfilling • Magical Automations • Pop"
+      },
+      {
+        "name": "PromptHero",
+        "rationale": "Developer Empowerment • Catchy • GenZ"
+      }
+    ]
+  },
+  "fintech-crypto": {
+    "short-coined": [
+      {
+        "name": "Ledgr",
+        "rationale": "Accounting • Immutable • Punchy"
+      },
+      {
+        "name": "Payy",
+        "rationale": "Payments • Instant • Snappy"
+      },
+      {
+        "name": "Vult",
+        "rationale": "Vault • Secure • Compact"
+      },
+      {
+        "name": "Mintt",
+        "rationale": "Coin Generation • Fresh • Crisp"
+      },
+      {
+        "name": "Solv",
+        "rationale": "Solvency • Mathematical • Sharp"
+      },
+      {
+        "name": "Ciph",
+        "rationale": "Cipher • Cryptographic • Sleek"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Sovereign Vault",
+        "rationale": "Self-Custodial • Fortified • Dignified"
+      },
+      {
+        "name": "Frictionless Rail",
+        "rationale": "Zero-Latency Settlement • Smooth • High-Speed"
+      },
+      {
+        "name": "Trust Protocol",
+        "rationale": "Mathematical Verification • Fair • Transparent"
+      },
+      {
+        "name": "Golden Ledger",
+        "rationale": "Double-Entry • Wealth-Building • Enduring"
+      },
+      {
+        "name": "Meridian Mint",
+        "rationale": "Global Standard • Precision • Solid"
+      },
+      {
+        "name": "Liquid Apex",
+        "rationale": "Maximum Liquidity • Peak Capital • Dynamic"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Artha Finance",
+        "rationale": "Sanskrit Wealth & Material Purpose • Sacred • True"
+      },
+      {
+        "name": "Kuber Wealth",
+        "rationale": "Lord of Treasury • Abundant • Prestigious"
+      },
+      {
+        "name": "Fiscus Capital",
+        "rationale": "Latin Public Treasury • Institutional • Solid"
+      },
+      {
+        "name": "Moneta Protocol",
+        "rationale": "Roman Goddess of Money • Ancient • Sovereign"
+      },
+      {
+        "name": "Credo Trust",
+        "rationale": "Latin Belief • Audited • Fiduciary"
+      },
+      {
+        "name": "Sovereign Pay",
+        "rationale": "Decentralized • Uncensorable • Royal"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Instant Settlement",
+        "rationale": "Sub-Second • Finality • Real-Time"
+      },
+      {
+        "name": "Cryptographic Hash",
+        "rationale": "SHA-256 • Unalterable • Hardened"
+      },
+      {
+        "name": "Cold-Storage Security",
+        "rationale": "Air-Gapped • Ice-Cold • Protected"
+      },
+      {
+        "name": "Solid Liquidity",
+        "rationale": "Deep Orderbook • Slippage-Free • Dense"
+      },
+      {
+        "name": "Audited Precision",
+        "rationale": "Zero-Variance • Clean • Verified"
+      },
+      {
+        "name": "Frictionless Checkout",
+        "rationale": "Single-Click • Seamless • Swift"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "SettleCraft",
+        "rationale": "Precision Clearing • Reliable • Active"
+      },
+      {
+        "name": "Paywell",
+        "rationale": "Fair Exchange • Generous • Seamless"
+      },
+      {
+        "name": "Yieldwise",
+        "rationale": "Intelligent Compounding • High-Return • Smart"
+      },
+      {
+        "name": "TransactForward",
+        "rationale": "Future Rails • Borderless • Modern"
+      },
+      {
+        "name": "MintPure",
+        "rationale": "Unbacked Currency-Free • Sound • Honest"
+      },
+      {
+        "name": "VaultSafe",
+        "rationale": "Custodial Shield • Fortified • Direct"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Hundi Rails",
+        "rationale": "Centuries-Old Indian Credit Note • Trust-Based • Iconic"
+      },
+      {
+        "name": "Chanakya Capital",
+        "rationale": "Ancient Economic Strategist • Arthashastra • Sage"
+      },
+      {
+        "name": "Bombay Stock Labs",
+        "rationale": "Asia's Oldest Exchange • Street • Veteran"
+      },
+      {
+        "name": "Lakshmi Treasury",
+        "rationale": "Goddess of Fortune • Auspicious • Abundant"
+      },
+      {
+        "name": "Marwari Mercantile",
+        "rationale": "Legendary Business Acumen • Frugal • Prosperous"
+      },
+      {
+        "name": "Chettiar Trust",
+        "rationale": "Pioneering Indian Bankers • Integrity • Historic"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "LedgerVault",
+        "rationale": "Double-Entry • Fortified • Minimal"
+      },
+      {
+        "name": "CoinHouse",
+        "rationale": "Digital Assets • Domestic • Solid"
+      },
+      {
+        "name": "AssetLab",
+        "rationale": "Quantitative Models • Experimental • Clean"
+      },
+      {
+        "name": "PayWard",
+        "rationale": "Escrow • Protected • Structured"
+      },
+      {
+        "name": "TokenLine",
+        "rationale": "Linear Protocol • Modern • Direct"
+      },
+      {
+        "name": "TrustBox",
+        "rationale": "Simple Interface • Audited • Clear"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "MoneyHoney",
+        "rationale": "Sweet Finances • Catchy • Upbeat"
+      },
+      {
+        "name": "CryptoChai",
+        "rationale": "Indian Web3 • Casual • Community"
+      },
+      {
+        "name": "CashFlow Co.",
+        "rationale": "Direct • Goal-Oriented • Snappy"
+      },
+      {
+        "name": "SmartSpend",
+        "rationale": "Budget-Friendly • Sensible • Pop"
+      },
+      {
+        "name": "PocketRocket Pay",
+        "rationale": "Fast • High-Growth • Fun"
+      },
+      {
+        "name": "PennyWise App",
+        "rationale": "Prudent • Clever • Approachable"
+      }
+    ]
+  },
+  "cybersecurity": {
+    "short-coined": [
+      {
+        "name": "Wardn",
+        "rationale": "Warden • Security • Punchy"
+      },
+      {
+        "name": "Aegs",
+        "rationale": "Aegis Shield • Greek • Sleek"
+      },
+      {
+        "name": "Ciphx",
+        "rationale": "Cipher • Cryptographic • Compact"
+      },
+      {
+        "name": "Bastn",
+        "rationale": "Bastion Fortress • Strong • Clean"
+      },
+      {
+        "name": "Sentr",
+        "rationale": "Sentry • Guard • Sharp"
+      },
+      {
+        "name": "Lockd",
+        "rationale": "Hardened • Protected • Snappy"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Iron Fortress",
+        "rationale": "Impenetrable • Heavyweight • Hardened"
+      },
+      {
+        "name": "Zero Boundary",
+        "rationale": "Zero-Trust Architecture • Infinite • Vigilant"
+      },
+      {
+        "name": "Deep Shield",
+        "rationale": "Multi-Layered Defense • Resilient • Covert"
+      },
+      {
+        "name": "Sentinel Watch",
+        "rationale": "24/7 Monitoring • Alert • Unblinking"
+      },
+      {
+        "name": "Diamond Perimeter",
+        "rationale": "Unbreakable Edge • Faceted • Crystalline"
+      },
+      {
+        "name": "Silent Ward",
+        "rationale": "Invisible Protection • Quiet • Strong"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Raksha Cyber",
+        "rationale": "Sanskrit Protection • Patriotic • Unfailing"
+      },
+      {
+        "name": "Kavach Security",
+        "rationale": "Sanskrit Invulnerable Armor • Ancient • Solid"
+      },
+      {
+        "name": "Aegis Defensio",
+        "rationale": "Latin Shield of Gods • Sovereign • Invincible"
+      },
+      {
+        "name": "Custos Protocol",
+        "rationale": "Latin Guardian • Dedicated • Strict"
+      },
+      {
+        "name": "Praetorian Labs",
+        "rationale": "Elite Roman Guard • Hardened • Elite"
+      },
+      {
+        "name": "Vallum Guard",
+        "rationale": "Latin Defensive Wall • Fortified • Deep"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Air-Gapped Isolation",
+        "rationale": "Zero Network Contact • Cold • Unbreachable"
+      },
+      {
+        "name": "Military Hardened",
+        "rationale": "Battle-Tested • Tamper-Resistant • Rugged"
+      },
+      {
+        "name": "Encrypted Payload",
+        "rationale": "Inscrutable • Mathematical • Sealed"
+      },
+      {
+        "name": "Kernel-Level Lock",
+        "rationale": "Ring 0 Access • Root Defense • Absolute"
+      },
+      {
+        "name": "Cryptographic Wall",
+        "rationale": "Quantum-Resistant • Dense • Solid"
+      },
+      {
+        "name": "Real-Time Defense",
+        "rationale": "Zero-Second Reaction • Fluid • Electric"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "ShieldCraft",
+        "rationale": "Constructed Defense • Active • Methodical"
+      },
+      {
+        "name": "Defendwell",
+        "rationale": "Ethical Defense • Resilient • True"
+      },
+      {
+        "name": "Guardwise",
+        "rationale": "Intelligent Surveillance • Predictive • Sharp"
+      },
+      {
+        "name": "FortifyForward",
+        "rationale": "Proactive Hardening • Progressive • Strong"
+      },
+      {
+        "name": "ProtectPure",
+        "rationale": "Uncompromising Integrity • Clean • Direct"
+      },
+      {
+        "name": "LockDown",
+        "rationale": "Emergency Containment • Decisive • Rapid"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Shivaji Fort Security",
+        "rationale": "Hill Fort Strategy • Guerrilla Defense • Legendary"
+      },
+      {
+        "name": "RedFort Systems",
+        "rationale": "Imperial Citadel Walls • Monumental • Historic"
+      },
+      {
+        "name": "Ashoka Guard Labs",
+        "rationale": "Four-Lions Emblem • Sovereign • Steadfast"
+      },
+      {
+        "name": "Vijayanagar Aegis",
+        "rationale": "Impenetrable Granite Bastions • Ancient • Royal"
+      },
+      {
+        "name": "Chhatrapati Cyber",
+        "rationale": "Warrior Legacy • High-Honor • Unbreakable"
+      },
+      {
+        "name": "Golconda Bulwark",
+        "rationale": "Diamond Fortress • Acoustic Warning • Wise"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "ShieldVault",
+        "rationale": "Encrypted Isolation • Monolithic • Safe"
+      },
+      {
+        "name": "CipherLab",
+        "rationale": "Cryptographic Research • Clean • Scientific"
+      },
+      {
+        "name": "BastionHouse",
+        "rationale": "Perimeter Citadel • Structured • Modern"
+      },
+      {
+        "name": "GuardWard",
+        "rationale": "Dual-Layer Security • Architectural • Minimal"
+      },
+      {
+        "name": "SentinelLine",
+        "rationale": "Boundary Defense • Linear • Sharp"
+      },
+      {
+        "name": "ThreatBox",
+        "rationale": "Sandbox Isolation • Contained • Direct"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "HackerBlock",
+        "rationale": "Direct Action • Conversational • Punchy"
+      },
+      {
+        "name": "ZeroTrust Me",
+        "rationale": "Security Pun • Witty • GenZ"
+      },
+      {
+        "name": "LockBoxy",
+        "rationale": "Approachably Secure • Clean • Snappy"
+      },
+      {
+        "name": "BugBusters",
+        "rationale": "Pop-Culture Tribute • Energetic • Fun"
+      },
+      {
+        "name": "GhostShield",
+        "rationale": "Invisible Defense • Stealth • Cool"
+      },
+      {
+        "name": "SafeKeepers Co.",
+        "rationale": "Trustworthy • Friendly • Simple"
+      }
+    ]
+  },
+  "edtech-learning": {
+    "short-coined": [
+      {
+        "name": "Skilz",
+        "rationale": "Skills • Punchy • Modern"
+      },
+      {
+        "name": "Pedg",
+        "rationale": "Pedagogy • Compact • Educational"
+      },
+      {
+        "name": "Mast",
+        "rationale": "Mastery • Clean • Direct"
+      },
+      {
+        "name": "Lurn",
+        "rationale": "Learn • Coined • Approachable"
+      },
+      {
+        "name": "Asnd",
+        "rationale": "Ascend • Growth • Sharp"
+      },
+      {
+        "name": "Curio",
+        "rationale": "Curiosity • Inquisitive • Snappy"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Illuminating Path",
+        "rationale": "Enlightening • Step-by-Step • Clear"
+      },
+      {
+        "name": "Curious Mind",
+        "rationale": "Inquisitive • Exploratory • Open"
+      },
+      {
+        "name": "Ascending Horizon",
+        "rationale": "Progressive • Broadening • Hopeful"
+      },
+      {
+        "name": "Knowledge Spring",
+        "rationale": "Abundant Fountain • Fresh • Life-Giving"
+      },
+      {
+        "name": "Deep Insight",
+        "rationale": "Profound Understanding • Grounded • True"
+      },
+      {
+        "name": "Mastery Tree",
+        "rationale": "Branching Skills • Deep Roots • Enduring"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Vidya Learning",
+        "rationale": "Sanskrit True Knowledge • Sacred • Illuminating"
+      },
+      {
+        "name": "Gurukul Interactive",
+        "rationale": "Ancient Residential Academy • Mentorship • Deep"
+      },
+      {
+        "name": "Schola Academy",
+        "rationale": "Latin School of Thought • Rigorous • Classic"
+      },
+      {
+        "name": "Pedagogia Labs",
+        "rationale": "Teaching Science • Methodical • Modern"
+      },
+      {
+        "name": "Cognitio Platform",
+        "rationale": "Latin Understanding • Cognitive • Precision"
+      },
+      {
+        "name": "Dnyan Tech",
+        "rationale": "Sanskrit Wisdom • Applied Science • Pure"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Interactive Mastery",
+        "rationale": "Hands-On • Engaging • Tactile"
+      },
+      {
+        "name": "Micro-Learning",
+        "rationale": "Bite-Sized • Digestible • Fast"
+      },
+      {
+        "name": "Crisp Pedagogy",
+        "rationale": "Structured • No-Fluff • Sharp"
+      },
+      {
+        "name": "Self-Paced Flow",
+        "rationale": "Pressure-Free • Adaptive • Fluid"
+      },
+      {
+        "name": "Gamified Feedback",
+        "rationale": "Immediate Reward • Visual • Electric"
+      },
+      {
+        "name": "Deep Retention",
+        "rationale": "Spaced Repetition • Permanent • Sound"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "LearnCraft",
+        "rationale": "Constructed Understanding • Active • Methodical"
+      },
+      {
+        "name": "Teachwell",
+        "rationale": "Empathetic Mentorship • High-Standard • True"
+      },
+      {
+        "name": "Masterwise",
+        "rationale": "Competency-Driven • Intelligent • Steady"
+      },
+      {
+        "name": "UpskillForward",
+        "rationale": "Career-Ready • Future-Proof • Ambitious"
+      },
+      {
+        "name": "MentorPure",
+        "rationale": "Unfiltered Guidance • Direct • Honest"
+      },
+      {
+        "name": "AscendSkills",
+        "rationale": "Vertical Growth • High-Achievement • Clean"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Nalanda Classrooms",
+        "rationale": "World's First University • Ancient Bihar • Grand"
+      },
+      {
+        "name": "Takshashila EdTech",
+        "rationale": "Ancient Center of Higher Learning • Legendary • Deep"
+      },
+      {
+        "name": "Kashi Scholars",
+        "rationale": "Seat of Sanskrit Debate • Intellectual • Venerable"
+      },
+      {
+        "name": "Shantiniketan Online",
+        "rationale": "Tagore's Open-Air Education • Creative • Wholesome"
+      },
+      {
+        "name": "Vedic Academy",
+        "rationale": "Holistic Inquiry • Mind-Body-Soul • Timeless"
+      },
+      {
+        "name": "Ujjain Astronomy Lab",
+        "rationale": "Ancient Mathematical Meridian • Precise • Historic"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "SkillVault",
+        "rationale": "Curated Knowledge • Protected • Structured"
+      },
+      {
+        "name": "LearnHouse",
+        "rationale": "Communal Study • Welcoming • Clean"
+      },
+      {
+        "name": "StudyLab",
+        "rationale": "Empirical Learning • Modern • Sharp"
+      },
+      {
+        "name": "MentorWard",
+        "rationale": "Protected Guidance • Linear • Minimal"
+      },
+      {
+        "name": "KnowledgeLine",
+        "rationale": "Sequential Curriculum • Modern • Direct"
+      },
+      {
+        "name": "ClassBox",
+        "rationale": "Modular Education • Practical • Compact"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "BrainBox Learning",
+        "rationale": "Catchy • Smart • Approachable"
+      },
+      {
+        "name": "StudyBuddy Co.",
+        "rationale": "Peer-to-Peer • Friendly • Casual"
+      },
+      {
+        "name": "SkillUp Now",
+        "rationale": "Urgent • Actionable • Pop"
+      },
+      {
+        "name": "SmartCookies",
+        "rationale": "Affectionate • Witty • High-Spirit"
+      },
+      {
+        "name": "QuizWiz",
+        "rationale": "Rhyming • Gamified • Fun"
+      },
+      {
+        "name": "Learnr App",
+        "rationale": "Vowel-Dropped • Modern Tech • Snappy"
+      }
+    ]
+  },
+  "gaming-esports": {
+    "short-coined": [
+      {
+        "name": "Nexx",
+        "rationale": "Nexus • Gaming • Punchy"
+      },
+      {
+        "name": "Vrtx",
+        "rationale": "Vortex • Kinetic • Compact"
+      },
+      {
+        "name": "Gltch",
+        "rationale": "Glitch • Counter-Culture • Sharp"
+      },
+      {
+        "name": "Fragg",
+        "rationale": "FPS Elimination • High-Energy • Snappy"
+      },
+      {
+        "name": "Spwn",
+        "rationale": "Spawn Point • Game Mechanic • Clean"
+      },
+      {
+        "name": "Rogu",
+        "rationale": "Rogue-Like • Independent • Edgy"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Electric Arena",
+        "rationale": "High-Voltage • Esports • Neon"
+      },
+      {
+        "name": "Crimson Respawn",
+        "rationale": "High-Stakes • Instant Recovery • Bold"
+      },
+      {
+        "name": "Quantum Havoc",
+        "rationale": "Unpredictable • Multi-Dimensional • Wild"
+      },
+      {
+        "name": "Neon Horizon",
+        "rationale": "Cyberpunk Aesthetic • Luminous • Future"
+      },
+      {
+        "name": "Titan Clash",
+        "rationale": "Monumental • Competitive • Heavy"
+      },
+      {
+        "name": "Cyber Odyssey",
+        "rationale": "Epic Narrative • Futuristic • Deep"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Astra Gaming",
+        "rationale": "Sanskrit Celestial Weapon • Devastating • Epic"
+      },
+      {
+        "name": "Veera Esports",
+        "rationale": "Sanskrit Heroic Warrior • Competitive • Bold"
+      },
+      {
+        "name": "Ludus Interactive",
+        "rationale": "Latin Gladiatorial Game • Training • Classical"
+      },
+      {
+        "name": "Titanus Studios",
+        "rationale": "Mythic Giant • High-Production • Heavy"
+      },
+      {
+        "name": "Invictus Arena",
+        "rationale": "Latin Unconquered • Esports Trophy • Champion"
+      },
+      {
+        "name": "Bellum Play",
+        "rationale": "Latin Warfare • Tactical • Direct"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Low-Latency 240Hz",
+        "rationale": "Fluid Frame-Rate • Twitch Reaction • Smooth"
+      },
+      {
+        "name": "Mechanical Click",
+        "rationale": "Tactile Switches • Audible • Precision"
+      },
+      {
+        "name": "Neon Glow",
+        "rationale": "Cyberpunk RGB • Visceral • Electric"
+      },
+      {
+        "name": "Haptic Rumble",
+        "rationale": "Immersive Feedback • Visceral • Shaking"
+      },
+      {
+        "name": "Surround Audio",
+        "rationale": "Spatial Sound • Footsteps • Directional"
+      },
+      {
+        "name": "Adrenaline Spike",
+        "rationale": "High-Heart-Rate • Clutch Play • Electric"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "PlayCraft",
+        "rationale": "Game Design • Interactive • Intentional"
+      },
+      {
+        "name": "Respawnwell",
+        "rationale": "Quick Recovery • Competitive • Relentless"
+      },
+      {
+        "name": "FragForward",
+        "rationale": "Offensive Momentum • Fast • Bold"
+      },
+      {
+        "name": "Levelwise",
+        "rationale": "Skill Progression • Strategic • Steady"
+      },
+      {
+        "name": "CompetePure",
+        "rationale": "Fair Play • High-Stakes • Honest"
+      },
+      {
+        "name": "WinMatch",
+        "rationale": "Victory-Driven • Direct • Uncompromising"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Kurukshetra Arena",
+        "rationale": "Epic Battlefield of Mahabharata • Tactical • Mythic"
+      },
+      {
+        "name": "Maratha Gaming Lot",
+        "rationale": "Guerrilla Tactics • High-Courage • Historic"
+      },
+      {
+        "name": "Indus Warriors",
+        "rationale": "Ancient Fighters • Competitive • United"
+      },
+      {
+        "name": "Bombay Esports League",
+        "rationale": "Urban Megacity • Fast-Paced • High-Energy"
+      },
+      {
+        "name": "Vedic Astra Studios",
+        "rationale": "Mythological Weapons IP • Cinematic • Deep"
+      },
+      {
+        "name": "Deccan Titans",
+        "rationale": "Southern Champions • Resilient • Heavy"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "ApexVault",
+        "rationale": "Loot Locker • Fortified • Minimal"
+      },
+      {
+        "name": "PixelStudio",
+        "rationale": "Retro & Modern Art • Clean • Geometric"
+      },
+      {
+        "name": "ArenaLab",
+        "rationale": "Competitive Tuning • High-Tech • Sharp"
+      },
+      {
+        "name": "GlitchWard",
+        "rationale": "Cyber Security • Sheltered • Dark"
+      },
+      {
+        "name": "SpawnHouse",
+        "rationale": "Starting Base • Communal • Direct"
+      },
+      {
+        "name": "GameLine",
+        "rationale": "Production Pipeline • Linear • Modern"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "GGNoobs Co.",
+        "rationale": "Gaming Slang • Witty • GenZ"
+      },
+      {
+        "name": "RespawnZone",
+        "rationale": "Safe Haven • Catchy • Upbeat"
+      },
+      {
+        "name": "JoystickJunkies",
+        "rationale": "Enthusiast Fanbase • Relatable • Fun"
+      },
+      {
+        "name": "FragSquad",
+        "rationale": "Multiplayer Team • High-Energy • Snappy"
+      },
+      {
+        "name": "NoScope Studio",
+        "rationale": "Trickshot Meme • Skilled • Bold"
+      },
+      {
+        "name": "GameOverMan",
+        "rationale": "Classic Movie Quote • Nostalgic • Pop"
+      }
+    ]
+  },
+  "developer-tools": {
+    "short-coined": [
+      {
+        "name": "Bytt",
+        "rationale": "Byte • Computing • Punchy"
+      },
+      {
+        "name": "Krnl",
+        "rationale": "Kernel • OS Core • Compact"
+      },
+      {
+        "name": "Pyp",
+        "rationale": "Pipe • Unix Philosophy • Snappy"
+      },
+      {
+        "name": "Daem",
+        "rationale": "Daemon • Background Service • Sleek"
+      },
+      {
+        "name": "Gitx",
+        "rationale": "Version Control • Modern • Sharp"
+      },
+      {
+        "name": "Term",
+        "rationale": "Terminal • Command-Line • Direct"
+      }
+    ],
+    "two-word-metaphor": [
+      {
+        "name": "Declarative Pipe",
+        "rationale": "Idempotent Flow • Functional • Elegant"
+      },
+      {
+        "name": "Compiler Loom",
+        "rationale": "Weaving Source Code • Precise • Structured"
+      },
+      {
+        "name": "Kernel Core",
+        "rationale": "Central Execution • Low-Level • Unshakable"
+      },
+      {
+        "name": "Branching River",
+        "rationale": "Git Branches • Fluid • Collaborative"
+      },
+      {
+        "name": "Terminal Beacon",
+        "rationale": "Guiding Output • Clear • Illuminating"
+      },
+      {
+        "name": "Syntax Bridge",
+        "rationale": "Connecting Paradigms • Seamless • Solid"
+      }
+    ],
+    "sanskrit-latin": [
+      {
+        "name": "Sutra Syntax",
+        "rationale": "Sanskrit Aphorism / Rule • Declarative • Concise"
+      },
+      {
+        "name": "Karman Runtime",
+        "rationale": "Sanskrit Action & Execution • Deterministic • Fast"
+      },
+      {
+        "name": "Machina Dev",
+        "rationale": "Latin Machine • High-Throughput • Clean"
+      },
+      {
+        "name": "Fabrica Code",
+        "rationale": "Latin Workshop • Hand-Crafted Software • Solid"
+      },
+      {
+        "name": "Modus Engine",
+        "rationale": "Latin Method • Architectural • Extensible"
+      },
+      {
+        "name": "Praxis Infra",
+        "rationale": "Greek Practical Application • Cloud-Native • Real"
+      }
+    ],
+    "sensory-texture": [
+      {
+        "name": "Zero-Overhead",
+        "rationale": "C-Level Efficiency • Bare-Metal • Lightweight"
+      },
+      {
+        "name": "Sub-Millisecond Build",
+        "rationale": "Instant Compilation • Fluid • Fast"
+      },
+      {
+        "name": "Type-Safe Guarantee",
+        "rationale": "Compiler-Verified • Zero-Crash • Robust"
+      },
+      {
+        "name": "Terminal-Native CLI",
+        "rationale": "Keyboard-First • Minimalist • Ergonomic"
+      },
+      {
+        "name": "Single-Binary Footprint",
+        "rationale": "Self-Contained • Portable • Dense"
+      },
+      {
+        "name": "Deterministic Artifact",
+        "rationale": "Byte-for-Byte Exact • Pure • Sound"
+      }
+    ],
+    "action-verb": [
+      {
+        "name": "BuildCraft",
+        "rationale": "Constructed Tooling • Methodical • Clean"
+      },
+      {
+        "name": "Deploywell",
+        "rationale": "Zero-Downtime • Continuous • Sound"
+      },
+      {
+        "name": "Compilewise",
+        "rationale": "Smart Optimization • Tree-Shaking • Fast"
+      },
+      {
+        "name": "ShipForward",
+        "rationale": "High-Velocity CI/CD • Ambitious • Rapid"
+      },
+      {
+        "name": "CodePure",
+        "rationale": "Zero-Boilerplate • Readable • Honest"
+      },
+      {
+        "name": "TestFast",
+        "rationale": "Instant Feedback Loop • Parallel • Sharp"
+      }
+    ],
+    "cultural-heritage": [
+      {
+        "name": "Silicon Bengaluru",
+        "rationale": "India's Tech Capital • Open Source • Global"
+      },
+      {
+        "name": "Indus Kernel Project",
+        "rationale": "Ancient Civil Engineering • Foundational • Deep"
+      },
+      {
+        "name": "Cyberabad Systems",
+        "rationale": "Modern Cloud Corridor • Enterprise-Ready • Sound"
+      },
+      {
+        "name": "Deccan Devs Collective",
+        "rationale": "Southern Hacker Culture • High-Impact • Real"
+      },
+      {
+        "name": "Aryabhata Algorithms",
+        "rationale": "Pioneering Computing Heritage • Exact • Pure"
+      },
+      {
+        "name": "Pune Linux Guild",
+        "rationale": "Grassroots Open Source • Community • Strong"
+      }
+    ],
+    "minimalist-compound": [
+      {
+        "name": "StackVault",
+        "rationale": "Infrastructure Registry • Monolithic • Safe"
+      },
+      {
+        "name": "KernelLab",
+        "rationale": "Low-Level Systems • Research-Grade • Sharp"
+      },
+      {
+        "name": "PipeHouse",
+        "rationale": "Composable Unix Tools • Structured • Clean"
+      },
+      {
+        "name": "DevWard",
+        "rationale": "Isolated Sandbox • Protected • Minimal"
+      },
+      {
+        "name": "DeployLine",
+        "rationale": "Linear Automation • GitOps • Modern"
+      },
+      {
+        "name": "ToolBox CLI",
+        "rationale": "Everyday Utilities • Ergonomic • Practical"
+      }
+    ],
+    "modern-playful": [
+      {
+        "name": "ShipItBro",
+        "rationale": "Hacker Culture Meme • Action-Oriented • Funny"
+      },
+      {
+        "name": "CodeMonkey Co.",
+        "rationale": "Self-Deprecating • Relatable • Catchy"
+      },
+      {
+        "name": "BugFree Life",
+        "rationale": "Aspirational • Cheerful • Modern"
+      },
+      {
+        "name": "GitGud Tools",
+        "rationale": "Gamer/Coder Crossover • High-Skill • Bold"
+      },
+      {
+        "name": "CtrlZ Club",
+        "rationale": "Safe Undos • Forgiving Systems • Pop"
+      },
+      {
+        "name": "TerminalNinja",
+        "rationale": "Command-Line Master • Fast • Stealthy"
+      }
+    ]
+  }
+};
 
   function getNicheDictionaryKey(niche = '') {
     const s = (niche || '').toLowerCase();
@@ -2317,60 +6362,52 @@ Return a SINGLE valid JSON object matching this schema strictly:
     return 'organic-skincare'; // default fallback
   }
 
+  function getAffixes(name) {
+    const clean = (name || '').toLowerCase().replace(/[^a-z]/g, '');
+    const prefix = clean.slice(0, 3);
+    const suffix = clean.slice(-3);
+    return { prefix, suffix };
+  }
+
   function generateProceduralSuggestedNames(niche = '', vibe = 'eco-organic', count = 8) {
     const dictKey = getNicheDictionaryKey(niche);
-    const dict = NICHE_NAME_DICTIONARIES[dictKey] || NICHE_NAME_DICTIONARIES['coffee-chai'];
+    const pool = NICHE_ARCHETYPE_POOLS[dictKey] || NICHE_ARCHETYPE_POOLS['coffee-chai'];
 
     const results = [];
-    const used = new Set();
+    const usedPrefixes = new Set();
+    const usedSuffixes = new Set();
 
-    const shuffledCompounds = [...dict.compounds].sort(() => 0.5 - Math.random());
-    const shuffledRoots = [...dict.roots].sort(() => 0.5 - Math.random());
-    const shuffledMods = [...dict.modifiers].sort(() => 0.5 - Math.random());
-    const shuffledRationales = [...dict.rationales].sort(() => 0.5 - Math.random());
+    // Generate exactly one name per archetype across all 8 archetypes
+    for (const arch of NAMING_ARCHETYPES) {
+      const candidates = [...(pool[arch.id] || [])].sort(() => Math.random() - 0.5);
+      let selected = null;
 
-    // Helper to adapt based on Vibe
-    function formatForVibe(name) {
-      if (vibe === 'minimalist-luxury') {
-        if (!name.startsWith('Maison') && !name.startsWith('Atelier') && !name.includes('&')) {
-          return Math.random() > 0.5 ? `Maison ${name}` : `${name} Atelier`;
-        }
-      } else if (vibe === 'bold-genz') {
-        return name.replace(/\s+/g, '');
-      } else if (vibe === 'tech-futuristic') {
-        if (!name.endsWith('Logic') && !name.endsWith('AI') && !name.endsWith('Labs')) {
-          return Math.random() > 0.5 ? `${name} Labs` : name;
+      for (const cand of candidates) {
+        const { prefix, suffix } = getAffixes(cand.name);
+        if (prefix.length >= 3 && suffix.length >= 3) {
+          if (!usedPrefixes.has(prefix) && !usedSuffixes.has(suffix)) {
+            selected = cand;
+            usedPrefixes.add(prefix);
+            usedSuffixes.add(suffix);
+            break;
+          }
         }
       }
-      return name;
-    }
 
-    // 1. Pick from compounds
-    for (let i = 0; i < shuffledCompounds.length && results.length < 4; i++) {
-      const raw = shuffledCompounds[i];
-      const styled = formatForVibe(raw);
-      const key = styled.toLowerCase();
-      if (!used.has(key)) {
-        used.add(key);
-        results.push({
-          name: styled,
-          rationale: shuffledRationales[results.length % shuffledRationales.length]
-        });
+      if (!selected && candidates.length > 0) {
+        selected = candidates[0];
+        const { prefix, suffix } = getAffixes(selected.name);
+        usedPrefixes.add(prefix);
+        usedSuffixes.add(suffix);
       }
-    }
 
-    // 2. Pair root + modifier
-    for (let i = 0; i < shuffledRoots.length && results.length < count; i++) {
-      const root = shuffledRoots[i];
-      const mod = shuffledMods[i % shuffledMods.length];
-      const raw = `${root} ${mod}`;
-      const styled = formatForVibe(raw);
-      const key = styled.toLowerCase();
-      if (!used.has(key)) {
-        used.add(key);
+      if (selected) {
         results.push({
-          name: styled,
-          rationale: shuffledRationales[results.length % shuffledRationales.length]
+          archetype: arch.label,
+          archetypeId: arch.id,
+          archetypeIcon: arch.icon,
+          name: selected.name,
+          rationale: selected.rationale
         });
       }
     }
@@ -2381,27 +6418,39 @@ Return a SINGLE valid JSON object matching this schema strictly:
   async function generateSuggestedNamesWithGemini(niche, vibe, audience) {
     const promptText = `
 You are an elite Brand Naming Strategist & Trademark Clearance Specialist.
-Generate exactly 8 distinct, highly brandable, creative business name ideas tailored to:
+Generate EXACTLY 8 distinct, highly brandable business name ideas for:
 - Industry / Sector: "${niche}"
 - Brand Vibe / Archetype: "${vibe}" (minimalist-luxury, bold-genz, eco-organic, tech-futuristic)
 - Target Audience: "${audience}"
 
-Naming Criteria:
-- Names must be legally distinctive, memorable, and trademark-friendly (avoid generic dictionary terms alone).
-- Provide diverse naming styles: coined, compound mark, archival/prestige mark, punchy short mark, evocative metaphor.
-- For each name, provide a punchy 3-word rationale tag (e.g. "Restorative • Tactile • Grounding", "Electric • Kinetic • Bold").
+CRITICAL REQUIREMENT — 8 SEPARATE NAMING ARCHETYPES:
+Each of the 8 names MUST strictly follow one of the 8 distinct naming archetypes below in exact order:
+1. Short 4-5 letter coined word (e.g., Zora, Kaffo, Velo)
+2. Evocative two-word metaphor (e.g., Solstice & Bean, Amber & Hearth)
+3. Sanskrit or Latin root word (e.g., Kavita, Terroir, Prana)
+4. Sensory or texture word (e.g., Velvety, Silken, Crisp)
+5. Action-driven verb name (e.g., SteepCraft, Awaken Co., Stirwell)
+6. Cultural or heritage nod (e.g., Malabar Steeps, Deccan Chai)
+7. Minimalist compound (e.g., BeanVault, ChaiPress, SteamLine)
+8. Modern playful twist (e.g., SipHappens, WiredChai, DailyDrip)
+
+STRICT DIVERSITY RULE:
+- NEVER repeat the same prefix (first 3 letters) or suffix (last 3 letters) across the 8 names.
+- Each name must have a completely unique phonetic opening, cadence, and ending.
+- Each name must be legally distinctive, memorable, and trademark-friendly (avoid generic dictionary words alone).
+- Provide a punchy 3-word rationale tag for each name (e.g., "Artisanal • Roasted • Slow-Crafted").
 
 Return a SINGLE valid JSON object matching this schema strictly:
 {
   "names": [
-    { "name": "BrandNameOne", "rationale": "Word1 • Word2 • Word3" },
-    { "name": "BrandNameTwo", "rationale": "Word1 • Word2 • Word3" },
-    { "name": "BrandNameThree", "rationale": "Word1 • Word2 • Word3" },
-    { "name": "BrandNameFour", "rationale": "Word1 • Word2 • Word3" },
-    { "name": "BrandNameFive", "rationale": "Word1 • Word2 • Word3" },
-    { "name": "BrandNameSix", "rationale": "Word1 • Word2 • Word3" },
-    { "name": "BrandNameSeven", "rationale": "Word1 • Word2 • Word3" },
-    { "name": "BrandNameEight", "rationale": "Word1 • Word2 • Word3" }
+    { "name": "Name1", "archetype": "Short Coined", "rationale": "Word1 • Word2 • Word3" },
+    { "name": "Name2", "archetype": "Two-Word Metaphor", "rationale": "Word1 • Word2 • Word3" },
+    { "name": "Name3", "archetype": "Sanskrit / Latin Root", "rationale": "Word1 • Word2 • Word3" },
+    { "name": "Name4", "archetype": "Sensory & Texture", "rationale": "Word1 • Word2 • Word3" },
+    { "name": "Name5", "archetype": "Action Verb", "rationale": "Word1 • Word2 • Word3" },
+    { "name": "Name6", "archetype": "Cultural & Heritage", "rationale": "Word1 • Word2 • Word3" },
+    { "name": "Name7", "archetype": "Minimalist Compound", "rationale": "Word1 • Word2 • Word3" },
+    { "name": "Name8", "archetype": "Modern Playful", "rationale": "Word1 • Word2 • Word3" }
   ]
 }
 `;
@@ -2417,8 +6466,10 @@ Return a SINGLE valid JSON object matching this schema strictly:
     const data = await callGeminiEndpoint(payload);
     const parsed = extractJsonFromGeminiResponse(data);
     if (parsed && Array.isArray(parsed.names) && parsed.names.length >= 4) {
-      return parsed.names.slice(0, 8).map(item => ({
+      return parsed.names.slice(0, 8).map((item, idx) => ({
         name: (item.name || '').trim().replace(/^["']|["']$/g, ''),
+        archetype: item.archetype || (NAMING_ARCHETYPES[idx] ? NAMING_ARCHETYPES[idx].label : 'Brandable'),
+        archetypeIcon: (NAMING_ARCHETYPES[idx] ? NAMING_ARCHETYPES[idx].icon : '✨'),
         rationale: (item.rationale || 'Distinctive • Protectable • Evocative').trim()
       }));
     }
@@ -2429,13 +6480,19 @@ Return a SINGLE valid JSON object matching this schema strictly:
     if (!elements.suggestedNamesList || !elements.nameSuggestionsTray) return;
     elements.suggestedNamesList.innerHTML = '';
 
-    namesList.forEach((item) => {
+    namesList.forEach((item, idx) => {
+      const archLabel = item.archetype || (NAMING_ARCHETYPES[idx] ? NAMING_ARCHETYPES[idx].label : 'Brandable');
+      const archIcon = item.archetypeIcon || (NAMING_ARCHETYPES[idx] ? NAMING_ARCHETYPES[idx].icon : '✨');
+
       const pill = document.createElement('button');
       pill.type = 'button';
       pill.className = 'name-pill';
       pill.setAttribute('data-name', item.name);
-      pill.setAttribute('title', `Use "${item.name}" & check trademark clearance`);
+      pill.setAttribute('title', `Use "${item.name}" (${archLabel}) & check trademark clearance`);
       pill.innerHTML = `
+        <div class="name-pill-header">
+          <span class="name-pill-arch">${archIcon} ${archLabel}</span>
+        </div>
         <span class="name-pill-text">${item.name}</span>
         <span class="name-pill-tag">${item.rationale}</span>
         <svg class="name-pill-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
@@ -2446,7 +6503,7 @@ Return a SINGLE valid JSON object matching this schema strictly:
           elements.inputBrandName.value = item.name;
           elements.inputBrandName.focus();
         }
-        showToast(`Selected "${item.name}"! Auditing live QuickCompany & NICE Class clearance...`, 'info', 2500);
+        showToast(`Selected "${item.name}"! Auditing live QuickCompany, Wikipedia & NICE Class clearance...`, 'info', 2500);
         handleCheckTrademark(item.name);
       });
 

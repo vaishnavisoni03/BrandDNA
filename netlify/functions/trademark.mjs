@@ -408,8 +408,94 @@ export async function queryQuickCompanyTrademarks(brandName = '') {
   }
 }
 
+// Live Wikidata / Wikipedia Global Entity & Trademark Search Engine (CORS-friendly OpenSearch API)
+export async function queryWikipediaBrandSearch(brandName = '') {
+  const query = (brandName || '').trim();
+  if (!query) return [];
+
+  const targetUrl = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=5&format=json&origin=*`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000); // 4-second timeout
+
+    const response = await fetch(targetUrl, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'BrandDNA-Studio/2.0 (Trademark Conflict Checker)',
+        'Accept': 'application/json'
+      }
+    });
+
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      console.warn(`Wikipedia OpenSearch returned HTTP ${response.status}`);
+      return [];
+    }
+
+    const data = await response.json();
+    if (!Array.isArray(data) || data.length < 4) return [];
+
+    const [, titles, descs, urls] = data;
+    const matches = [];
+
+    const commercialKeywords = /\b(company|startup|brand|business|corporation|firm|enterprise|retail|retailer|conglomerate|platform|app|application|service|software|chain|store|manufacturer|brewery|patisserie|restaurant|e-commerce|fintech|agency|holdings|inc|ltd|llc|pvt|co\.)\b/i;
+
+    const cleanQuery = query.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    for (let i = 0; i < Math.min(titles.length, 5); i++) {
+      const title = titles[i] || '';
+      if (!title) continue;
+
+      let desc = (descs[i] || '').trim();
+      const url = urls[i] || `https://en.wikipedia.org/wiki/${encodeURIComponent(title)}`;
+      const cleanTitle = title.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      const isExactMatch = cleanTitle === cleanQuery || title.toLowerCase() === query.toLowerCase();
+      const isPartialMatch = cleanTitle.includes(cleanQuery) || cleanQuery.includes(cleanTitle);
+
+      // If description was empty, attempt quick REST summary fetch for exact or top titles
+      if (!desc && (isExactMatch || i < 2)) {
+        try {
+          const sumCtrl = new AbortController();
+          const sumTimeout = setTimeout(() => sumCtrl.abort(), 2000);
+          const sumRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`, {
+            signal: sumCtrl.signal,
+            headers: { 'User-Agent': 'BrandDNA-Studio/2.0' }
+          });
+          clearTimeout(sumTimeout);
+          if (sumRes.ok) {
+            const sumJson = await sumRes.json();
+            desc = sumJson.description || (sumJson.extract ? sumJson.extract.slice(0, 160) : '');
+          }
+        } catch (sumErr) {
+          // Ignore summary fetch timeout/error
+        }
+      }
+
+      const isCommercial = commercialKeywords.test(desc) || commercialKeywords.test(title);
+
+      if (isExactMatch || isCommercial || isPartialMatch) {
+        matches.push({
+          title,
+          description: desc || 'Wikipedia global entity entry',
+          url,
+          isExactMatch,
+          isCommercial
+        });
+      }
+    }
+
+    return matches;
+  } catch (err) {
+    console.warn('Wikipedia brand search query error / timeout:', err.message);
+    return [];
+  }
+}
+
 // Procedural Trademark Conflict Evaluator (for offline, demo, or fallback)
-export function evaluateProceduralTrademark(brandName = '', niche = '', liveMatches = []) {
+export function evaluateProceduralTrademark(brandName = '', niche = '', liveMatches = [], wikiMatches = []) {
   const cleanName = (brandName || '').trim();
   const lower = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '');
   const nice = mapNicheToNiceClass(niche);
@@ -427,7 +513,32 @@ export function evaluateProceduralTrademark(brandName = '', niche = '', liveMatc
     });
   }
 
-  // 2. Check live QuickCompany matches if available
+  // 2. Check live Wikipedia / Wikidata global entity records
+  if (Array.isArray(wikiMatches) && wikiMatches.length > 0) {
+    wikiMatches.forEach(wiki => {
+      if (wiki.isExactMatch && wiki.isCommercial) {
+        status = 'Conflict';
+        conflicts.unshift({
+          name: `${wiki.title} (Live Global Entity / Brand Record)`,
+          reason: `Existing registered commercial company or brand identified via global encyclopedia & entity archives: "${wiki.description}". Direct trademark conflict.`
+        });
+      } else if (wiki.isExactMatch) {
+        if (status !== 'Conflict') status = 'Caution';
+        conflicts.push({
+          name: `${wiki.title} (Global Entity Record)`,
+          reason: `Exact title match with existing public global entity: "${wiki.description}". May face prior-use objection.`
+        });
+      } else if (wiki.isCommercial) {
+        if (status === 'Clear') status = 'Caution';
+        conflicts.push({
+          name: `${wiki.title} (Commercial Entity Overlap)`,
+          reason: `Phonetically / conceptually similar commercial entity operating: "${wiki.description}".`
+        });
+      }
+    });
+  }
+
+  // 3. Check live QuickCompany matches if available
   if (Array.isArray(liveMatches) && liveMatches.length > 0) {
     liveMatches.forEach(live => {
       const liveName = (live.name || '').trim();
@@ -446,7 +557,7 @@ export function evaluateProceduralTrademark(brandName = '', niche = '', liveMatc
     });
   }
 
-  // 3. Check phonetic / generic caution terms
+  // 4. Check phonetic / generic caution terms
   if (status !== 'Conflict') {
     const genericWords = ['coffee', 'cafe', 'tech', 'studio', 'pay', 'mart', 'kart', 'super', 'hyper', 'aura', 'urban', 'luxe'];
     const matchedGeneric = genericWords.find(w => lower === w || lower === w + 's' || lower === 'the' + w);
@@ -466,7 +577,7 @@ export function evaluateProceduralTrademark(brandName = '', niche = '', liveMatc
     }
   }
 
-  // 4. Smart Alternative Generator based on niche
+  // 5. Smart Alternative Generator based on niche
   const nameBase = cleanName.replace(/Living|Studio|Lab|Venture|Co|Club|Craft|House|Roasters/gi, '').trim() || 'Veritas';
   let alternatives = [];
 
@@ -492,7 +603,8 @@ export function evaluateProceduralTrademark(brandName = '', niche = '', liveMatc
     conflicts: conflicts,
     alternatives: alternatives,
     quickCompanyUrl: `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(cleanName)}`,
-    quickCompanyMatches: liveMatches || []
+    quickCompanyMatches: liveMatches || [],
+    wikiMatches: wikiMatches || []
   };
 }
 
@@ -545,8 +657,11 @@ export default async (req, context) => {
   // 3. Direct 100+ Trademark DB Collision Check
   const dbMatch = checkDatabaseTrademarkCollision(brandName);
 
-  // 4. Query QuickCompany live database in parallel
-  const liveMatches = await queryQuickCompanyTrademarks(brandName);
+  // 4. Query QuickCompany live database and Wikipedia/Wikidata in parallel
+  const [liveMatches, wikiMatches] = await Promise.all([
+    queryQuickCompanyTrademarks(brandName),
+    queryWikipediaBrandSearch(brandName)
+  ]);
 
   // 5. Check for API key
   const serverApiKey = (typeof process !== 'undefined' && process.env ? process.env.GEMINI_API_KEY : null)
@@ -554,16 +669,16 @@ export default async (req, context) => {
 
   const activeApiKey = clientApiKey || serverApiKey;
 
-  // If no API key configured, use procedural synthesis incorporating any live QuickCompany matches & DB collision
+  // If no API key configured, use procedural synthesis incorporating live QuickCompany, Wikipedia hits & DB collision
   if (!activeApiKey) {
-    const proceduralResult = evaluateProceduralTrademark(brandName, niche, liveMatches);
+    const proceduralResult = evaluateProceduralTrademark(brandName, niche, liveMatches, wikiMatches);
     return new Response(JSON.stringify(proceduralResult), {
       status: 200,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
   }
 
-  // 6. Construct AI Prompt for Gemini 3.8 Flash with QuickCompany & DB context
+  // 6. Construct AI Prompt for Gemini 3.8 Flash with QuickCompany, Wikipedia & DB context
   let liveContextSection = '';
   if (liveMatches && liveMatches.length > 0) {
     liveContextSection = `
@@ -573,6 +688,17 @@ ${liveMatches.map(m => `- Mark: "${m.name}" | Class: ${m.trademarkClass} | Statu
 INSTRUCTIONS REGARDING LIVE QUICKCOMPANY DATA:
 - Incorporate any direct, identical, or closely confusing matches from the QuickCompany results above into the "conflicts" array.
 - If an exact or near-identical mark is registered or active on QuickCompany in this or related classes, mark status as "Conflict".
+`;
+  }
+
+  let wikiContextSection = '';
+  if (wikiMatches && wikiMatches.length > 0) {
+    wikiContextSection = `
+LIVE WIKIDATA / WIKIPEDIA BRAND & ENTITY RECORDS:
+${wikiMatches.map(m => `- "${m.title}": ${m.description} [Commercial Entity: ${m.isCommercial ? 'Yes' : 'Unconfirmed'}]`).join('\n')}
+
+INSTRUCTIONS REGARDING LIVE WIKIPEDIA / WIKIDATA RECORDS:
+- If "${brandName}" matches or sounds like an active company, startup, D2C brand, mobile app, or platform found above, mark status as "Conflict" and identify the real-world operating company.
 `;
   }
 
@@ -594,10 +720,12 @@ Evaluate trademark registration availability, phonetic similarity, and conflict 
 - Mapped NICE Trademark Class: "${niceClass.label}: ${niceClass.desc}"
 ${dbContextSection}
 ${liveContextSection}
+${wikiContextSection}
 Analyze:
-1. Identical conflicts with existing registered Indian & global trademarks in this NICE Class or closely related classes (e.g. Zomato, Swiggy, Chaayos, Chai Point, Blue Tokai, Starbucks, Nykaa, Mamaearth, Sugar, boAt, Noise, Zepto, Blinkit, Razorpay, Paytm, Nike, Apple, Zara, Snitch, Lenskart, Tata, Reliance, etc.).
-2. Phonetic / Sound-alike conflicts (e.g. Kaffe vs Cafe, Nyke vs Nike, BoAt vs Boat, etc.).
-3. Deceptiveness or Section 9 absolute grounds of refusal under Indian Trade Marks Act 1999 (descriptiveness, laudatory terms, generic words).
+1. Identical conflicts with existing registered Indian & global trademarks in this NICE Class or closely related classes (e.g. Zomato, Swiggy, Chaayos, Chai Point, Blue Tokai, Starbucks, Nykaa, Mamaearth, Sugar, boAt, Noise, Zepto, Blinkit, Razorpay, Paytm, Nike, Apple, Zara, Snitch, Lenskart, Dunzo, Zerodha, Tata, Reliance, etc.).
+2. Real-world existence: Check if this name belongs to any existing company, startup, D2C brand, app, or registered mark—returning Conflict (if an exact brand/company exists), Caution (if similar phonetic names exist), or Clear (only if genuinely unused), along with the real owner/industry found.
+3. Phonetic / Sound-alike conflicts (e.g. Kaffe vs Cafe, Nyke vs Nike, BoAt vs Boat, etc.).
+4. Deceptiveness or Section 9 absolute grounds of refusal under Indian Trade Marks Act 1999 (descriptiveness, laudatory terms, generic words).
 
 Return a SINGLE valid JSON object matching this schema strictly:
 {
@@ -606,8 +734,8 @@ Return a SINGLE valid JSON object matching this schema strictly:
   "classDesc": "${niceClass.desc}",
   "conflicts": [
     {
-      "name": "Existing Conflicting Mark or Legal Ground (including owner)",
-      "reason": "Clear explanation of identical/phonetic overlap or Section 9 objection"
+      "name": "Existing Conflicting Mark, Company or Legal Ground (including owner/industry)",
+      "reason": "Clear explanation of identical/phonetic overlap, commercial company existence, or Section 9 objection"
     }
   ],
   "alternatives": [
@@ -618,7 +746,7 @@ Return a SINGLE valid JSON object matching this schema strictly:
 }
 
 Rules:
-- If there is an active, identical or direct phonetic collision found on QuickCompany or known registry (or noted above), status MUST be "Conflict".
+- If there is an active, identical or direct commercial collision found on QuickCompany, Wikipedia, or known registry (or noted above), status MUST be "Conflict".
 - If the word is crowded, descriptive, or has borderline phonetic similarity, status MUST be "Caution".
 - If the mark is distinctive, coined, or clear of notable collisions, status MUST be "Clear" (and conflicts array should be empty []).
 - "alternatives" must be 3 legally strong, distinctive, protectable coined names tailored to the niche.
@@ -661,7 +789,7 @@ Rules:
 
     if (!response.ok) {
       console.warn('Gemini API call returned non-OK status:', response.status);
-      const fallback = evaluateProceduralTrademark(brandName, niche, liveMatches);
+      const fallback = evaluateProceduralTrademark(brandName, niche, liveMatches, wikiMatches);
       return new Response(JSON.stringify(fallback), {
         status: 200,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
@@ -697,6 +825,28 @@ Rules:
       }
     }
 
+    // ENFORCE WIKIPEDIA COMMERCIAL ENTITY COLLISION: If real-world company/brand matches, status MUST be Conflict
+    if (wikiMatches && wikiMatches.length > 0) {
+      wikiMatches.forEach(wiki => {
+        const already = conflictsList.some(c => c.name.toLowerCase().includes(wiki.title.toLowerCase()));
+        if (wiki.isExactMatch && wiki.isCommercial) {
+          finalStatus = 'Conflict';
+          if (!already) {
+            conflictsList.unshift({
+              name: `${wiki.title} (Live Global Entity / Brand Record)`,
+              reason: `Existing registered commercial company or brand identified: "${wiki.description}". Direct trademark conflict.`
+            });
+          }
+        } else if (wiki.isExactMatch && !already) {
+          if (finalStatus !== 'Conflict') finalStatus = 'Caution';
+          conflictsList.push({
+            name: `${wiki.title} (Global Entity Record)`,
+            reason: `Exact match with public global entity: "${wiki.description}". Potential prior-use objection.`
+          });
+        }
+      });
+    }
+
     // Guarantee any live QuickCompany matches are merged into conflicts
     if (liveMatches && liveMatches.length > 0) {
       liveMatches.forEach(live => {
@@ -726,9 +876,10 @@ Rules:
       conflicts: conflictsList,
       alternatives: Array.isArray(parsed.alternatives) && parsed.alternatives.length >= 3
         ? parsed.alternatives.slice(0, 3)
-        : evaluateProceduralTrademark(brandName, niche, liveMatches).alternatives,
+        : evaluateProceduralTrademark(brandName, niche, liveMatches, wikiMatches).alternatives,
       quickCompanyUrl: `https://www.quickcompany.in/trademarks?q=${encodeURIComponent(brandName)}`,
-      quickCompanyMatches: liveMatches || []
+      quickCompanyMatches: liveMatches || [],
+      wikiMatches: wikiMatches || []
     };
 
     return new Response(JSON.stringify(result), {
@@ -738,7 +889,7 @@ Rules:
 
   } catch (err) {
     console.error('Trademark AI analysis error, using smart procedural fallback:', err);
-    const fallback = evaluateProceduralTrademark(brandName, niche, liveMatches);
+    const fallback = evaluateProceduralTrademark(brandName, niche, liveMatches, wikiMatches);
     return new Response(JSON.stringify(fallback), {
       status: 200,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
