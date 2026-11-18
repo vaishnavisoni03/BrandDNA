@@ -5502,12 +5502,7 @@ body {
   flex-shrink: 0 !important;
 }
 
-/* 4. Column Spans: 6 Columns for Colors, Typography, Instagram Mockup */
-#card-palette,
-.card-palette {
-  grid-column: span 6 !important;
-}
-
+/* 4. Column Spans: 6 Columns for Typography, Instagram Mockup */
 #card-typography,
 .card-typography {
   grid-column: span 6 !important;
@@ -5519,9 +5514,11 @@ body {
   grid-column: span 6 !important;
 }
 
-/* 5. Column Spans: Full Width (1 / -1) for Logo Studio, Calendar, Templates, Taglines, Ideas, and Remix Bar */
+/* 5. Column Spans: Full Width (1 / -1) for Logo Studio, Color Palette, Calendar, Templates, Taglines, Ideas, and Remix Bar */
 #card-logo-studio,
 .card-logo-studio,
+#card-palette,
+.card-palette,
 #remix-control-bar,
 .remix-control-bar,
 #card-calendar,
@@ -5533,6 +5530,97 @@ body {
 #brand-hero-bar,
 .brand-hero-bar {
   grid-column: 1 / -1 !important;
+}
+
+/* Color Palette Specific Polish: Stack Role Badges & Inline Text Color Toggles */
+#card-palette .swatches-grid,
+.swatches-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 16px !important;
+  margin: 1.25rem 0 !important;
+}
+
+.swatch-header-row {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  margin-bottom: 6px !important;
+}
+
+.swatch-hex {
+  font-size: 0.92rem !important;
+  font-weight: 700 !important;
+  color: #0F172A !important;
+  font-family: 'JetBrains Mono', monospace !important;
+  letter-spacing: 0.02em !important;
+}
+
+.swatch-role-pill {
+  display: block !important;
+  width: fit-content !important;
+  margin-top: 4px !important;
+  white-space: nowrap !important;
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  padding: 2px 8px !important;
+  border-radius: 9999px !important;
+}
+
+#card-palette .swatch-item {
+  padding: 10px !important;
+}
+
+#card-palette .swatch-name {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: #1E293B !important;
+}
+
+#card-palette .swatch-psychology {
+  display: block !important;
+  font-size: 0.74rem !important;
+  color: var(--text-muted, #64748B) !important;
+  line-height: 1.4 !important;
+  margin-top: 4px !important;
+}
+
+/* Arrange Text Color: White / Charcoal toggle pills in a clean horizontal row */
+.wcag-text-color-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.toggle-micro-label {
+  font-size: 0.76rem !important;
+  font-weight: 600 !important;
+  color: var(--text-muted, #64748B) !important;
+  white-space: nowrap !important;
+}
+
+.wcag-toggle-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 4px 12px !important;
+  font-size: 0.76rem !important;
+  font-weight: 600 !important;
+  border-radius: 9999px !important;
+  border: 1px solid var(--border-stone, #E2E8F0) !important;
+  background: #F8FAFC !important;
+  color: #475569 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.wcag-toggle-btn.active {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  border-color: #0F172A !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12) !important;
 }
 
 /* Logo Studio Specific Polish (Full Width + Single/Wrap Header + Stacked Action Buttons) */
@@ -5578,22 +5666,6 @@ body {
   font-size: 0.82rem !important;
   font-weight: 600 !important;
   box-sizing: border-box !important;
-}
-
-#card-palette .swatches-grid {
-  gap: 8px !important;
-}
-
-#card-palette .swatch-item {
-  padding: 4px !important;
-}
-
-#card-palette .swatch-name {
-  font-size: 0.72rem !important;
-}
-
-#card-palette .swatch-psychology {
-  display: none !important;
 }
 
 /* 6. Sub-Grid: Templates in a 3-Column Grid */
@@ -5660,6 +5732,10 @@ body {
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 8px !important;
+  }
+
+  .swatches-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 
   .logo-concepts-grid,
