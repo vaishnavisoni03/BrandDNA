@@ -1572,6 +1572,141 @@
             </div>
           </div>
 
+          <!-- =========================================================================
+               BENTO CARD: AI PRODUCT & VISUAL STUDIO (Span 12)
+               Powered by Google Imagen 3 (imagen-3.0-generate-002)
+               ========================================================================= -->
+          <div class="bento-card card-visual-studio" id="card-visual-studio">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-eyebrow card-kicker">Photorealistic Studio Assets</span>
+                <div class="card-title-row">
+                  <div class="card-icon-pill icon-emerald">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <rect x="3" y="3" width="18" height="18" rx="4"/>
+                      <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                      <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                  </div>
+                  <h2 class="card-title">AI Product &amp; Visual Studio</h2>
+                  <span class="badge-imagen-meta">Google Imagen 3 &bull; imagen-3.0-generate-002</span>
+                </div>
+              </div>
+              <div class="card-actions-header">
+                <span class="badge-studio-meta" id="visual-engine-badge">✨ Imagen 3 Ready</span>
+              </div>
+            </div>
+
+            <!-- Studio Interface Body -->
+            <div class="visual-studio-body">
+              
+              <!-- Left: Generation Controls & Context Injection -->
+              <div class="visual-controls-panel">
+                
+                <!-- Prompt Input Wrap -->
+                <div class="visual-field-group">
+                  <div class="visual-field-header">
+                    <label for="visual-prompt-input" class="visual-field-label">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                      <span>Product &amp; Visual Prompt</span>
+                    </label>
+                    <button type="button" class="btn-text-action" id="btn-suggest-visual-prompt" title="Generate fresh niche prompt idea">
+                      ✨ Suggest Idea
+                    </button>
+                  </div>
+                  <textarea 
+                    id="visual-prompt-input" 
+                    class="form-textarea visual-prompt-textarea" 
+                    rows="3" 
+                    placeholder="Describe your commercial product shot, packaging mockup, or campaign editorial..."
+                  ></textarea>
+                </div>
+
+                <!-- Aspect Ratio Selector -->
+                <div class="visual-field-group">
+                  <label class="visual-field-label">Aspect Ratio</label>
+                  <div class="ratio-selector-group" id="ratio-selector-group" role="radiogroup" aria-label="Aspect Ratio Selection">
+                    <button type="button" class="btn-ratio-pill active" data-ratio="1:1" aria-checked="true">
+                      <span class="ratio-box ratio-box-1-1"></span>
+                      <span class="ratio-label">1:1 Square</span>
+                    </button>
+                    <button type="button" class="btn-ratio-pill" data-ratio="4:5" aria-checked="false">
+                      <span class="ratio-box ratio-box-4-5"></span>
+                      <span class="ratio-label">4:5 Social</span>
+                    </button>
+                    <button type="button" class="btn-ratio-pill" data-ratio="16:9" aria-checked="false">
+                      <span class="ratio-box ratio-box-16-9"></span>
+                      <span class="ratio-label">16:9 Hero</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Brand Context Injection Preview Box -->
+                <div class="visual-injection-box">
+                  <div class="injection-header">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                    <span class="injection-title">Auto-Injected Brand DNA Parameters</span>
+                  </div>
+                  <div class="injection-pills-row">
+                    <span class="injection-pill" id="visual-inject-niche">Niche: Skincare</span>
+                    <span class="injection-pill" id="visual-inject-vibe">Vibe: Organic</span>
+                    <div class="injection-palette-dots" id="visual-inject-palette" title="Active Palette Colors Injected"></div>
+                  </div>
+                  <p class="injection-explainer">
+                    Active brand colors, niche textures, and aesthetic lighting are automatically injected into every generation for seamless commercial consistency.
+                  </p>
+                </div>
+
+                <!-- Generate Visual Action Button -->
+                <div class="visual-actions-row">
+                  <button type="button" id="btn-generate-visual" class="btn btn-primary btn-generate-visual">
+                    <span class="btn-spinner hidden" id="visual-generate-spinner"></span>
+                    <svg id="visual-generate-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                    </svg>
+                    <span id="btn-generate-visual-text">Generate Visual</span>
+                  </button>
+                </div>
+
+              </div>
+
+              <!-- Right: Visual Stage & Canvas Preview -->
+              <div class="visual-stage-panel">
+                <div class="visual-stage-container ratio-1-1" id="visual-stage-container">
+                  
+                  <!-- Loading Overlay -->
+                  <div class="visual-stage-loading hidden" id="visual-stage-loading">
+                    <div class="visual-shimmer-card">
+                      <div class="visual-spinner-ring"></div>
+                      <span class="loading-label-title">Synthesizing via Imagen 3...</span>
+                      <span class="loading-label-sub" id="visual-loading-sub">Rendering photorealistic product lighting &amp; textures</span>
+                    </div>
+                  </div>
+
+                  <!-- Generated Visual Image / Stage Preview -->
+                  <div class="visual-display-wrapper" id="visual-display-wrapper">
+                    <img id="visual-result-img" class="visual-result-img hidden" alt="AI Generated Product Visual" />
+                    <div class="visual-stage-placeholder" id="visual-stage-placeholder"></div>
+                  </div>
+
+                </div>
+
+                <!-- Visual Stage Footer -->
+                <div class="visual-stage-footer">
+                  <div class="visual-meta-info">
+                    <span class="visual-dimension-badge" id="visual-dimensions-badge">1080 &times; 1080 px &bull; PNG</span>
+                    <span class="visual-watermark-note">Commercial Rights &bull; Print &amp; Web Ready</span>
+                  </div>
+                  <button type="button" class="btn btn-secondary btn-download-visual" id="btn-download-visual" title="Download High-Res PNG">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Download PNG</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
         </section>
       </main>
     </div>

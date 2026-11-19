@@ -5622,6 +5622,8 @@ body {
 .card-palette,
 #remix-control-bar,
 .remix-control-bar,
+#card-visual-studio,
+.card-visual-studio,
 #card-calendar,
 .card-launch-calendar,
 #card-ideas,
@@ -5860,6 +5862,423 @@ body {
   #ideas-cards-grid,
   .ideas-cards-grid {
     grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ==========================================================================
+   AI Product & Visual Studio (Google Imagen 3)
+   ========================================================================== */
+#card-visual-studio,
+.card-visual-studio {
+  grid-column: 1 / -1 !important;
+  background: #FFFFFF !important;
+  border: 1px solid #DCE3DE !important;
+  border-radius: var(--radius-lg, 16px) !important;
+  padding: 24px !important;
+}
+
+.badge-imagen-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+
+.visual-studio-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 1.25rem;
+  align-items: start;
+}
+
+.visual-controls-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.visual-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.visual-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.visual-field-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.btn-text-action {
+  background: none;
+  border: none;
+  color: #059669;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-text-action:hover {
+  background: #ECFDF5;
+  color: #047857;
+  text-decoration: underline;
+}
+
+.visual-prompt-textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #DCE3DE;
+  background: #F9FAF9;
+  color: #111827;
+  resize: vertical;
+  min-height: 80px;
+  transition: all 0.2s ease;
+}
+
+.visual-prompt-textarea:focus {
+  outline: none;
+  border-color: #059669;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
+}
+
+/* Aspect Ratio Selector Pills */
+.ratio-selector-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-ratio-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #F9FAF9;
+  border: 1px solid #DCE3DE;
+  color: #4B5563;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-ratio-pill:hover {
+  background: #F3F4F6;
+  border-color: #9CA3AF;
+  color: #111827;
+}
+
+.btn-ratio-pill.active {
+  background: #ECFDF5;
+  border-color: #059669;
+  color: #059669;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.15);
+}
+
+.ratio-box {
+  display: inline-block;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+}
+
+.ratio-box-1-1 {
+  width: 12px;
+  height: 12px;
+}
+
+.ratio-box-4-5 {
+  width: 11px;
+  height: 13.5px;
+}
+
+.ratio-box-16-9 {
+  width: 16px;
+  height: 9px;
+}
+
+/* Auto-Injected Brand DNA Parameter Box */
+.visual-injection-box {
+  background: #F8FAF9;
+  border: 1px solid #E2E8E4;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.injection-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #059669;
+}
+
+.injection-pills-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.injection-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: #FFFFFF;
+  border: 1px solid #DCE3DE;
+  color: #374151;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.injection-palette-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 4px;
+}
+
+.inject-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  display: inline-block;
+}
+
+.injection-explainer {
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #6B7280;
+}
+
+/* Generate Button */
+.btn-generate-visual {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 18px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border-radius: 10px;
+  background: #059669;
+  color: #FFFFFF;
+  border: 1px solid #059669;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+}
+
+.btn-generate-visual:hover {
+  background: #047857;
+  border-color: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.28);
+}
+
+.btn-generate-visual:active {
+  transform: translateY(0);
+}
+
+.btn-generate-visual:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Right Stage Panel */
+.visual-stage-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.visual-stage-container {
+  width: 100%;
+  position: relative;
+  border-radius: 14px;
+  border: 1px solid #DCE3DE;
+  background: #F3F4F6;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(17, 24, 39, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.visual-stage-container.ratio-1-1 {
+  aspect-ratio: 1 / 1;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.visual-stage-container.ratio-4-5 {
+  aspect-ratio: 4 / 5;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.visual-stage-container.ratio-16-9 {
+  aspect-ratio: 16 / 9;
+  max-width: 100%;
+}
+
+.visual-display-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.visual-result-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+.visual-stage-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Loading Overlay */
+.visual-stage-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.visual-shimmer-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+}
+
+.visual-spinner-ring {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid #E5E7EB;
+  border-top-color: #059669;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-label-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.loading-label-sub {
+  font-size: 0.74rem;
+  color: #6B7280;
+  max-width: 240px;
+}
+
+/* Visual Stage Footer */
+.visual-stage-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 4px 2px;
+}
+
+.visual-meta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.visual-dimension-badge {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.visual-watermark-note {
+  font-size: 0.68rem;
+  color: #6B7280;
+}
+
+.btn-download-visual {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #FFFFFF;
+  border: 1px solid #DCE3DE;
+  color: #111827;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-download-visual:hover {
+  background: #F3F4F6;
+  border-color: #9CA3AF;
+  color: #059669;
+}
+
+@media (max-width: 900px) {
+  .visual-studio-body {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .visual-stage-container.ratio-1-1,
+  .visual-stage-container.ratio-4-5 {
+    max-width: 100%;
   }
 }
 

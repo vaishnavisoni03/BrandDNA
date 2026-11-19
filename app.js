@@ -420,6 +420,9 @@
     taglineCount: 8,
     auditBgColor: '#2563EB',
     auditTextColor: '#FFFFFF',
+    selectedAspectRatio: '1:1',
+    isGeneratingVisual: false,
+    currentVisualDataUrl: null,
     isLiked: false,
     likedCount: 1420,
     isSaved: false,
@@ -490,6 +493,27 @@
     btnRegenerateLogos: document.getElementById('btn-regenerate-logos'),
     regenerateLogosSpinner: document.getElementById('regenerate-logos-spinner'),
     btnRegenerateLogosText: document.getElementById('btn-regenerate-logos-text'),
+
+    // AI Product & Visual Studio (Google Imagen 3)
+    cardVisualStudio: document.getElementById('card-visual-studio'),
+    visualPromptInput: document.getElementById('visual-prompt-input'),
+    btnSuggestVisualPrompt: document.getElementById('btn-suggest-visual-prompt'),
+    ratioSelectorGroup: document.getElementById('ratio-selector-group'),
+    btnRatioPills: document.querySelectorAll('#ratio-selector-group .btn-ratio-pill'),
+    visualInjectNiche: document.getElementById('visual-inject-niche'),
+    visualInjectVibe: document.getElementById('visual-inject-vibe'),
+    visualInjectPalette: document.getElementById('visual-inject-palette'),
+    btnGenerateVisual: document.getElementById('btn-generate-visual'),
+    visualGenerateSpinner: document.getElementById('visual-generate-spinner'),
+    btnGenerateVisualText: document.getElementById('btn-generate-visual-text'),
+    visualStageContainer: document.getElementById('visual-stage-container'),
+    visualStageLoading: document.getElementById('visual-stage-loading'),
+    visualLoadingSub: document.getElementById('visual-loading-sub'),
+    visualResultImg: document.getElementById('visual-result-img'),
+    visualStagePlaceholder: document.getElementById('visual-stage-placeholder'),
+    visualDimensionsBadge: document.getElementById('visual-dimensions-badge'),
+    btnDownloadVisual: document.getElementById('btn-download-visual'),
+    visualEngineBadge: document.getElementById('visual-engine-badge'),
 
     swatchesGrid: document.getElementById('swatches-grid'),
     paletteNarrative: document.getElementById('palette-narrative'),
@@ -9397,6 +9421,35 @@ ${(b.palette || b.colors).map(c => `- **${c.hex}** | ${c.name} (${c.role}): ${c.
     }
 
     // Remix Colors & Fonts Control Bar
+    // AI Product & Visual Studio (Google Imagen 3)
+    if (elements.btnGenerateVisual) {
+      elements.btnGenerateVisual.addEventListener('click', handleGenerateVisual);
+    }
+    if (elements.btnSuggestVisualPrompt) {
+      elements.btnSuggestVisualPrompt.addEventListener('click', () => {
+        const brand = state.currentBrand || PRESET_BRANDS.komorebi;
+        if (brand && elements.visualPromptInput) {
+          const suggestions = getNicheVisualPrompts(brand);
+          const currentVal = elements.visualPromptInput.value;
+          const nextPrompt = suggestions.find(s => s !== currentVal) || suggestions[0];
+          elements.visualPromptInput.value = nextPrompt;
+          elements.visualPromptInput.dataset.isDefault = 'false';
+          showToast('Updated prompt with fresh product concept idea!', 'info');
+        }
+      });
+    }
+    if (elements.btnRatioPills && elements.btnRatioPills.length > 0) {
+      elements.btnRatioPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          const ratio = pill.getAttribute('data-ratio');
+          if (ratio) handleSelectAspectRatio(ratio);
+        });
+      });
+    }
+    if (elements.btnDownloadVisual) {
+      elements.btnDownloadVisual.addEventListener('click', handleDownloadVisual);
+    }
+
     if (elements.btnRegenerateLogos) {
       elements.btnRegenerateLogos.addEventListener('click', (e) => {
         e.preventDefault();
