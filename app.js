@@ -8995,6 +8995,513 @@ Return ONLY valid JSON with NO commentary.
   }
 
   // =========================================================================
+  // 17e. AI Product & Visual Studio (Gemini 2.5 Flash Image & Puter.js Fallback)
+  // =========================================================================
+
+  function getNicheVisualPrompts(brand) {
+    const name = brand?.name || "BrandDNA";
+    const niche = brand?.industry || "Design & Lifestyle";
+    const colors = brand?.palette || brand?.colors || [];
+    const p1Name = colors[0]?.name ? `${colors[0].name.toLowerCase()} (${colors[0].hex})` : (colors[0]?.hex || '#059669');
+    const p2Name = colors[1]?.name ? `${colors[1].name.toLowerCase()} (${colors[1].hex})` : (colors[1]?.hex || '#10B981');
+    const p3Name = colors[2]?.name ? `${colors[2].name.toLowerCase()} (${colors[2].hex})` : (colors[2]?.hex || '#ECFDF5');
+    const p4Name = colors[3]?.name ? `${colors[3].name.toLowerCase()} (${colors[3].hex})` : (colors[3]?.hex || '#A7F3D0');
+    const darkName = colors[4]?.name ? `${colors[4].name.toLowerCase()} (${colors[4].hex})` : (colors[4]?.hex || '#111827');
+    const ind = (niche || '').toLowerCase();
+
+    if (ind.includes('coffee') || ind.includes('chai') || ind.includes('cafe') || ind.includes('tea')) {
+      return [
+        `Artisanal ceramic cup in ${p1Name} with delicate latte art on raw linen coaster beside organic coffee beans for ${name}, warm morning window light with ${p2Name} undertones`,
+        `Minimalist dark amber glass cold brew bottle with embossed ${name} label resting on distressed concrete bar, dramatic moody side lighting in ${p4Name} tones`,
+        `Handcrafted matcha whisk and ceramic bowl in ${p1Name} with vibrant green froth on weathered cedar tabletop for ${name}, Japanese wabi-sabi aesthetic`
+      ];
+    }
+
+    if (ind.includes('bakery') || ind.includes('culinary') || ind.includes('food') || ind.includes('pastry') || ind.includes('sweet')) {
+      return [
+        `Artisan sourdough loaf dusted with organic rye flour beside raw ceramic butter dish in ${p1Name} on light oak kitchen table for ${name}, golden hour sunshine`,
+        `Luxury artisanal chocolate truffles with gold leaf flakes in minimalist matte ${p1Name} textured gift box with embossed ${name} mark, editorial flatlay`,
+        `Warm flaky pastry resting on matte ${p2Name} stoneware plate beside antique copper kettle for ${name}, gentle morning steam, editorial gourmet style`
+      ];
+    }
+
+    if (ind.includes('skincare') || ind.includes('beauty') || ind.includes('botanical') || ind.includes('wellness') || ind.includes('cosmetic')) {
+      return [
+        `Frosted glass serum dropper bottle for ${name} with ${p1Name} label resting on smooth mossy river stone, soft morning sunlight and ${p4Name} dewy mist`,
+        `Minimalist ceramic cosmetic jar in ${p3Name} with brushed gold lid for ${name}, surrounded by botanical monstera leaves on a travertine pedestal`,
+        `Luxury facial oil in fluted glass container for ${name} casting caustic reflections on pristine water surface with ${p1Name} color grading, hyper-clean spa lighting`
+      ];
+    }
+
+    if (ind.includes('streetwear') || ind.includes('fashion') || ind.includes('sneaker') || ind.includes('apparel') || ind.includes('clothing')) {
+      return [
+        `Minimalist luxury heavyweight cotton hoodie in ${p1Name} folded on raw brutalist concrete plinth with architectural shadows and ${name} garment badge`,
+        `Designer leather sneaker with ${p1Name} and ${p4Name} color blocking resting on frosted acrylic display cube for ${name}, subtle neon rim light`,
+        `Editorial apparel collection display for ${name} with textured raw linen fabric swatches in ${p1Name} and matte aluminum garment tag, Vogue studio style`
+      ];
+    }
+
+    if (ind.includes('jewelry') || ind.includes('watch') || ind.includes('luxury') || ind.includes('gold') || ind.includes('diamond')) {
+      return [
+        `Brushed titanium automatic wristwatch for ${name} resting on midnight ${p1Name} velvet cushion with precision dial reflections, dramatic spotlighting`,
+        `Handcrafted 18k sculptural gold signet ring for ${name} on white Carrara marble slab casting sharp geometric shadows with ${p2Name} ambient bounce`,
+        `Prismatic brilliant-cut diamond pendant for ${name} suspended in crystal clear water with micro air bubbles, hyper-detailed macro lighting`
+      ];
+    }
+
+    if (ind.includes('tech') || ind.includes('ai') || ind.includes('saas') || ind.includes('cloud') || ind.includes('software')) {
+      return [
+        `Futuristic precision-machined aluminum desktop console for ${name} glowing with soft ${p1Name} neon ambient illumination on matte ${darkName} workstation`,
+        `Minimalist magnetic wireless charger in ${p1Name} with glowing LED halo on natural walnut desk beside architectural mug for ${name}`,
+        `Sleek matte glass smart device concept for ${name} floating with holographic chromatic light reflections in ${p4Name} against dark studio gradient`
+      ];
+    }
+
+    if (ind.includes('podcast') || ind.includes('media') || ind.includes('music') || ind.includes('audio')) {
+      return [
+        `Matte obsidian audiophile studio condenser microphone for ${name} on brass arm mount in warm acoustic-paneled creator studio with ${p1Name} accents`,
+        `Bespoke walnut and matte ${p1Name} over-ear studio headphones for ${name} resting on brass desktop stand with warm incandescent studio backlight`,
+        `Vintage-modern analog audio interface for ${name} with illuminated VU meters in ${p4Name} and polished aluminum knobs on dark slate desk`
+      ];
+    }
+
+    if (ind.includes('fitness') || ind.includes('outdoor') || ind.includes('adventure') || ind.includes('sport')) {
+      return [
+        `Ergonomic matte-finish insulated trail hydration flask in ${p1Name} for ${name} resting on mossy alpine granite rock with mist-shrouded mountain range`,
+        `Ultra-lightweight ripstop carbon-composite hiking pack in ${p1Name} for ${name} on sun-bleached driftwood at sunrise ocean shoreline`,
+        `Precision-milled brass compass and weathered topographic trail journal for ${name} on heavy waxed canvas blanket in ${p2Name}, morning adventure lighting`
+      ];
+    }
+
+    return [
+      `Luxury bespoke packaging gift box for ${name} in ${p1Name} with embossed foil emblem and ${p2Name} textured ribbon resting on warm travertine stone`,
+      `Commercial hero product showcase for ${name} in ${niche} on sculptural geometric plinths with harmonious ${p1Name} color-graded backdrop, studio lighting`,
+      `Minimalist lifestyle flatlay for ${name} featuring handcrafted leather goods in ${p1Name}, ceramic vessel in ${p3Name}, and editorial stationery`
+    ];
+  }
+
+  function getDefaultProductIdea(brand) {
+    const suggestions = getNicheVisualPrompts(brand);
+    return suggestions[0];
+  }
+
+  function suggestVisualIdea() {
+    const brand = state.currentBrand || PRESET_BRANDS.komorebi || (typeof generateProceduralBrand === 'function' ? generateProceduralBrand("Komorebi Botanicals", "Skincare & Wellness", "Organic Minimalist") : null);
+    if (!brand) return;
+
+    const input = elements.visualPromptInput || document.getElementById('visual-prompt-input');
+    if (!input) return;
+
+    const suggestions = getNicheVisualPrompts(brand);
+    const currentVal = input.value.trim();
+    
+    let nextPrompt = suggestions.find(s => s !== currentVal);
+    if (!nextPrompt) {
+      const randIdx = Math.floor(Math.random() * suggestions.length);
+      nextPrompt = suggestions[randIdx];
+    }
+
+    input.value = nextPrompt;
+    input.dataset.isDefault = 'false';
+    showToast('✨ Updated with tailored product concept prompt!', 'info', 2500);
+    return nextPrompt;
+  }
+  window.suggestVisualIdea = suggestVisualIdea;
+
+  function getEnrichedVisualPrompt(userPrompt, brand, ratio) {
+    const brandName = brand?.name || "BrandDNA";
+    const niche = brand?.industry || "Design & Lifestyle";
+    const vibe = brand?.vibe || "Modern Minimalist";
+    const colorsHex = (brand?.palette || brand?.colors || []).map(c => c.hex).join(', ');
+    const base = (userPrompt || '').trim() || getDefaultProductIdea(brand);
+
+    return `${base}, commercial high-end product photography for ${brandName}, ${niche} industry, ${vibe} aesthetic, color grading strictly harmonized with brand palette [${colorsHex}], professional studio softbox lighting, 8k resolution, raytraced reflections, hyper-detailed materials and textures, shot on 85mm f/1.4 lens, clean architectural backdrop, editorial Vogue quality, no text distortions, ultra-photorealistic.`;
+  }
+
+  function updateVisualStudioContext(brand) {
+    if (!brand) return;
+
+    if (elements.visualInjectNiche) {
+      elements.visualInjectNiche.textContent = `Niche: ${brand.industry ? brand.industry.split('&')[0].trim() : 'Design'}`;
+    }
+    if (elements.visualInjectVibe) {
+      elements.visualInjectVibe.textContent = `Vibe: ${brand.vibe || 'Minimalist'}`;
+    }
+
+    if (elements.visualInjectPalette) {
+      elements.visualInjectPalette.innerHTML = '';
+      const colors = brand.palette || brand.colors || [];
+      colors.slice(0, 5).forEach(c => {
+        const dot = document.createElement('span');
+        dot.className = 'inject-dot';
+        dot.style.backgroundColor = c.hex;
+        dot.setAttribute('title', `${c.name}: ${c.hex}`);
+        elements.visualInjectPalette.appendChild(dot);
+      });
+    }
+
+    if (elements.visualPromptInput) {
+      if (!elements.visualPromptInput.value || elements.visualPromptInput.dataset.isDefault === 'true') {
+        elements.visualPromptInput.value = getDefaultProductIdea(brand);
+        elements.visualPromptInput.dataset.isDefault = 'true';
+      }
+    }
+
+    if (!state.currentVisualDataUrl) {
+      renderProceduralVisualFallback(brand, state.selectedAspectRatio || '1:1', elements.visualPromptInput ? elements.visualPromptInput.value : '');
+    }
+  }
+
+  function handleSelectAspectRatio(ratio) {
+    if (!['1:1', '4:5', '16:9'].includes(ratio)) return;
+    state.selectedAspectRatio = ratio;
+
+    if (elements.btnRatioPills) {
+      elements.btnRatioPills.forEach(pill => {
+        const r = pill.getAttribute('data-ratio');
+        if (r === ratio) {
+          pill.classList.add('active');
+          pill.setAttribute('aria-checked', 'true');
+        } else {
+          pill.classList.remove('active');
+          pill.setAttribute('aria-checked', 'false');
+        }
+      });
+    }
+
+    if (elements.visualStageContainer) {
+      elements.visualStageContainer.classList.remove('ratio-1-1', 'ratio-4-5', 'ratio-16-9');
+      elements.visualStageContainer.classList.add(`ratio-${ratio.replace(':', '-')}`);
+    }
+
+    if (elements.visualDimensionsBadge) {
+      const dimMap = {
+        '1:1': '1080 × 1080 px • PNG',
+        '4:5': '1080 × 1350 px • PNG',
+        '16:9': '1920 × 1080 px • PNG'
+      };
+      elements.visualDimensionsBadge.textContent = dimMap[ratio] || '1080 × 1080 px • PNG';
+    }
+
+    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
+    if (brand && (!elements.visualResultImg || elements.visualResultImg.classList.contains('hidden') || !state.currentVisualDataUrl?.startsWith('data:image/png;base64'))) {
+      renderProceduralVisualFallback(brand, ratio, elements.visualPromptInput ? elements.visualPromptInput.value : '');
+    }
+  }
+
+  function generateProceduralVisualSvg(brand, ratio, promptText) {
+    let width = 1080, height = 1080;
+    if (ratio === '4:5') { width = 1080; height = 1350; }
+    if (ratio === '16:9') { width = 1920; height = 1080; }
+
+    const colors = brand.palette || brand.colors || [];
+    const p1 = colors[0]?.hex || '#059669';
+    const p2 = colors[1]?.hex || '#10B981';
+    const p3 = colors[2]?.hex || '#ECFDF5';
+    const p4 = colors[3]?.hex || '#A7F3D0';
+    const darkColor = colors[4]?.hex || '#111827';
+    const headingFont = cleanFontName(brand.headingFont || brand.fonts?.heading || 'Plus Jakarta Sans');
+    const bodyFont = cleanFontName(brand.bodyFont || brand.fonts?.body || 'Inter');
+    const name = brand.name || "BrandDNA";
+    const ind = (brand.industry || 'STUDIO COLLECTION').toUpperCase();
+
+    let productMarkup = '';
+    const indLower = (brand.industry || '').toLowerCase();
+
+    if (indLower.includes('coffee') || indLower.includes('chai') || indLower.includes('tea') || indLower.includes('cafe')) {
+      productMarkup = `
+        <ellipse cx="0" cy="90" rx="140" ry="24" fill="${p2}" opacity="0.4"/>
+        <ellipse cx="0" cy="85" rx="120" ry="18" fill="${p3}" stroke="${p1}" stroke-width="3"/>
+        <path d="M-60 -30 L60 -30 L45 80 C45 85, -45 85, -45 80 Z" fill="#FFFFFF" stroke="${p1}" stroke-width="4"/>
+        <ellipse cx="0" cy="-30" rx="60" ry="16" fill="${p2}" stroke="${p1}" stroke-width="3"/>
+        <ellipse cx="0" cy="-30" rx="52" ry="12" fill="${darkColor}"/>
+        <ellipse cx="0" cy="-30" rx="42" ry="8" fill="${p2}" opacity="0.8"/>
+        <path d="M-20 -50 Q-35 -80, -15 -110 Q5 -140, -10 -170" fill="none" stroke="${p4}" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+        <path d="M15 -50 Q30 -85, 10 -120 Q-10 -150, 5 -180" fill="none" stroke="${p4}" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+        <rect x="-35" y="10" width="70" height="40" rx="6" fill="${p3}" stroke="${p4}" stroke-width="1.5"/>
+        <text x="0" y="34" font-family="'${headingFont}', serif" font-weight="700" font-size="10" fill="${darkColor}" text-anchor="middle" letter-spacing="1">${name.slice(0, 10).toUpperCase()}</text>
+      `;
+    } else if (indLower.includes('bakery') || indLower.includes('food') || indLower.includes('pastry')) {
+      productMarkup = `
+        <ellipse cx="0" cy="90" rx="150" ry="25" fill="${p1}" opacity="0.3"/>
+        <ellipse cx="0" cy="80" rx="140" ry="20" fill="${p3}" stroke="${p4}" stroke-width="3"/>
+        <ellipse cx="0" cy="10" rx="110" ry="70" fill="${p2}" stroke="${p1}" stroke-width="4"/>
+        <ellipse cx="-20" cy="-5" rx="90" ry="50" fill="${p3}" fill-opacity="0.35"/>
+        <path d="M-60 -10 Q-30 -40, 10 -30 Q40 -20, 60 5" fill="none" stroke="${p1}" stroke-width="5" stroke-linecap="round"/>
+        <path d="M-40 20 Q0 -10, 40 10" fill="none" stroke="${p1}" stroke-width="4" stroke-linecap="round"/>
+        <rect x="-40" y="45" width="80" height="25" rx="5" fill="#FFFFFF" stroke="${p1}" stroke-width="2"/>
+        <text x="0" y="62" font-family="'${headingFont}', serif" font-weight="700" font-size="9" fill="${darkColor}" text-anchor="middle" letter-spacing="1.5">${name.slice(0, 10).toUpperCase()}</text>
+      `;
+    } else if (indLower.includes('tech') || indLower.includes('ai') || indLower.includes('saas') || indLower.includes('cloud')) {
+      productMarkup = `
+        <ellipse cx="0" cy="110" rx="160" ry="30" fill="${p1}" opacity="0.35"/>
+        <polygon points="0,-120 100,-60 100,60 0,120 -100,60 -100,-60" fill="${darkColor}" stroke="${p1}" stroke-width="4"/>
+        <polygon points="0,-100 80,-50 80,50 0,100 -80,50 -80,-50" fill="url(#prismGrad)" stroke="${p4}" stroke-width="2" stroke-dasharray="6 4"/>
+        <circle cx="0" cy="0" r="35" fill="${p1}" fill-opacity="0.3" stroke="${p4}" stroke-width="3"/>
+        <polygon points="0,-18 16,9 -16,9" fill="${p3}"/>
+        <text x="0" y="45" font-family="monospace" font-weight="700" font-size="10" fill="${p4}" text-anchor="middle" letter-spacing="2">SYS.CORE</text>
+      `;
+    } else if (indLower.includes('streetwear') || indLower.includes('fashion') || indLower.includes('apparel')) {
+      productMarkup = `
+        <ellipse cx="0" cy="110" rx="150" ry="25" fill="${p1}" opacity="0.3"/>
+        <rect x="-110" y="-80" width="220" height="170" rx="14" fill="${darkColor}" stroke="${p1}" stroke-width="3"/>
+        <rect x="-95" y="-65" width="190" height="140" rx="8" fill="url(#prismGrad)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+        <line x1="0" y1="-80" x2="0" y2="90" stroke="${p1}" stroke-width="4"/>
+        <line x1="-110" y1="5" x2="110" y2="5" stroke="${p1}" stroke-width="4"/>
+        <circle cx="0" cy="5" r="28" fill="${p3}" stroke="${p1}" stroke-width="3"/>
+        <text x="0" y="11" font-family="'${headingFont}', serif" font-weight="800" font-size="14" fill="${darkColor}" text-anchor="middle">${name.slice(0, 1)}</text>
+        <rect x="-60" y="45" width="120" height="24" rx="12" fill="${p1}"/>
+        <text x="0" y="61" font-family="'${bodyFont}', sans-serif" font-weight="700" font-size="9" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">DEBUT EDITION</text>
+      `;
+    } else {
+      productMarkup = `
+        <rect x="-85" y="-120" width="170" height="260" rx="35" fill="#FFFFFF" fill-opacity="0.85" stroke="${p1}" stroke-width="4"/>
+        <rect x="-70" y="-105" width="140" height="230" rx="25" fill="${p3}" fill-opacity="0.6"/>
+        <path d="M-65 15 C-30 0, 30 30, 65 15 L65 110 C65 120, -65 120, -65 110 Z" fill="${p1}" fill-opacity="0.35"/>
+        <rect x="-42" y="-160" width="84" height="42" rx="8" fill="${p2}" stroke="${darkColor}" stroke-width="3"/>
+        <rect x="-18" y="-195" width="36" height="36" rx="18" fill="${p1}"/>
+        <rect x="-5" y="-120" width="10" height="200" rx="4" fill="#FFFFFF" fill-opacity="0.6"/>
+        <rect x="-55" y="-40" width="110" height="110" rx="10" fill="#FFFFFF" stroke="${p4}" stroke-width="1.5"/>
+        <text x="0" y="-12" font-family="'${headingFont}', serif" font-weight="700" font-size="13" fill="${darkColor}" text-anchor="middle" letter-spacing="1">${name.slice(0, 14).toUpperCase()}</text>
+        <line x1="-30" y1="2" x2="30" y2="2" stroke="${p1}" stroke-width="1.5"/>
+        <text x="0" y="20" font-family="'${bodyFont}', sans-serif" font-weight="600" font-size="8" fill="${p1}" text-anchor="middle" letter-spacing="2">ORGANIC ESSENCE</text>
+        <text x="0" y="38" font-family="'${bodyFont}', sans-serif" font-weight="500" font-size="7" fill="#6B7280" text-anchor="middle" letter-spacing="1.5">30 ML / 1.0 FL. OZ.</text>
+      `;
+    }
+
+    return `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+      <defs>
+        <radialGradient id="bgGrad" cx="50%" cy="40%" r="80%">
+          <stop offset="0%" stop-color="${p3}" stop-opacity="0.95"/>
+          <stop offset="45%" stop-color="#E2E8E4"/>
+          <stop offset="100%" stop-color="${darkColor}"/>
+        </radialGradient>
+        <radialGradient id="pedestalGrad" cx="50%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#FFFFFF"/>
+          <stop offset="65%" stop-color="${p3}"/>
+          <stop offset="100%" stop-color="${p4}"/>
+        </radialGradient>
+        <radialGradient id="prismGrad" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="${p3}" stop-opacity="0.9"/>
+          <stop offset="100%" stop-color="${p1}" stop-opacity="0.6"/>
+        </radialGradient>
+        <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="35" result="blur"/>
+          <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+        </filter>
+        <filter id="dropShadow" x="-25%" y="-25%" width="150%" height="150%">
+          <feDropShadow dx="0" dy="28" stdDeviation="22" flood-color="#000000" flood-opacity="0.32"/>
+        </filter>
+      </defs>
+
+      <rect width="${width}" height="${height}" fill="url(#bgGrad)"/>
+      <ellipse cx="${width/2}" cy="${height * 0.74}" rx="${width * 0.44}" ry="${height * 0.17}" fill="#000000" opacity="0.36" filter="url(#softGlow)"/>
+
+      <g transform="translate(${width/2}, ${height * 0.65})">
+        <ellipse cx="0" cy="50" rx="${width * 0.28}" ry="35" fill="${p1}" opacity="0.3"/>
+        <path d="M-${width * 0.26} 0 L-${width * 0.26} 50 C-${width * 0.26} 85, ${width * 0.26} 85, ${width * 0.26} 50 L${width * 0.26} 0 Z" fill="${darkColor}" opacity="0.88"/>
+        <ellipse cx="0" cy="0" rx="${width * 0.26}" ry="36" fill="url(#pedestalGrad)" stroke="${p1}" stroke-width="3"/>
+      </g>
+
+      <g transform="translate(${width/2}, ${height * 0.43})" filter="url(#dropShadow)">
+        ${productMarkup}
+      </g>
+
+      <g transform="translate(60, ${height - 60})">
+        <text x="0" y="0" font-family="'${headingFont}', Georgia, serif" font-weight="800" font-size="28" fill="${darkColor}" letter-spacing="-0.5">${name}</text>
+        <text x="0" y="24" font-family="'${bodyFont}', sans-serif" font-weight="600" font-size="12" fill="${p1}" letter-spacing="2.5">${ind} &bull; STUDIO EDITION</text>
+      </g>
+
+      <g transform="translate(${width - 240}, 50)">
+        <rect width="180" height="34" rx="17" fill="${darkColor}" fill-opacity="0.75"/>
+        <text x="90" y="22" font-family="'${bodyFont}', sans-serif" font-weight="700" font-size="11" fill="#FFFFFF" text-anchor="middle" letter-spacing="1.5">${ratio} &bull; STUDIO MOCKUP</text>
+      </g>
+    </svg>
+    `.trim();
+  }
+
+  async function renderProceduralVisualFallback(brand, ratio, promptText) {
+    let width = 1080, height = 1080;
+    if (ratio === '4:5') { width = 1080; height = 1350; }
+    if (ratio === '16:9') { width = 1920; height = 1080; }
+
+    const svgString = generateProceduralVisualSvg(brand, ratio, promptText);
+
+    if (elements.visualStagePlaceholder) {
+      elements.visualStagePlaceholder.innerHTML = svgString;
+    }
+
+    if (elements.visualResultImg) {
+      elements.visualResultImg.classList.add('hidden');
+    }
+
+    try {
+      const img = new Image();
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const blobUrl = URL.createObjectURL(svgBlob);
+
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          state.currentVisualDataUrl = canvas.toDataURL('image/png');
+          URL.revokeObjectURL(blobUrl);
+        } catch (e) {
+          state.currentVisualDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
+          URL.revokeObjectURL(blobUrl);
+        }
+      };
+      img.onerror = () => {
+        state.currentVisualDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
+        URL.revokeObjectURL(blobUrl);
+      };
+      img.src = blobUrl;
+    } catch (e) {
+      state.currentVisualDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
+    }
+  }
+
+  async function handleGenerateVisual() {
+    if (state.isGeneratingVisual) return;
+    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
+    if (!brand) return;
+
+    const userPrompt = (elements.visualPromptInput ? elements.visualPromptInput.value.trim() : '') || getDefaultProductIdea(brand);
+    const ratio = state.selectedAspectRatio || '1:1';
+    const enrichedPrompt = getEnrichedVisualPrompt(userPrompt, brand, ratio);
+
+    state.isGeneratingVisual = true;
+    if (elements.btnGenerateVisual) elements.btnGenerateVisual.disabled = true;
+    if (elements.visualGenerateSpinner) elements.visualGenerateSpinner.classList.remove('hidden');
+    if (elements.btnGenerateVisualText) elements.btnGenerateVisualText.textContent = 'Generating with AI...';
+    if (elements.visualStageLoading) elements.visualStageLoading.classList.remove('hidden');
+    if (elements.visualLoadingSub) elements.visualLoadingSub.textContent = `Synthesizing ${ratio} commercial visual...`;
+
+    let success = false;
+    let imageDataUrl = null;
+    let engineSource = '';
+
+    // 1. Try Netlify Serverless Function (gemini-2.5-flash-image)
+    try {
+      const rawKey = elements.apiKeyInput ? elements.apiKeyInput.value.trim() : '';
+      const response = await fetch('/.netlify/functions/gemini', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(rawKey ? { 'x-goog-api-key': rawKey } : {})
+        },
+        body: JSON.stringify({
+          action: 'generateImage',
+          prompt: enrichedPrompt,
+          aspectRatio: ratio,
+          apiKey: rawKey || undefined
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data?.image || data?.base64) {
+          imageDataUrl = data.image || `data:${data.mimeType || 'image/png'};base64,${data.base64}`;
+          success = true;
+          engineSource = 'Gemini 2.5 Flash Image';
+        }
+      }
+    } catch (netErr) {
+      console.warn('Netlify image endpoint unavailable or offline:', netErr);
+    }
+
+    // 2. Try Puter.js Zero-Key Client Fallback (puter.ai.txt2img)
+    if (!success && typeof puter !== 'undefined' && puter.ai && typeof puter.ai.txt2img === 'function') {
+      try {
+        if (elements.visualLoadingSub) elements.visualLoadingSub.textContent = 'Generating with Puter.js Zero-Key AI...';
+        const puterImg = await puter.ai.txt2img(enrichedPrompt);
+        if (puterImg && puterImg.src) {
+          imageDataUrl = puterImg.src;
+          success = true;
+          engineSource = 'Puter.js AI (Zero-Key)';
+        }
+      } catch (puterErr) {
+        console.warn('Puter.js image generation error:', puterErr);
+      }
+    }
+
+    // 3. Fallback: Procedural Studio Vector Render (100% offline guarantee)
+    try {
+      if (success && imageDataUrl) {
+        state.currentVisualDataUrl = imageDataUrl;
+        if (elements.visualResultImg) {
+          elements.visualResultImg.src = imageDataUrl;
+          elements.visualResultImg.classList.remove('hidden');
+        }
+        if (elements.visualStagePlaceholder) elements.visualStagePlaceholder.innerHTML = '';
+        if (elements.visualEngineBadge) elements.visualEngineBadge.textContent = `✨ ${engineSource} (Live)`;
+        showToast(`✨ Generated photorealistic visual with ${engineSource}!`, 'success');
+      } else {
+        await renderProceduralVisualFallback(brand, ratio, userPrompt);
+        if (elements.visualEngineBadge) elements.visualEngineBadge.textContent = '🎨 Studio Render (Offline)';
+        showToast('Generated commercial studio visual mockup!', 'success');
+      }
+    } catch (err) {
+      console.error('Visual display error:', err);
+      await renderProceduralVisualFallback(brand, ratio, userPrompt);
+    } finally {
+      state.isGeneratingVisual = false;
+      if (elements.btnGenerateVisual) elements.btnGenerateVisual.disabled = false;
+      if (elements.visualGenerateSpinner) elements.visualGenerateSpinner.classList.add('hidden');
+      if (elements.btnGenerateVisualText) elements.btnGenerateVisualText.textContent = 'Generate Visual';
+      if (elements.visualStageLoading) elements.visualStageLoading.classList.add('hidden');
+    }
+  }
+
+  function handleDownloadVisual() {
+    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
+    const brandSlug = sanitizeHandle(brand?.name || 'brand');
+    const ratio = (state.selectedAspectRatio || '1:1').replace(':', 'x');
+    const filename = `${brandSlug}-product-visual-${ratio}.png`;
+
+    if (state.currentVisualDataUrl) {
+      if (state.currentVisualDataUrl.startsWith('data:')) {
+        const a = document.createElement('a');
+        a.href = state.currentVisualDataUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast(`Downloaded high-res product visual PNG! 📸`, 'success');
+      } else {
+        fetch(state.currentVisualDataUrl)
+          .then(res => res.blob())
+          .then(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`Downloaded high-res product visual PNG! 📸`, 'success');
+          })
+          .catch(() => {
+            const a = document.createElement('a');
+            a.href = state.currentVisualDataUrl;
+            a.download = filename;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          });
+      }
+    } else {
+      showToast('Visual is still preparing. Please try again.', 'warning');
+    }
+  }
+
+  // =========================================================================
   // 18. API Key & Engine Badge Handling
   // =========================================================================
   function initApiKey() {

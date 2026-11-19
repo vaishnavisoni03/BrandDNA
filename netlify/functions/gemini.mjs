@@ -1,9 +1,9 @@
 /**
- * Netlify Serverless Function: Gemini AI & Imagen 3 Proxy
+ * Netlify Serverless Function: Gemini AI & Image Generation Proxy
  * Path: netlify/functions/gemini.mjs
  * 
- * Securely forwards AI requests to Google Gemini 3.8 Flash and Imagen 3
- * (imagen-3.0-generate-002) using the GEMINI_API_KEY environment variable.
+ * Securely forwards AI requests to Google Gemini 3.8 Flash and Gemini 2.5 Flash Image
+ * (gemini-2.5-flash-image) using the GEMINI_API_KEY environment variable.
  */
 
 export default async (req, context) => {
@@ -53,44 +53,54 @@ export default async (req, context) => {
       });
     }
 
-    // 4. Action: Image Generation via Google Imagen 3 (imagen-3.0-generate-002)
+    // 4. Action: Image Generation via Google Gemini 2.5 Flash Image (gemini-2.5-flash-image)
     if (requestBody.action === 'generateImage') {
       const promptText = requestBody.prompt || requestBody.instances?.[0]?.prompt || '';
-      const aspectRatio = requestBody.aspectRatio || requestBody.parameters?.aspectRatio || '1:1';
 
-      // Supported Imagen 3 aspect ratios: '1:1', '3:4', '4:3', '9:16', '16:9'
-      let imagenRatio = aspectRatio;
-      if (aspectRatio === '4:5') {
-        imagenRatio = '3:4'; // Imagen 3 nearest standard portrait ratio
-      }
+      const imageUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-      const imagenUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${encodeURIComponent(apiKey)}`;
-
-      const imagenPayload = {
-        instances: [
-          { prompt: promptText }
+      const imagePayload = {
+        contents: [
+          {
+            parts: [
+              { text: promptText }
+            ]
+          }
         ],
-        parameters: {
-          sampleCount: 1,
-          aspectRatio: imagenRatio,
-          outputMimeType: 'image/png'
+        generationConfig: {
+          responseModalities: ["IMAGE"]
         }
       };
 
-      const response = await fetch(imagenUrl, {
+      let response = await fetch(imageUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(imagenPayload)
+        body: JSON.stringify(imagePayload)
       });
+
+      // Fallback to imagen-3.0-generate-002:predict if gemini-2.5-flash-image returns 404
+      if (response.status === 404) {
+        console.warn('gemini-2.5-flash-image returned 404, attempting fallback to imagen-3.0-generate-002:predict');
+        let imagenRatio = requestBody.aspectRatio === '4:5' ? '3:4' : (requestBody.aspectRatio || '1:1');
+        const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${encodeURIComponent(apiKey)}`;
+        response = await fetch(fallbackUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            instances: [{ prompt: promptText }],
+            parameters: { sampleCount: 1, aspectRatio: imagenRatio, outputMimeType: 'image/png' }
+          })
+        });
+      }
 
       const responseData = await response.json();
 
       if (!response.ok) {
-        console.error('Imagen 3 API Error:', responseData);
+        console.error('Gemini image generation error:', responseData);
         return new Response(JSON.stringify({
-          error: responseData.error?.message || 'Error generating visual with Imagen 3',
+          error: responseData.error?.message || 'Error generating image with Gemini image model',
           status: response.status,
           fallbackMode: true
         }), {
@@ -102,12 +112,32 @@ export default async (req, context) => {
         });
       }
 
-      const base64Data = responseData.predictions?.[0]?.bytesBase64Encoded;
-      const mimeType = responseData.predictions?.[0]?.mimeType || 'image/png';
+      // Extract inlineData.data (gemini-2.5-flash-image format) or bytesBase64Encoded (imagen format)
+      let base64Data = null;
+      let mimeType = 'image/png';
+
+      // 1. Check gemini-2.5-flash-image inlineData
+      const candidate = responseData.candidates?.[0];
+      if (candidate?.content?.parts) {
+        for (const part of candidate.content.parts) {
+          if (part.inlineData?.data) {
+            base64Data = part.inlineData.data;
+            mimeType = part.inlineData.mimeType || 'image/png';
+            break;
+          }
+        }
+      }
+
+      // 2. Check imagen predictions format fallback
+      if (!base64Data && responseData.predictions?.[0]?.bytesBase64Encoded) {
+        base64Data = responseData.predictions[0].bytesBase64Encoded;
+        mimeType = responseData.predictions[0].mimeType || 'image/png';
+      }
 
       if (!base64Data) {
+        console.warn('No image binary data found in model response:', responseData);
         return new Response(JSON.stringify({
-          error: 'No image data returned from Imagen 3',
+          error: 'No image data returned from model',
           fallbackMode: true
         }), {
           status: 500,
@@ -123,9 +153,7 @@ export default async (req, context) => {
         image: `data:${mimeType};base64,${base64Data}`,
         base64: base64Data,
         mimeType: mimeType,
-        aspectRatio: aspectRatio,
-        prompt: promptText,
-        predictions: responseData.predictions
+        prompt: promptText
       }), {
         status: 200,
         headers: {
