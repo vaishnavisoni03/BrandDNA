@@ -9053,7 +9053,7 @@ Return ONLY valid JSON with NO commentary.
   }
 
   // =========================================================================
-  // 17e. AI Product & Visual Studio (Gemini 2.5 Flash Image & Puter.js Fallback)
+  // 17e. AI Product & Visual Studio (Gemini 2.5 Flash Image & Local Canvas/SVG Fallback)
   // =========================================================================
 
   function getNicheVisualPrompts(brand) {
@@ -9472,9 +9472,9 @@ Return ONLY valid JSON with NO commentary.
         aspectRatio: ratio
       });
 
-      const base64 = data?.imageBase64 || data?.base64;
-      if (base64 || data?.image) {
-        imageDataUrl = data.image || ('data:' + (data?.mimeType || 'image/png') + ';base64,' + base64);
+      const dataUri = data?.imageUrl || data?.image || (data?.imageBase64 || data?.base64 ? ('data:' + (data?.mimeType || 'image/png') + ';base64,' + (data.imageBase64 || data.base64)) : null);
+      if (dataUri) {
+        imageDataUrl = dataUri;
         success = true;
         engineSource = 'Gemini 2.5 Flash Image';
         logVisualStatus('Success: Generated visual asset via Google Gemini 2.5 Flash Image (200 OK)', 'success');
@@ -9492,25 +9492,7 @@ Return ONLY valid JSON with NO commentary.
       }
     }
 
-    // 2. Try Puter.js Zero-Key Client Fallback (puter.ai.txt2img)
-    if (!success && typeof puter !== 'undefined' && puter.ai && typeof puter.ai.txt2img === 'function') {
-      try {
-        if (elements.visualLoadingSub) elements.visualLoadingSub.textContent = 'Generating with Puter.js Zero-Key AI...';
-        logVisualStatus('Attempting Puter.js Zero-Key AI fallback...', 'info');
-        const puterImg = await puter.ai.txt2img(enrichedPrompt);
-        if (puterImg && puterImg.src) {
-          imageDataUrl = puterImg.src;
-          success = true;
-          engineSource = 'Puter.js AI (Zero-Key)';
-          logVisualStatus('Success: Generated visual asset via Puter.js Zero-Key AI', 'success');
-        }
-      } catch (puterErr) {
-        console.warn('Puter.js image generation error:', puterErr);
-        logVisualStatus('Puter.js Notice: ' + (puterErr?.message || 'Offline'), 'warning');
-      }
-    }
-
-    // 3. Fallback: Procedural Studio Vector Render (100% offline guarantee)
+    // 2. Fallback: Procedural Studio HTML5 Canvas / SVG Render (100% offline guarantee)
     try {
       if (success && imageDataUrl) {
         state.currentVisualDataUrl = imageDataUrl;

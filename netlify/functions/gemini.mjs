@@ -148,10 +148,12 @@ export default async (req, context) => {
         });
       }
 
+      const dataUri = `data:${mimeType};base64,${base64Data}`;
       return new Response(JSON.stringify({
         success: true,
+        imageUrl: dataUri,
         imageBase64: base64Data,
-        image: `data:${mimeType};base64,${base64Data}`,
+        image: dataUri,
         base64: base64Data,
         mimeType: mimeType,
         prompt: promptText
