@@ -150,6 +150,7 @@ export default async (req, context) => {
 
       return new Response(JSON.stringify({
         success: true,
+        imageBase64: base64Data,
         image: `data:${mimeType};base64,${base64Data}`,
         base64: base64Data,
         mimeType: mimeType,

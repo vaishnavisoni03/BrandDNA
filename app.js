@@ -514,6 +514,7 @@
     visualDimensionsBadge: document.getElementById('visual-dimensions-badge'),
     btnDownloadVisual: document.getElementById('btn-download-visual'),
     visualEngineBadge: document.getElementById('visual-engine-badge'),
+    visualStatusBanner: document.getElementById('visual-status-banner'),
 
     swatchesGrid: document.getElementById('swatches-grid'),
     paletteNarrative: document.getElementById('palette-narrative'),
@@ -6940,7 +6941,64 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
     const hasHeaderKey = Boolean(rawKey && rawKey.length > 5);
 
     if (hasHeaderKey) {
-      const primaryUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(rawKey)}`;
+      if (payload && payload.action === 'generateImage') {
+        const promptText = payload.prompt || '';
+        const imgUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=' + encodeURIComponent(rawKey);
+        const imgBody = {
+          contents: [{ parts: [{ text: promptText }] }],
+          generationConfig: { responseModalities: ["IMAGE"] }
+        };
+
+        let res = await fetch(imgUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(imgBody)
+        });
+
+        if (res.status === 404) {
+          const fallbackUrl = 'https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=' + encodeURIComponent(rawKey);
+          res = await fetch(fallbackUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              instances: [{ prompt: promptText }],
+              parameters: { sampleCount: 1, aspectRatio: payload.aspectRatio === '4:5' ? '3:4' : (payload.aspectRatio || '1:1'), outputMimeType: 'image/png' }
+            })
+          });
+        }
+
+        const resData = await res.json();
+        if (!res.ok) {
+          throw new Error(resData.error?.message || ('Direct Gemini Image API error (' + res.status + ')'));
+        }
+
+        let base64Data = null;
+        let mimeType = 'image/png';
+        const candidate = resData.candidates?.[0];
+        if (candidate?.content?.parts) {
+          for (const part of candidate.content.parts) {
+            if (part.inlineData?.data) {
+              base64Data = part.inlineData.data;
+              mimeType = part.inlineData.mimeType || 'image/png';
+              break;
+            }
+          }
+        }
+        if (!base64Data && resData.predictions?.[0]?.bytesBase64Encoded) {
+          base64Data = resData.predictions[0].bytesBase64Encoded;
+          mimeType = resData.predictions[0].mimeType || 'image/png';
+        }
+
+        return {
+          success: true,
+          imageBase64: base64Data,
+          image: base64Data ? ('data:' + mimeType + ';base64,' + base64Data) : null,
+          base64: base64Data,
+          mimeType: mimeType
+        };
+      }
+
+      const primaryUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=' + encodeURIComponent(rawKey);
       let res = await fetch(primaryUrl, {
         method: 'POST',
         headers: {
@@ -6952,7 +7010,7 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
 
       if (res.status === 404) {
         console.warn('gemini-3.8-flash direct returned 404, attempting fallback to gemini-1.5-flash');
-        const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(rawKey)}`;
+        const fallbackUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + encodeURIComponent(rawKey);
         res = await fetch(fallbackUrl, {
           method: 'POST',
           headers: {
@@ -6965,7 +7023,7 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
 
       if (!res.ok) {
         const errorText = await res.text();
-        throw new Error(`Direct Gemini API error ${res.status}: ${errorText}`);
+        throw new Error('Direct Gemini API error ' + res.status + ': ' + errorText);
       }
 
       return await res.json();
@@ -6980,7 +7038,7 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
 
       if (!res.ok) {
         const errJson = await res.json().catch(() => ({}));
-        throw new Error(errJson.error || `Netlify Gemini proxy error (status ${res.status})`);
+        throw new Error(errJson.error || ('Netlify Gemini proxy error (status ' + res.status + ')'));
       }
 
       return await res.json();
@@ -9118,6 +9176,20 @@ Return ONLY valid JSON with NO commentary.
     return `${base}, commercial high-end product photography for ${brandName}, ${niche} industry, ${vibe} aesthetic, color grading strictly harmonized with brand palette [${colorsHex}], professional studio softbox lighting, 8k resolution, raytraced reflections, hyper-detailed materials and textures, shot on 85mm f/1.4 lens, clean architectural backdrop, editorial Vogue quality, no text distortions, ultra-photorealistic.`;
   }
 
+    function logVisualStatus(message, type = 'info') {
+    const banner = (elements && elements.visualStatusBanner) || document.getElementById('visual-status-banner');
+    if (!banner) return;
+    if (!message) {
+      banner.classList.add('hidden');
+      banner.textContent = '';
+      return;
+    }
+    const icon = type === 'error' ? '⚠️' : type === 'success' ? '✅' : type === 'warning' ? '⚡' : 'ℹ️';
+    banner.className = 'visual-status-banner status-' + type;
+    banner.innerHTML = '<span class="status-icon">' + icon + '</span> <span class="status-text">' + message + '</span>';
+    banner.classList.remove('hidden');
+  }
+
   function updateVisualStudioContext(brand) {
     if (!brand) return;
 
@@ -9379,53 +9451,62 @@ Return ONLY valid JSON with NO commentary.
     if (elements.visualGenerateSpinner) elements.visualGenerateSpinner.classList.remove('hidden');
     if (elements.btnGenerateVisualText) elements.btnGenerateVisualText.textContent = 'Generating with AI...';
     if (elements.visualStageLoading) elements.visualStageLoading.classList.remove('hidden');
-    if (elements.visualLoadingSub) elements.visualLoadingSub.textContent = `Synthesizing ${ratio} commercial visual...`;
+    if (elements.visualLoadingSub) elements.visualLoadingSub.textContent = 'Synthesizing ' + ratio + ' commercial visual via Netlify...';
 
     let success = false;
     let imageDataUrl = null;
     let engineSource = '';
+    let lastError = null;
 
-    // 1. Try Netlify Serverless Function (gemini-2.5-flash-image)
+    logVisualStatus('Connecting to Netlify serverless proxy (/.netlify/functions/gemini)...', 'info');
+    if (elements.visualEngineBadge) {
+      elements.visualEngineBadge.textContent = '⚡ Netlify Calling...';
+      elements.visualEngineBadge.className = 'badge-studio-meta';
+    }
+
+    // 1. Try Netlify Serverless Function (gemini-2.5-flash-image) via callGeminiEndpoint
     try {
-      const rawKey = elements.apiKeyInput ? elements.apiKeyInput.value.trim() : '';
-      const response = await fetch('/.netlify/functions/gemini', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(rawKey ? { 'x-goog-api-key': rawKey } : {})
-        },
-        body: JSON.stringify({
-          action: 'generateImage',
-          prompt: enrichedPrompt,
-          aspectRatio: ratio,
-          apiKey: rawKey || undefined
-        })
+      const data = await callGeminiEndpoint({
+        action: 'generateImage',
+        prompt: enrichedPrompt,
+        aspectRatio: ratio
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data?.image || data?.base64) {
-          imageDataUrl = data.image || `data:${data.mimeType || 'image/png'};base64,${data.base64}`;
-          success = true;
-          engineSource = 'Gemini 2.5 Flash Image';
-        }
+      const base64 = data?.imageBase64 || data?.base64;
+      if (base64 || data?.image) {
+        imageDataUrl = data.image || ('data:' + (data?.mimeType || 'image/png') + ';base64,' + base64);
+        success = true;
+        engineSource = 'Gemini 2.5 Flash Image';
+        logVisualStatus('Success: Generated visual asset via Google Gemini 2.5 Flash Image (200 OK)', 'success');
+      } else {
+        throw new Error('No image binary payload returned from Gemini endpoint');
       }
     } catch (netErr) {
-      console.warn('Netlify image endpoint unavailable or offline:', netErr);
+      lastError = netErr;
+      const errorMsg = netErr?.message || 'Serverless endpoint unavailable';
+      console.warn('Netlify Gemini endpoint error:', netErr);
+      logVisualStatus('Netlify Gemini API Notice: ' + errorMsg + '. Activating fallback...', 'warning');
+      if (elements.visualEngineBadge) {
+        elements.visualEngineBadge.textContent = '⚠️ API Error (Fallback Active)';
+        elements.visualEngineBadge.className = 'badge-studio-meta badge-status-error';
+      }
     }
 
     // 2. Try Puter.js Zero-Key Client Fallback (puter.ai.txt2img)
     if (!success && typeof puter !== 'undefined' && puter.ai && typeof puter.ai.txt2img === 'function') {
       try {
         if (elements.visualLoadingSub) elements.visualLoadingSub.textContent = 'Generating with Puter.js Zero-Key AI...';
+        logVisualStatus('Attempting Puter.js Zero-Key AI fallback...', 'info');
         const puterImg = await puter.ai.txt2img(enrichedPrompt);
         if (puterImg && puterImg.src) {
           imageDataUrl = puterImg.src;
           success = true;
           engineSource = 'Puter.js AI (Zero-Key)';
+          logVisualStatus('Success: Generated visual asset via Puter.js Zero-Key AI', 'success');
         }
       } catch (puterErr) {
         console.warn('Puter.js image generation error:', puterErr);
+        logVisualStatus('Puter.js Notice: ' + (puterErr?.message || 'Offline'), 'warning');
       }
     }
 
@@ -9438,16 +9519,25 @@ Return ONLY valid JSON with NO commentary.
           elements.visualResultImg.classList.remove('hidden');
         }
         if (elements.visualStagePlaceholder) elements.visualStagePlaceholder.innerHTML = '';
-        if (elements.visualEngineBadge) elements.visualEngineBadge.textContent = `✨ ${engineSource} (Live)`;
-        showToast(`✨ Generated photorealistic visual with ${engineSource}!`, 'success');
+        if (elements.visualEngineBadge) {
+          elements.visualEngineBadge.textContent = '✨ ' + engineSource + ' (Live)';
+          elements.visualEngineBadge.className = 'badge-studio-meta badge-status-success';
+        }
+        showToast('✨ Generated photorealistic visual with ' + engineSource + '!', 'success');
       } else {
         await renderProceduralVisualFallback(brand, ratio, userPrompt);
-        if (elements.visualEngineBadge) elements.visualEngineBadge.textContent = '🎨 Studio Render (Offline)';
+        if (elements.visualEngineBadge) {
+          elements.visualEngineBadge.textContent = '🎨 Studio Render (Offline)';
+          elements.visualEngineBadge.className = 'badge-studio-meta';
+        }
+        const errorDetail = lastError?.message ? (' (' + lastError.message + ')') : '';
+        logVisualStatus('Rendered commercial studio mockup. Model status: Offline/Fallback mode active' + errorDetail, 'info');
         showToast('Generated commercial studio visual mockup!', 'success');
       }
     } catch (err) {
       console.error('Visual display error:', err);
       await renderProceduralVisualFallback(brand, ratio, userPrompt);
+      logVisualStatus('Rendered studio mockup: ' + (err?.message || 'Ready'), 'info');
     } finally {
       state.isGeneratingVisual = false;
       if (elements.btnGenerateVisual) elements.btnGenerateVisual.disabled = false;
@@ -9456,6 +9546,11 @@ Return ONLY valid JSON with NO commentary.
       if (elements.visualStageLoading) elements.visualStageLoading.classList.add('hidden');
     }
   }
+
+  window.generateVisual = handleGenerateVisual;
+  window.handleGenerateVisual = handleGenerateVisual;
+  window.suggestVisualIdea = suggestVisualIdea;
+  window.suggestVisualPrompt = suggestVisualIdea;
 
   function handleDownloadVisual() {
     const brand = state.currentBrand || PRESET_BRANDS.komorebi;

@@ -1589,11 +1589,11 @@
                     </svg>
                   </div>
                   <h2 class="card-title">AI Product &amp; Visual Studio</h2>
-                  <span class="badge-imagen-meta">Google Imagen 3 &bull; imagen-3.0-generate-002</span>
+                  <span class="badge-imagen-meta" id="visual-model-meta">Google Gemini 2.5 Flash Image</span>
                 </div>
               </div>
               <div class="card-actions-header">
-                <span class="badge-studio-meta" id="visual-engine-badge">✨ Imagen 3 Ready</span>
+                <span class="badge-studio-meta" id="visual-engine-badge">✨ Gemini AI Ready</span>
               </div>
             </div>
 
@@ -1659,7 +1659,7 @@
 
                 <!-- Generate Visual Action Button -->
                 <div class="visual-actions-row">
-                  <button type="button" id="btn-generate-visual" class="btn btn-primary btn-generate-visual">
+                  <button type="button" id="btn-generate-visual" class="btn btn-primary btn-generate-visual" onclick="generateVisual()">
                     <span class="btn-spinner hidden" id="visual-generate-spinner"></span>
                     <svg id="visual-generate-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                       <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
@@ -1667,6 +1667,9 @@
                     <span id="btn-generate-visual-text">Generate Visual</span>
                   </button>
                 </div>
+
+                <!-- Live Status & Error Logging Banner -->
+                <div class="visual-status-banner hidden" id="visual-status-banner" role="status" aria-live="polite"></div>
 
               </div>
 

@@ -6271,6 +6271,56 @@ body {
   color: #059669;
 }
 
+/* AI Visual Studio Live Status & Error Logging */
+.visual-status-banner {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  word-break: break-word;
+  transition: all 0.2s ease;
+}
+
+.visual-status-banner.status-info {
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  color: #1D4ED8;
+}
+
+.visual-status-banner.status-success {
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  color: #065F46;
+}
+
+.visual-status-banner.status-warning {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  color: #92400E;
+}
+
+.visual-status-banner.status-error {
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #991B1B;
+}
+
+.badge-status-success {
+  background: #ECFDF5 !important;
+  color: #059669 !important;
+  border-color: #A7F3D0 !important;
+}
+
+.badge-status-error {
+  background: #FEF2F2 !important;
+  color: #DC2626 !important;
+  border-color: #FECACA !important;
+}
+
 @media (max-width: 900px) {
   .visual-studio-body {
     grid-template-columns: 1fr;
