@@ -1201,6 +1201,7 @@
   }
 
   function generateThreeLogoConcepts(brand, seed = 0) {
+    const sVal = typeof seed === 'number' ? seed : parseInt(seed, 10) || 0;
     const name = brand.name || "BrandDNA";
     const colors = brand.palette || brand.colors || [];
     const p1 = colors[0]?.hex || '#059669';
@@ -1215,17 +1216,23 @@
     const displayName = name.length > 15 ? name.slice(0, 14) + '…' : name;
     const subSnippet = (brand.tagline || brand.industry || 'STUDIO EDITION').toUpperCase().slice(0, 24);
 
-    // Dynamic rich vector illustrations
-    const ill1 = (brand.customIllustration && seed === 0)
+    // Dynamic rich vector illustrations (randomized per seed)
+    const ill1 = (brand.customIllustration && sVal === 0)
       ? brand.customIllustration
-      : getRichNicheIllustration(brand.industry, brand.vibe, seed, colors);
+      : getRichNicheIllustration(brand.industry, brand.vibe, sVal, colors);
 
-    const ill2 = getRichNicheIllustration(brand.industry, brand.vibe, seed + 1, colors);
-    const ill3 = getRichNicheIllustration(brand.industry, brand.vibe, seed + 2, colors);
+    const ill2 = getRichNicheIllustration(brand.industry, brand.vibe, sVal + 1, colors);
+    const ill3 = getRichNicheIllustration(brand.industry, brand.vibe, sVal + 2, colors);
 
-    // Concept 1: Modern Illustrated Icon & Editorial Wordmark Lockup
-    const concept1Inner = `
-  <!-- Concept 1: Modern Illustrated Icon & Editorial Wordmark Lockup -->
+    const layout1Index = Math.abs(sVal) % 3;
+    const layout2Index = Math.abs(sVal + 1) % 3;
+    const layout3Index = Math.abs(sVal + 2) % 3;
+
+    // Concept 1 Layout Variations (Modern Icon & Editorial Wordmark)
+    let concept1Inner = '';
+    if (layout1Index === 0) {
+      concept1Inner = `
+  <!-- Concept 1 Layout A: Modern Illustrated Icon & Editorial Wordmark Lockup -->
   <rect width="240" height="120" rx="14" fill="#FFFFFF"/>
   <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="#DCE3DE" stroke-width="1"/>
   
@@ -1250,16 +1257,59 @@
       <line x1="51" y1="0" x2="93" y2="0" stroke="${p4}" stroke-width="1.5" stroke-linecap="round"/>
     </g>
     <text x="0" y="60" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="6" fill="${p2}" letter-spacing="1.5">&bull; ORIGINAL VECTOR SYSTEM &bull;</text>
+  </g>`.trim();
+    } else if (layout1Index === 1) {
+      concept1Inner = `
+  <!-- Concept 1 Layout B: Sleek Circular Emblem & Clean Pill Header -->
+  <rect width="240" height="120" rx="14" fill="#FFFFFF"/>
+  <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="#DCE3DE" stroke-width="1"/>
+  
+  <g transform="translate(18, 18)">
+    <circle cx="42" cy="42" r="38" fill="${p3}" stroke="${p1}" stroke-width="1.8"/>
+    <circle cx="42" cy="42" r="32" fill="#FFFFFF" stroke="${p4}" stroke-width="1.2" stroke-dasharray="3 2"/>
+    <g transform="translate(18, 17) scale(1.04)">
+      ${ill1}
+    </g>
   </g>
-`.trim();
+  
+  <g transform="translate(108, 30)">
+    <rect x="0" y="0" width="${Math.min(114, subSnippet.length * 5.6 + 18)}" height="15" rx="7.5" fill="${p3}" stroke="${p4}" stroke-width="1"/>
+    <text x="${Math.min(114, subSnippet.length * 5.6 + 18) / 2}" y="10.5" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="700" font-size="6" fill="${p1}" text-anchor="middle" letter-spacing="1.6">${subSnippet}</text>
+    <text x="0" y="36" class="brand-heading-text" font-family="'${heading}', sans-serif" font-weight="800" font-size="19" fill="${darkColor}" letter-spacing="-0.3">${displayName}</text>
+    <line x1="0" y1="45" x2="68" y2="45" stroke="${p1}" stroke-width="2" stroke-linecap="round"/>
+    <text x="0" y="58" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="6.2" fill="#6B7280" letter-spacing="1.8">AUTHENTIC BRAND LAB &bull; 2026</text>
+  </g>`.trim();
+    } else {
+      concept1Inner = `
+  <!-- Concept 1 Layout C: Architectural Edge-Stripe & Asymmetric Hex Lockup -->
+  <rect width="240" height="120" rx="14" fill="#FFFFFF"/>
+  <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="#DCE3DE" stroke-width="1"/>
+  <rect x="0" y="0" width="7" height="120" rx="3.5" fill="${p1}"/>
+  
+  <g transform="translate(20, 16)">
+    <polygon points="38,6 68,23 68,63 38,80 8,63 8,23" fill="${p3}" stroke="${p1}" stroke-width="1.8" stroke-linejoin="round"/>
+    <polygon points="38,11 63,25 63,60 38,74 13,60 13,25" fill="none" stroke="${p2}" stroke-width="1" stroke-dasharray="2 2"/>
+    <g transform="translate(14, 15) scale(1.02)">
+      ${ill1}
+    </g>
+  </g>
+  
+  <g transform="translate(104, 34)">
+    <text x="0" y="10" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="700" font-size="6.5" fill="${p2}" letter-spacing="2">EST. STUDIO MARK</text>
+    <text x="0" y="32" class="brand-heading-text" font-family="'${heading}', serif" font-weight="700" font-size="18" fill="${darkColor}">${displayName}</text>
+    <line x1="0" y1="42" x2="114" y2="42" stroke="${p4}" stroke-width="1.2"/>
+    <text x="0" y="55" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="6.8" fill="${p1}" letter-spacing="1.2">${subSnippet}</text>
+  </g>`.trim();
+    }
 
-    // Concept 2: Heritage Emblem & Artisan Stamp
-    const concept2Inner = `
-  <!-- Concept 2: Heritage Emblem & Artisan Stamp -->
+    // Concept 2 Layout Variations (Heritage Crest & Artisan Stamp)
+    let concept2Inner = '';
+    if (layout2Index === 0) {
+      concept2Inner = `
+  <!-- Concept 2 Layout A: Centered Medallion Stamp -->
   <rect width="240" height="120" rx="14" fill="#FFFFFF"/>
   <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="#DCE3DE" stroke-width="1"/>
 
-  <!-- Centered Medallion Stamp -->
   <g transform="translate(120, 45)">
     <circle cx="0" cy="0" r="34" fill="${p3}" stroke="${p1}" stroke-width="2"/>
     <circle cx="0" cy="0" r="29" fill="none" stroke="${p2}" stroke-width="1" stroke-dasharray="3 2"/>
@@ -1270,16 +1320,64 @@
     <polygon points="40,0 38,-3 41,-2 43,-4 43,-1 46,0 43,1 43,4 41,2 38,3" fill="${p1}"/>
   </g>
 
-  <!-- Wordmark below Stamp -->
   <g transform="translate(120, 96)">
     <text x="0" y="5" class="brand-heading-text" font-family="'${heading}', Georgia, serif" font-weight="700" font-size="13" fill="${darkColor}" text-anchor="middle" letter-spacing="3">${displayName.toUpperCase()}</text>
     <text x="0" y="16" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="6" fill="${p1}" text-anchor="middle" letter-spacing="3.5">EST. 2026 &bull; ARTISANAL TRADEMARK MARK</text>
-  </g>
-`.trim();
+  </g>`.trim();
+    } else if (layout2Index === 1) {
+      concept2Inner = `
+  <!-- Concept 2 Layout B: Octagonal Heritage Shield & Laurel Wings -->
+  <rect width="240" height="120" rx="14" fill="#FFFFFF"/>
+  <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="#DCE3DE" stroke-width="1"/>
+  <circle cx="10" cy="10" r="2.5" fill="${p1}"/>
+  <circle cx="230" cy="10" r="2.5" fill="${p1}"/>
+  <circle cx="10" cy="110" r="2.5" fill="${p1}"/>
+  <circle cx="230" cy="110" r="2.5" fill="${p1}"/>
 
-    // Concept 3: Modern Kinetic Dark-Card Vector Emblem
-    const concept3Inner = `
-  <!-- Concept 3: Modern Kinetic Dark-Card Vector Emblem -->
+  <g transform="translate(120, 44)">
+    <polygon points="-24,-30 24,-30 42,-12 42,14 24,32 -24,32 -42,14 -42,-12" fill="${p3}" stroke="${p1}" stroke-width="2" stroke-linejoin="round"/>
+    <polygon points="-21,-26 21,-26 38,-10 38,12 21,28 -21,28 -38,12 -38,-10" fill="none" stroke="${p2}" stroke-width="1" stroke-dasharray="2 2"/>
+    <polygon points="-58,-2 -44,-8 -44,4" fill="${p2}"/>
+    <polygon points="58,-2 44,-8 44,4" fill="${p2}"/>
+    <g transform="translate(-24, -25) scale(1.0)">
+      ${ill2}
+    </g>
+  </g>
+
+  <g transform="translate(120, 96)">
+    <text x="0" y="5" class="brand-heading-text" font-family="'${heading}', Georgia, serif" font-weight="800" font-size="13.5" fill="${darkColor}" text-anchor="middle" letter-spacing="2.8">${displayName.toUpperCase()}</text>
+    <text x="0" y="16" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="5.8" fill="${p1}" text-anchor="middle" letter-spacing="3.2">&bull; VERIFIED HERITAGE ATELIER &bull;</text>
+  </g>`.trim();
+    } else {
+      concept2Inner = `
+  <!-- Concept 2 Layout C: Artisan Cartouche & Flanked Horizon Banner -->
+  <rect width="240" height="120" rx="14" fill="#FAF9F7"/>
+  <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="${p4}" stroke-width="1"/>
+  <rect x="6" y="6" width="228" height="108" rx="10" fill="none" stroke="${p1}" stroke-opacity="0.3" stroke-width="1.2"/>
+
+  <g transform="translate(120, 44)">
+    <ellipse cx="0" cy="0" rx="34" ry="28" fill="${p3}" stroke="${p1}" stroke-width="1.8"/>
+    <ellipse cx="0" cy="0" rx="29" ry="23" fill="none" stroke="${p2}" stroke-width="1" stroke-dasharray="3 2"/>
+    <line x1="-96" y1="0" x2="-40" y2="0" stroke="${p2}" stroke-width="1.2"/>
+    <polygon points="-40,-3 -36,0 -40,3" fill="${p1}"/>
+    <line x1="40" y1="0" x2="96" y2="0" stroke="${p2}" stroke-width="1.2"/>
+    <polygon points="40,-3 36,0 40,3" fill="${p1}"/>
+    <g transform="translate(-24, -25) scale(0.98)">
+      ${ill2}
+    </g>
+  </g>
+
+  <g transform="translate(120, 94)">
+    <text x="0" y="5" class="brand-heading-text" font-family="'${heading}', Georgia, serif" font-weight="800" font-size="13" fill="${darkColor}" text-anchor="middle" letter-spacing="3.5">${displayName.toUpperCase()}</text>
+    <text x="0" y="17" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="6" fill="${p1}" text-anchor="middle" letter-spacing="2.5">ORIGINAL ARCHIVE &bull; NO. 028</text>
+  </g>`.trim();
+    }
+
+    // Concept 3 Layout Variations (Modern Kinetic Dark-Card / High Contrast)
+    let concept3Inner = '';
+    if (layout3Index === 0) {
+      concept3Inner = `
+  <!-- Concept 3 Layout A: Ambient Glow & Kinetic Tech Rings -->
   <rect width="240" height="120" rx="14" fill="${darkColor}"/>
   <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
   <circle cx="210" cy="20" r="70" fill="${p1}" opacity="0.22"/>
@@ -1303,8 +1401,53 @@
       <circle cx="24" cy="0" r="2.5" fill="${p4}"/>
       <line x1="33" y1="0" x2="68" y2="0" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
     </g>
+  </g>`.trim();
+    } else if (layout3Index === 1) {
+      concept3Inner = `
+  <!-- Concept 3 Layout B: Cyberpunk Floating Center Diamond & Brackets -->
+  <rect width="240" height="120" rx="14" fill="${darkColor}"/>
+  <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+  <path d="M12 20 V12 H20" stroke="${p4}" stroke-width="1.5" fill="none"/>
+  <path d="M228 20 V12 H220" stroke="${p4}" stroke-width="1.5" fill="none"/>
+  <path d="M12 100 V108 H20" stroke="${p4}" stroke-width="1.5" fill="none"/>
+  <path d="M228 100 V108 H220" stroke="${p4}" stroke-width="1.5" fill="none"/>
+
+  <g transform="translate(120, 40)">
+    <rect x="-24" y="-24" width="48" height="48" rx="10" fill="rgba(255,255,255,0.06)" stroke="${p1}" stroke-width="1.8" transform="rotate(45)"/>
+    <circle cx="0" cy="0" r="26" fill="none" stroke="${p4}" stroke-width="1" stroke-dasharray="3 3"/>
+    <g transform="translate(-24, -25) scale(1.0)">
+      ${ill3}
+    </g>
   </g>
-`.trim();
+
+  <g transform="translate(120, 88)">
+    <text x="0" y="4" class="brand-heading-text" font-family="'${heading}', sans-serif" font-weight="800" font-size="14.5" fill="#FFFFFF" text-anchor="middle" letter-spacing="3">${displayName.toUpperCase()}</text>
+    <text x="0" y="16" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="6.5" fill="${p4}" text-anchor="middle" letter-spacing="2.8">${subSnippet}</text>
+    <text x="0" y="26" class="brand-body-text" font-family="'${body}', monospace" font-weight="500" font-size="5.2" fill="rgba(255,255,255,0.45)" text-anchor="middle" letter-spacing="1.5">// SYS.KINETIC.VEC // AUTHENTICATED //</text>
+  </g>`.trim();
+    } else {
+      concept3Inner = `
+  <!-- Concept 3 Layout C: Split-Blade Modern Dark Lockup -->
+  <rect width="240" height="120" rx="14" fill="${darkColor}"/>
+  <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+  <path d="M0 0 H86 L74 120 H0 Z" fill="${p1}" fill-opacity="0.2"/>
+  <line x1="86" y1="0" x2="74" y2="120" stroke="${p1}" stroke-width="1.5" stroke-opacity="0.5"/>
+
+  <g transform="translate(16, 18)">
+    <circle cx="28" cy="42" r="26" fill="rgba(0,0,0,0.3)" stroke="${p4}" stroke-width="1.5"/>
+    <g transform="translate(5, 17) scale(0.96)">
+      ${ill3}
+    </g>
+  </g>
+
+  <g transform="translate(98, 36)">
+    <rect x="0" y="0" width="${Math.min(115, subSnippet.length * 5.8 + 16)}" height="14" rx="7" fill="rgba(255,255,255,0.1)" stroke="${p2}" stroke-width="0.8"/>
+    <text x="${Math.min(115, subSnippet.length * 5.8 + 16) / 2}" y="9.5" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="700" font-size="5.8" fill="${p4}" text-anchor="middle" letter-spacing="1.8">${subSnippet}</text>
+    <text x="0" y="32" class="brand-heading-text" font-family="'${heading}', sans-serif" font-weight="800" font-size="18.5" fill="#FFFFFF" letter-spacing="-0.3">${displayName}</text>
+    <line x1="0" y1="42" x2="122" y2="42" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+    <text x="0" y="54" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="6.5" fill="${p2}" letter-spacing="2">&bull; HIGH VELOCITY SYSTEM &bull;</text>
+  </g>`.trim();
+    }
 
     return {
       concept1: createStandaloneSvgMarkup(concept1Inner, heading, body),
@@ -1376,15 +1519,18 @@
         copyToClipboard(logos.concept3, 'Concept 3 SVG code copied!');
       };
     }
+
+    return logos;
   }
 
   // =========================================================================
-  // Logo Studio: Regenerate Logos Action (AI with Rich Procedural Fallback)
+  // Logo Studio: Global window.regenerateLogos & Action Dispatcher
   // =========================================================================
-  async function regenerateLogoConceptsAction() {
+  async function regenerateLogos() {
     if (state.isRegeneratingLogos) return;
-    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
+    const brand = state.currentBrand || PRESET_BRANDS.komorebi || (typeof generateProceduralBrand === 'function' ? generateProceduralBrand("Komorebi Botanicals", "Skincare & Wellness", "Organic Minimalist") : null);
     if (!brand) return;
+    state.currentBrand = brand;
 
     state.isRegeneratingLogos = true;
     if (elements.btnRegenerateLogos) elements.btnRegenerateLogos.disabled = true;
@@ -1392,10 +1538,20 @@
     if (elements.btnRegenerateLogosText) elements.btnRegenerateLogosText.textContent = 'Generating...';
 
     try {
-      const rawKey = elements.apiKeyInput ? elements.apiKeyInput.value.trim() : '';
-      const hasKey = Boolean(rawKey && rawKey.length > 5);
+      // Clear static overrides so new vector variations show immediately
+      brand.customLogoUrl = null;
+      brand.customIllustration = null;
 
-      if (hasKey) {
+      // Advance seed by a randomized step so every click produces visibly new icons & layouts
+      const randomOffset = Math.floor(Math.random() * 4) + 1;
+      state.logoVariationSeed = ((state.logoVariationSeed || 0) + randomOffset) % 60;
+
+      // Re-render logo cards with randomized niche icons and layouts
+      const newLogos = renderThreeLogoStudio(brand, state.logoVariationSeed);
+
+      // Optional AI enhancement if Gemini API key is configured
+      const rawKey = elements.apiKeyInput ? elements.apiKeyInput.value.trim() : '';
+      if (rawKey && rawKey.length > 5) {
         try {
           const colorsHex = (brand.palette || brand.colors || []).map(c => c.hex).join(', ');
           const prompt = `You are an elite vector logo designer.
@@ -1420,20 +1576,22 @@ NO conversational text, return ONLY JSON.`;
           const parsed = extractJsonFromGeminiResponse(data);
           if (parsed?.customIllustration && typeof parsed.customIllustration === 'string' && parsed.customIllustration.includes('<')) {
             brand.customIllustration = parsed.customIllustration;
+            renderThreeLogoStudio(brand, state.logoVariationSeed);
           }
         } catch (geminiErr) {
           console.warn('Gemini logo regeneration fallback to offline procedural engine:', geminiErr);
         }
       }
 
-      state.logoVariationSeed = ((state.logoVariationSeed || 0) + 1) % 10;
-      renderThreeLogoStudio(brand, state.logoVariationSeed);
       showToast('✨ Generated 3 brand-new custom illustrated logo concepts!', 'success');
+      return newLogos;
     } catch (err) {
-      console.error('Error regenerating logos:', err);
-      state.logoVariationSeed = ((state.logoVariationSeed || 0) + 1) % 10;
-      renderThreeLogoStudio(brand, state.logoVariationSeed);
-      showToast('Generated 3 fresh illustrated logo concepts!', 'success');
+      console.error('Error in regenerateLogos:', err);
+      const randomOffset = Math.floor(Math.random() * 3) + 1;
+      state.logoVariationSeed = ((state.logoVariationSeed || 0) + randomOffset) % 60;
+      const fallbackLogos = renderThreeLogoStudio(brand, state.logoVariationSeed);
+      showToast('✨ Generated 3 fresh illustrated logo concepts!', 'success');
+      return fallbackLogos;
     } finally {
       state.isRegeneratingLogos = false;
       if (elements.btnRegenerateLogos) elements.btnRegenerateLogos.disabled = false;
@@ -1441,6 +1599,10 @@ NO conversational text, return ONLY JSON.`;
       if (elements.btnRegenerateLogosText) elements.btnRegenerateLogosText.textContent = '✨ Regenerate Logos';
     }
   }
+
+  // Expose on window object globally
+  window.regenerateLogos = regenerateLogos;
+  const regenerateLogoConceptsAction = regenerateLogos;
 
   // =========================================================================
   // 8. WCAG 2.1 Luminance & Contrast Ratio Engine
@@ -9235,6 +9397,13 @@ ${(b.palette || b.colors).map(c => `- **${c.hex}** | ${c.name} (${c.role}): ${c.
     }
 
     // Remix Colors & Fonts Control Bar
+    if (elements.btnRegenerateLogos) {
+      elements.btnRegenerateLogos.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.regenerateLogos();
+      });
+    }
+
     if (elements.btnShufflePalette) {
       elements.btnShufflePalette.addEventListener('click', handleShufflePalette);
     }
