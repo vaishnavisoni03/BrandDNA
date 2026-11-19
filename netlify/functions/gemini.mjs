@@ -35,10 +35,12 @@ export default async (req, context) => {
     const headerKey = req.headers.get('x-goog-api-key');
 
     // 3. Retrieve server-side GEMINI_API_KEY with fallback to header or body
-    const apiKey = (typeof process !== 'undefined' && process.env ? process.env.GEMINI_API_KEY : null)
-      || (typeof Netlify !== 'undefined' && Netlify.env ? Netlify.env.get('GEMINI_API_KEY') : null)
+    const rawApiKey = (typeof process !== 'undefined' && process.env ? (process.env.GEMINI_API_KEY || process.env.API_KEY || process.env.GOOGLE_API_KEY) : null)
+      || (typeof Netlify !== 'undefined' && Netlify.env ? (Netlify.env.get('GEMINI_API_KEY') || Netlify.env.get('API_KEY') || Netlify.env.get('GOOGLE_API_KEY')) : null)
       || headerKey
       || requestBody.apiKey;
+
+    const apiKey = typeof rawApiKey === 'string' ? rawApiKey.trim() : null;
 
     if (!apiKey) {
       return new Response(JSON.stringify({
@@ -53,11 +55,9 @@ export default async (req, context) => {
       });
     }
 
-    // 4. Action: Image Generation via Google Gemini 2.5 Flash Image (gemini-2.5-flash-image)
+    // 4. Action: Image Generation via Google Gemini multimodal image models
     if (requestBody.action === 'generateImage') {
       const promptText = requestBody.prompt || requestBody.instances?.[0]?.prompt || '';
-
-      const imageUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${encodeURIComponent(apiKey)}`;
 
       const imagePayload = {
         contents: [
@@ -72,6 +72,11 @@ export default async (req, context) => {
         }
       };
 
+      // 4a. Primary Endpoint: gemini-2.0-flash-exp-image-generation:generateContent
+      let modelUsed = 'gemini-2.0-flash-exp-image-generation';
+      let imageUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+      console.log(`[generateImage] Calling primary image endpoint: ${modelUsed}`);
       let response = await fetch(imageUrl, {
         method: 'POST',
         headers: {
@@ -80,9 +85,24 @@ export default async (req, context) => {
         body: JSON.stringify(imagePayload)
       });
 
-      // Fallback to imagen-3.0-generate-002:predict if gemini-2.5-flash-image returns 404
+      // 4b. Fallback: gemini-2.5-flash-image:generateContent if 404
       if (response.status === 404) {
-        console.warn('gemini-2.5-flash-image returned 404, attempting fallback to imagen-3.0-generate-002:predict');
+        console.warn(`[generateImage] ${modelUsed} returned HTTP 404. Trying fallback to gemini-2.5-flash-image`);
+        modelUsed = 'gemini-2.5-flash-image';
+        imageUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${encodeURIComponent(apiKey)}`;
+        response = await fetch(imageUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(imagePayload)
+        });
+      }
+
+      // 4c. Fallback: imagen-3.0-generate-002:predict if 404
+      if (response.status === 404) {
+        console.warn(`[generateImage] ${modelUsed} returned HTTP 404. Trying fallback to imagen-3.0-generate-002:predict`);
+        modelUsed = 'imagen-3.0-generate-002';
         let imagenRatio = requestBody.aspectRatio === '4:5' ? '3:4' : (requestBody.aspectRatio || '1:1');
         const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${encodeURIComponent(apiKey)}`;
         response = await fetch(fallbackUrl, {
@@ -95,13 +115,14 @@ export default async (req, context) => {
         });
       }
 
-      const responseData = await response.json();
+      const responseData = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        console.error('Gemini image generation error:', responseData);
+        console.error(`[generateImage] API error from ${modelUsed} - Status: ${response.status}`, responseData);
         return new Response(JSON.stringify({
-          error: responseData.error?.message || 'Error generating image with Gemini image model',
+          error: responseData.error?.message || `Image model ${modelUsed} failed with HTTP status ${response.status}`,
           status: response.status,
+          model: modelUsed,
           fallbackMode: true
         }), {
           status: response.status,
@@ -112,11 +133,11 @@ export default async (req, context) => {
         });
       }
 
-      // Extract inlineData.data (gemini-2.5-flash-image format) or bytesBase64Encoded (imagen format)
+      // Extract inlineData.data (gemini image format) or bytesBase64Encoded (imagen format)
       let base64Data = null;
       let mimeType = 'image/png';
 
-      // 1. Check gemini-2.5-flash-image inlineData
+      // 1. Check gemini inlineData in candidate parts
       const candidate = responseData.candidates?.[0];
       if (candidate?.content?.parts) {
         for (const part of candidate.content.parts) {
@@ -135,9 +156,11 @@ export default async (req, context) => {
       }
 
       if (!base64Data) {
-        console.warn('No image binary data found in model response:', responseData);
+        console.warn(`[generateImage] No image binary data found in ${modelUsed} response (status ${response.status}):`, responseData);
         return new Response(JSON.stringify({
-          error: 'No image data returned from model',
+          error: `No image data returned from ${modelUsed} (status ${response.status})`,
+          status: response.status || 500,
+          model: modelUsed,
           fallbackMode: true
         }), {
           status: 500,
@@ -148,6 +171,7 @@ export default async (req, context) => {
         });
       }
 
+      console.log(`[generateImage] Successfully synthesized image with ${modelUsed} (status ${response.status})`);
       const dataUri = `data:${mimeType};base64,${base64Data}`;
       return new Response(JSON.stringify({
         success: true,
@@ -156,6 +180,7 @@ export default async (req, context) => {
         image: dataUri,
         base64: base64Data,
         mimeType: mimeType,
+        model: modelUsed,
         prompt: promptText
       }), {
         status: 200,

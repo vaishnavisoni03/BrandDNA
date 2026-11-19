@@ -6943,7 +6943,7 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
     if (hasHeaderKey) {
       if (payload && payload.action === 'generateImage') {
         const promptText = payload.prompt || '';
-        const imgUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=' + encodeURIComponent(rawKey);
+        let imgUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=' + encodeURIComponent(rawKey);
         const imgBody = {
           contents: [{ parts: [{ text: promptText }] }],
           generationConfig: { responseModalities: ["IMAGE"] }
@@ -6954,6 +6954,15 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(imgBody)
         });
+
+        if (res.status === 404) {
+          imgUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=' + encodeURIComponent(rawKey);
+          res = await fetch(imgUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(imgBody)
+          });
+        }
 
         if (res.status === 404) {
           const fallbackUrl = 'https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=' + encodeURIComponent(rawKey);
