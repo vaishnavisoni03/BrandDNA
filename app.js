@@ -487,6 +487,9 @@
     btnCopyLogo2: document.getElementById('btn-copy-logo-2'),
     btnDownloadLogo3: document.getElementById('btn-download-logo-3'),
     btnCopyLogo3: document.getElementById('btn-copy-logo-3'),
+    btnRegenerateLogos: document.getElementById('btn-regenerate-logos'),
+    regenerateLogosSpinner: document.getElementById('regenerate-logos-spinner'),
+    btnRegenerateLogosText: document.getElementById('btn-regenerate-logos-text'),
 
     swatchesGrid: document.getElementById('swatches-grid'),
     paletteNarrative: document.getElementById('palette-narrative'),
@@ -820,95 +823,485 @@
 </svg>`.trim();
   }
 
-  function generateThreeLogoConcepts(brand) {
+  // =========================================================================
+  // Rich Niche Vector Illustration Generator (Layered, Hand-Crafted Artworks)
+  // =========================================================================
+  function getRichNicheIllustration(industry = '', vibe = '', variant = 0, colors = []) {
+    const p1 = colors[0]?.hex || '#059669';
+    const p2 = colors[1]?.hex || '#10B981';
+    const p3 = colors[2]?.hex || '#ECFDF5';
+    const p4 = colors[3]?.hex || '#A7F3D0';
+    const darkColor = colors[4]?.hex || '#111827';
+
+    const s = ((industry || '') + ' ' + (vibe || '')).toLowerCase();
+    const v = Math.abs(variant || 0);
+
+    // 1. Coffee, Chai, Tea, Cafe & Beverages
+    if (s.includes('coffee') || s.includes('chai') || s.includes('tea') || s.includes('cafe') || s.includes('beverage') || s.includes('brew')) {
+      const mod = v % 3;
+      if (mod === 0) {
+        return `<g class="ill-coffee-cup" transform="translate(1, -2)">
+          <path d="M19 8 C17 13, 21 16, 18 22" stroke="${p2}" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.85"/>
+          <path d="M27 4 C24 10, 30 15, 26 22" stroke="${p1}" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+          <path d="M35 8 C33 13, 37 16, 34 22" stroke="${p4}" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.85"/>
+          <path d="M12 24 h30 c1.5 0 2.5 1.2 2.5 2.5 v10 c0 9.5 -7.5 16.5 -17.5 16.5 s-17.5 -7 -17.5 -16.5 v-10 c0 -1.3 1 -2.5 2.5 -2.5 z" fill="${p3}" stroke="${p1}" stroke-width="2"/>
+          <path d="M44.5 28 h4 c3.5 0 6 2.5 6 6 v3 c0 3.5 -2.5 6 -6 6 h-4" fill="none" stroke="${p1}" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="27" cy="25" rx="14" ry="2.5" fill="${p1}" opacity="0.35"/>
+          <path d="M15 29 q12 3 24 0" stroke="${p2}" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+          <path d="M6 55 h42 c2 0 4 1 4 2.2 s-2 2.2 -4 2.2 H6 c-2 0 -4 -1 -4 -2.2 s2 -2.2 4 -2.2 z" fill="${p1}" opacity="0.25"/>
+          <g transform="translate(17, 36) scale(0.68)">
+            <ellipse cx="8" cy="9" rx="7.5" ry="9.5" fill="${p1}" transform="rotate(-28 8 9)"/>
+            <path d="M5 2 Q8 9 5 16" stroke="${p3}" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+            <ellipse cx="20" cy="11" rx="6.5" ry="8.5" fill="${p2}" transform="rotate(32 20 11)"/>
+            <path d="M18 4 Q20 11 22 18" stroke="${p3}" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          </g>
+        </g>`.trim();
+      } else if (mod === 1) {
+        return `<g class="ill-french-press" transform="translate(4, -3)">
+          <circle cx="23" cy="28" r="23" fill="${p3}" opacity="0.5"/>
+          <circle cx="23" cy="28" r="23" stroke="${p4}" stroke-width="1" stroke-dasharray="2 3" fill="none"/>
+          <rect x="13" y="14" width="20" height="34" rx="2" fill="#FFFFFF" fill-opacity="0.8" stroke="${p1}" stroke-width="1.8"/>
+          <rect x="14" y="24" width="18" height="23" fill="${p1}" opacity="0.22"/>
+          <circle cx="18" cy="42" r="1" fill="${p1}"/>
+          <circle cx="23" cy="44" r="1.2" fill="${p2}"/>
+          <circle cx="28" cy="41" r="1" fill="${p1}"/>
+          <line x1="23" y1="5" x2="23" y2="28" stroke="${p1}" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="23" cy="5" r="3" fill="${p2}" stroke="${p1}" stroke-width="1.5"/>
+          <rect x="11" y="11" width="24" height="4" rx="1.5" fill="${p2}" stroke="${p1}" stroke-width="1.2"/>
+          <path d="M11 48 h24" stroke="${p1}" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M13 28 h20" stroke="${p2}" stroke-width="2" stroke-dasharray="3 2"/>
+          <path d="M33 18 h5 c2.5 0 4 2 4 4.5 v14 c0 2.5 -1.5 4.5 -4 4.5 h-5" fill="none" stroke="${p1}" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M13 14 l-3 -2 v4 z" fill="${p1}"/>
+        </g>`.trim();
+      } else {
+        return `<g class="ill-pourover-chemex" transform="translate(5, -2)">
+          <path d="M12 10 h22 l-6 16 c-1 2.5 -1 4.5 0 7 l8 16 c1 2 -0.5 4 -2.5 4 H14 c-2 0 -3.5 -2 -2.5 -4 l8 -16 c1 -2.5 1 -4.5 0 -7 z" fill="${p3}" stroke="${p1}" stroke-width="1.8" stroke-linejoin="round"/>
+          <rect x="17" y="24" width="12" height="7" rx="1" fill="${p2}" stroke="${p1}" stroke-width="1.2"/>
+          <circle cx="23" cy="27.5" r="2.2" fill="${p4}" stroke="${p1}" stroke-width="1"/>
+          <path d="M17 38 q6 3 12 0 l4 11 H13 z" fill="${p1}" opacity="0.3"/>
+          <circle cx="23" cy="20" r="1.5" fill="${p2}"/>
+          <path d="M37 20 Q44 14 43 7 Q36 8 37 20" fill="${p2}" stroke="${p1}" stroke-width="1"/>
+          <path d="M37 20 Q43 26 48 24 Q46 17 37 20" fill="${p4}" stroke="${p1}" stroke-width="1"/>
+          <circle cx="36" cy="22" r="2" fill="${p1}"/>
+          <circle cx="39" cy="25" r="1.8" fill="${p2}"/>
+        </g>`.trim();
+      }
+    }
+
+    // 2. Bakery, Kitchen, Culinary & Food
+    if (s.includes('bakery') || s.includes('bread') || s.includes('cake') || s.includes('pastry') || s.includes('kitchen') || s.includes('culinary') || s.includes('food')) {
+      const mod = v % 3;
+      if (mod === 0) {
+        return `<g class="ill-bakery-croissant" transform="translate(2, 0)">
+          <circle cx="26" cy="26" r="23" fill="${p3}" opacity="0.5"/>
+          <path d="M6 34 C6 18, 20 12, 34 16 C43 19, 48 27, 46 36 C42 41, 33 43, 24 39 C16 35, 10 39, 6 34 Z" fill="${p2}" stroke="${p1}" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M16 23 C22 21, 28 24, 31 31" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.85"/>
+          <path d="M22 17 C29 18, 36 23, 38 31" stroke="${p4}" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+          <path d="M11 29 C14 27, 18 29, 20 33" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.8"/>
+          <path d="M41 44 L49 14" stroke="${p1}" stroke-width="1.8" stroke-linecap="round"/>
+          <ellipse cx="48" cy="18" rx="2.5" ry="4.5" fill="${p4}" stroke="${p1}" stroke-width="1" transform="rotate(35 48 18)"/>
+          <ellipse cx="43" cy="23" rx="2.5" ry="4.5" fill="${p3}" stroke="${p1}" stroke-width="1" transform="rotate(-35 43 23)"/>
+          <ellipse cx="46" cy="29" rx="2.5" ry="4.5" fill="${p4}" stroke="${p1}" stroke-width="1" transform="rotate(35 46 29)"/>
+          <ellipse cx="41" cy="34" rx="2.5" ry="4.5" fill="${p3}" stroke="${p1}" stroke-width="1" transform="rotate(-35 41 34)"/>
+          <polygon points="12,12 13.5,15 16.5,16.5 13.5,18 12,21 10.5,18 7.5,16.5 10.5,15" fill="${p2}"/>
+        </g>`.trim();
+      } else if (mod === 1) {
+        return `<g class="ill-bakery-sourdough" transform="translate(3, 2)">
+          <ellipse cx="25" cy="31" rx="21" ry="16" fill="${p3}" stroke="${p1}" stroke-width="2"/>
+          <path d="M5 33 C10 42, 40 42, 45 33" fill="${p2}" opacity="0.35"/>
+          <path d="M11 28 Q25 18 39 28" stroke="${p1}" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M17 23 l4 4 M23 20 l4 4 M29 21 l4 4" stroke="${p4}" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="8" y1="8" x2="42" y2="8" stroke="${p2}" stroke-width="3.5" stroke-linecap="round"/>
+          <rect x="20" y="6" width="12" height="4" rx="1" fill="${p1}" stroke="${darkColor}" stroke-width="1"/>
+          <ellipse cx="21" cy="49" rx="2.5" ry="4" fill="${p1}" transform="rotate(-40 21 49)"/>
+          <ellipse cx="29" cy="49" rx="2.5" ry="4" fill="${p1}" transform="rotate(40 29 49)"/>
+          <circle cx="25" cy="49" r="1.5" fill="${p2}"/>
+        </g>`.trim();
+      } else {
+        return `<g class="ill-bakery-toque" transform="translate(2, -1)">
+          <line x1="6" y1="46" x2="46" y2="12" stroke="${p4}" stroke-width="4.5" stroke-linecap="round"/>
+          <line x1="6" y1="12" x2="46" y2="46" stroke="${p4}" stroke-width="4.5" stroke-linecap="round"/>
+          <line x1="6" y1="46" x2="46" y2="12" stroke="${p1}" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="6" y1="12" x2="46" y2="46" stroke="${p1}" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M17 38 h18 v-6 c0 -1 0.5 -1.5 1.5 -2 c3 -1.5 6 -6 4 -10 c-2 -4 -6 -3 -7 -1 c-1 -4 -6 -6 -9 -4 c-3 -2 -8 0 -9 4 c-1 -2 -5 -3 -7 1 c-2 4 1 8.5 4 10 c1 0.5 1.5 1 1.5 2 v6 z" fill="#FFFFFF" stroke="${p1}" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M21 21 v11 M26 19 v13 M31 21 v11" stroke="${p2}" stroke-width="1.5" stroke-linecap="round"/>
+          <rect x="16" y="34" width="20" height="5" rx="1.5" fill="${p2}" stroke="${p1}" stroke-width="1.2"/>
+          <polygon points="26,6 27.5,9.5 31,10 28.5,12.5 29,16 26,14.2 23,16 23.5,12.5 21,10 24.5,9.5" fill="${p1}"/>
+        </g>`.trim();
+      }
+    }
+
+    // 3. Skincare, Organic, Beauty & Botanicals
+    if (s.includes('skincare') || s.includes('beauty') || s.includes('organic') || s.includes('botanical') || s.includes('wellness') || s.includes('cosmetic') || s.includes('serum') || s.includes('nature') || s.includes('plant')) {
+      const mod = v % 3;
+      if (mod === 0) {
+        return `<g class="ill-skincare-monstera" transform="translate(3, -2)">
+          <circle cx="24" cy="27" r="23" fill="${p3}" opacity="0.6"/>
+          <path d="M12 49 C16 38, 24 24, 36 10" stroke="${p1}" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <path d="M36 10 C39 16, 43 27, 33 37 C26 43, 17 40, 15 35 C13 28, 22 17, 36 10 Z" fill="${p1}" stroke="${darkColor}" stroke-width="1.2"/>
+          <path d="M27 22 Q32 20 37 24" stroke="${p3}" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+          <path d="M24 28 Q29 27 34 32" stroke="${p3}" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+          <path d="M20 33 Q24 33 28 38" stroke="${p3}" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <path d="M16 35 C9 32, 6 22, 13 15 C19 9, 26 14, 25 24 Z" fill="${p2}" stroke="${p1}" stroke-width="1.2"/>
+          <path d="M14 26 C12 21, 14 17, 18 15" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+          <circle cx="37" cy="8" r="2.2" fill="${p4}" stroke="${p1}" stroke-width="0.8"/>
+          <polygon points="9,14 10,16.5 12.5,17.5 10,18.5 9,21 8,18.5 5.5,17.5 8,16.5" fill="${p1}"/>
+        </g>`.trim();
+      } else if (mod === 1) {
+        return `<g class="ill-skincare-dropper" transform="translate(3, -2)">
+          <path d="M11 41 C6 31, 8 19, 17 12" stroke="${p2}" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+          <ellipse cx="10" cy="34" rx="2" ry="3.5" fill="${p4}" stroke="${p1}" stroke-width="0.8" transform="rotate(-30 10 34)"/>
+          <ellipse cx="8" cy="26" rx="2" ry="3.5" fill="${p4}" stroke="${p1}" stroke-width="0.8" transform="rotate(-20 8 26)"/>
+          <ellipse cx="12" cy="18" rx="2" ry="3.5" fill="${p4}" stroke="${p1}" stroke-width="0.8" transform="rotate(10 12 18)"/>
+          <path d="M37 41 C42 31, 40 19, 31 12" stroke="${p2}" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+          <ellipse cx="38" cy="34" rx="2" ry="3.5" fill="${p4}" stroke="${p1}" stroke-width="0.8" transform="rotate(30 38 34)"/>
+          <ellipse cx="40" cy="26" rx="2" ry="3.5" fill="${p4}" stroke="${p1}" stroke-width="0.8" transform="rotate(20 40 26)"/>
+          <ellipse cx="36" cy="18" rx="2" ry="3.5" fill="${p4}" stroke="${p1}" stroke-width="0.8" transform="rotate(-10 36 18)"/>
+          <rect x="18" y="21" width="12" height="20" rx="3" fill="${p3}" stroke="${p1}" stroke-width="1.8"/>
+          <rect x="20" y="27" width="8" height="10" rx="1" fill="${p1}" opacity="0.25"/>
+          <line x1="20" y1="18" x2="28" y2="18" stroke="${p1}" stroke-width="2"/>
+          <rect x="21" y="14" width="6" height="4" rx="1" fill="${p2}" stroke="${p1}" stroke-width="1"/>
+          <path d="M22 14 C21 9, 27 9, 26 14 Z" fill="${p1}"/>
+          <path d="M24 45 C22 47, 22 50, 24 51 C26 50, 26 47, 24 45 Z" fill="${p1}"/>
+        </g>`.trim();
+      } else {
+        return `<g class="ill-skincare-lotus" transform="translate(1, 0)">
+          <path d="M34 10 C44 20, 39 36, 26 42 C38 39, 41 24, 34 10 Z" fill="${p4}" opacity="0.7"/>
+          <ellipse cx="26" cy="46" rx="22" ry="3.5" fill="none" stroke="${p2}" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <ellipse cx="26" cy="49" rx="15" ry="2.2" fill="none" stroke="${p1}" stroke-width="1"/>
+          <path d="M26 15 C33 22, 37 32, 26 41 C15 32, 19 22, 26 15 Z" fill="${p2}" stroke="${p1}" stroke-width="1.4"/>
+          <path d="M26 41 C18 38, 9 29, 13 22 C18 20, 24 29, 26 41 Z" fill="${p3}" stroke="${p1}" stroke-width="1.4"/>
+          <path d="M26 41 C34 38, 43 29, 39 22 C34 20, 28 29, 26 41 Z" fill="${p3}" stroke="${p1}" stroke-width="1.4"/>
+          <path d="M26 25 C30 30, 31 36, 26 41 C21 36, 22 30, 26 25 Z" fill="#FFFFFF" stroke="${p1}" stroke-width="1.5"/>
+          <circle cx="26" cy="22" r="1.8" fill="${p1}"/>
+        </g>`.trim();
+      }
+    }
+
+    // 4. Streetwear, Sneakers, Apparel & Fashion
+    if (s.includes('streetwear') || s.includes('fashion') || s.includes('sneaker') || s.includes('apparel') || s.includes('clothing') || s.includes('style') || s.includes('drop')) {
+      const mod = v % 3;
+      if (mod === 0) {
+        return `<g class="ill-streetwear-sneaker" transform="translate(1, 2)">
+          <line x1="2" y1="20" x2="16" y2="20" stroke="${p4}" stroke-width="2.2" stroke-linecap="round"/>
+          <line x1="6" y1="26" x2="18" y2="26" stroke="${p2}" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="1" y1="32" x2="14" y2="32" stroke="${p1}" stroke-width="2" stroke-linecap="round"/>
+          <path d="M16 26 C17 18, 22 14, 28 15 L32 20 L40 23 C46 25, 48 30, 48 34 L15 34 Z" fill="${p3}" stroke="${p1}" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M40 23 L47 34 H38 Z" fill="${p1}"/>
+          <path d="M23 15 L28 15 L26 24 Z" fill="${p2}"/>
+          <path d="M13 34 H49 V41 C49 42, 47 43, 45 43 H15 C13 43, 12 42, 13 41 Z" fill="${darkColor}" stroke="${p1}" stroke-width="1.5"/>
+          <rect x="20" y="36" width="10" height="4" rx="2" fill="${p4}" stroke="${p2}" stroke-width="1"/>
+          <line x1="34" y1="40" x2="38" y2="40" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+          <line x1="41" y1="40" x2="45" y2="40" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+        </g>`.trim();
+      } else if (mod === 1) {
+        return `<g class="ill-streetwear-bolt" transform="translate(5, -1)">
+          <polygon points="21,5 37,12 37,34 21,49 5,34 5,12" fill="${p3}" stroke="${p1}" stroke-width="2" stroke-linejoin="round"/>
+          <polygon points="21,9 33,14 33,31 21,43 9,31 9,14" fill="none" stroke="${p4}" stroke-width="1.2" stroke-dasharray="2 2"/>
+          <polygon points="24,10 11,26 20,26 16,42 31,23 22,23" fill="${p1}"/>
+          <polygon points="24,10 21,26 22,23 31,23 18,37 20,26" fill="${p2}"/>
+          <circle cx="21" cy="9" r="1.5" fill="${darkColor}"/>
+          <circle cx="33" cy="15" r="1.2" fill="${darkColor}"/>
+          <circle cx="9" cy="15" r="1.2" fill="${darkColor}"/>
+        </g>`.trim();
+      } else {
+        return `<g class="ill-streetwear-shears" transform="translate(4, -1)">
+          <line x1="7" y1="45" x2="39" y2="9" stroke="${p2}" stroke-width="2" stroke-linecap="round"/>
+          <ellipse cx="37" cy="11" rx="1.5" ry="3" fill="none" stroke="${p1}" stroke-width="1.2" transform="rotate(45 37 11)"/>
+          <path d="M37 11 Q44 6 42 16 Q40 26 47 31" fill="none" stroke="${p4}" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <path d="M12 43 C9 43, 7 40, 9 37 L29 13 C31 10, 34 12, 33 15 L17 41 C16 43, 14 43, 12 43 Z" fill="${p3}" stroke="${p1}" stroke-width="1.8"/>
+          <path d="M34 43 C37 43, 39 40, 37 37 L17 13 C15 10, 12 12, 13 15 L29 41 C30 43, 32 43, 34 43 Z" fill="${p1}" stroke="${darkColor}" stroke-width="1.8"/>
+          <circle cx="23" cy="27" r="3" fill="${p2}" stroke="${darkColor}" stroke-width="1"/>
+          <circle cx="11" cy="42" r="5" fill="none" stroke="${p1}" stroke-width="2"/>
+          <circle cx="35" cy="42" r="5" fill="none" stroke="${p1}" stroke-width="2"/>
+        </g>`.trim();
+      }
+    }
+
+    // 5. Luxury Jewelry, Watches, Horology & Gems
+    if (s.includes('jewelry') || s.includes('watch') || s.includes('gem') || s.includes('luxury') || s.includes('gold') || s.includes('diamond') || s.includes('horology')) {
+      const mod = v % 3;
+      if (mod === 0) {
+        return `<g class="ill-luxury-gem" transform="translate(3, -2)">
+          <line x1="23" y1="2" x2="23" y2="48" stroke="${p4}" stroke-width="1" stroke-dasharray="2 4"/>
+          <line x1="0" y1="25" x2="46" y2="25" stroke="${p4}" stroke-width="1" stroke-dasharray="2 4"/>
+          <polygon points="14,10 32,10 42,20 42,30 32,40 14,40 4,30 4,20" fill="${p3}" stroke="${p1}" stroke-width="2" stroke-linejoin="round"/>
+          <polygon points="18,17 28,17 33,22 33,28 28,33 18,33 13,28 13,22" fill="#FFFFFF" fill-opacity="0.85" stroke="${p2}" stroke-width="1.2"/>
+          <line x1="14" y1="10" x2="18" y2="17" stroke="${p1}" stroke-width="1.2"/>
+          <line x1="32" y1="10" x2="28" y2="17" stroke="${p1}" stroke-width="1.2"/>
+          <line x1="42" y1="20" x2="33" y2="22" stroke="${p1}" stroke-width="1.2"/>
+          <line x1="42" y1="30" x2="33" y2="28" stroke="${p1}" stroke-width="1.2"/>
+          <line x1="32" y1="40" x2="28" y2="33" stroke="${p1}" stroke-width="1.2"/>
+          <line x1="14" y1="40" x2="18" y2="33" stroke="${p1}" stroke-width="1.2"/>
+          <line x1="4" y1="30" x2="13" y2="28" stroke="${p1}" stroke-width="1.2"/>
+          <line x1="4" y1="20" x2="13" y2="22" stroke="${p1}" stroke-width="1.2"/>
+          <polygon points="38,8 39.5,12 43.5,13.5 39.5,15 38,19 36.5,15 32.5,13.5 36.5,12" fill="${p1}"/>
+        </g>`.trim();
+      } else if (mod === 1) {
+        return `<g class="ill-luxury-crown" transform="translate(1, 1)">
+          <rect x="7" y="37" width="38" height="6" rx="2" fill="${p1}" stroke="${darkColor}" stroke-width="1.2"/>
+          <circle cx="13" cy="40" r="1.5" fill="#FFFFFF"/>
+          <circle cx="21" cy="40" r="1.5" fill="#FFFFFF"/>
+          <circle cx="26" cy="40" r="1.5" fill="#FFFFFF"/>
+          <circle cx="31" cy="40" r="1.5" fill="#FFFFFF"/>
+          <circle cx="39" cy="40" r="1.5" fill="#FFFFFF"/>
+          <path d="M7 37 L9 20 L18 31 L26 13 L34 31 L43 20 L45 37 Z" fill="${p3}" stroke="${p1}" stroke-width="2" stroke-linejoin="round"/>
+          <polygon points="26,13 26,37 34,31 43,20" fill="${p2}" opacity="0.35"/>
+          <circle cx="9" cy="18" r="2.5" fill="${p4}" stroke="${p1}" stroke-width="1"/>
+          <circle cx="26" cy="11" r="3.2" fill="${p2}" stroke="${p1}" stroke-width="1.2"/>
+          <circle cx="43" cy="18" r="2.5" fill="${p4}" stroke="${p1}" stroke-width="1"/>
+          <polygon points="26,1 27.5,4.5 31,5 28.5,7.5 29,11 26,9.2 23,11 23.5,7.5 21,5 24.5,4.5" fill="${p1}"/>
+        </g>`.trim();
+      } else {
+        return `<g class="ill-luxury-watch" transform="translate(4, -1)">
+          <circle cx="23" cy="25" r="22" fill="${p3}" stroke="${p1}" stroke-width="2"/>
+          <circle cx="23" cy="25" r="18" fill="none" stroke="${p2}" stroke-width="1" stroke-dasharray="2 3"/>
+          <g transform="translate(23, 25)">
+            <circle cx="0" cy="0" r="11" fill="none" stroke="${p1}" stroke-width="2.5" stroke-dasharray="4 2.5"/>
+            <line x1="0" y1="0" x2="0" y2="-11" stroke="${p1}" stroke-width="1.8"/>
+            <line x1="0" y1="0" x2="9.5" y2="5.5" stroke="${p1}" stroke-width="1.8"/>
+            <line x1="0" y1="0" x2="-9.5" y2="5.5" stroke="${p1}" stroke-width="1.8"/>
+            <circle cx="0" cy="0" r="3.5" fill="${p2}" stroke="${darkColor}" stroke-width="1"/>
+            <circle cx="0" cy="0" r="1.5" fill="#FFFFFF"/>
+          </g>
+          <line x1="23" y1="25" x2="31" y2="17" stroke="${darkColor}" stroke-width="2" stroke-linecap="round"/>
+          <line x1="23" y1="25" x2="23" y2="10" stroke="${p1}" stroke-width="1.4" stroke-linecap="round"/>
+        </g>`.trim();
+      }
+    }
+
+    // 6. SaaS, AI, Tech, Cloud & Developer
+    if (s.includes('tech') || s.includes('ai') || s.includes('saas') || s.includes('cloud') || s.includes('code') || s.includes('developer') || s.includes('software') || s.includes('data')) {
+      const mod = v % 3;
+      if (mod === 0) {
+        return `<g class="ill-tech-chip" transform="translate(4, -2)">
+          <path d="M4 14 H14 L20 20" stroke="${p4}" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <circle cx="4" cy="14" r="1.5" fill="${p1}"/>
+          <path d="M42 14 H32 L26 20" stroke="${p4}" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <circle cx="42" cy="14" r="1.5" fill="${p1}"/>
+          <path d="M4 38 H14 L20 32" stroke="${p4}" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <circle cx="4" cy="38" r="1.5" fill="${p1}"/>
+          <path d="M42 38 H32 L26 32" stroke="${p4}" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <circle cx="42" cy="38" r="1.5" fill="${p1}"/>
+          <polygon points="23,9 37,17 37,33 23,41 9,33 9,17" fill="${p3}" stroke="${p1}" stroke-width="2" stroke-linejoin="round"/>
+          <polygon points="23,12 33,18 23,24 13,18" fill="${p2}" opacity="0.4"/>
+          <circle cx="23" cy="25" r="4.5" fill="${p1}" stroke="${darkColor}" stroke-width="1.2"/>
+          <circle cx="23" cy="25" r="2" fill="#FFFFFF"/>
+          <line x1="23" y1="9" x2="23" y2="4" stroke="${p2}" stroke-width="2" stroke-linecap="round"/>
+          <line x1="23" y1="41" x2="23" y2="46" stroke="${p2}" stroke-width="2" stroke-linecap="round"/>
+        </g>`.trim();
+      } else if (mod === 1) {
+        return `<g class="ill-tech-terminal" transform="translate(3, -1)">
+          <polygon points="24,6 40,15 40,35 24,44 8,35 8,15" fill="${p3}" stroke="${p1}" stroke-width="2" stroke-linejoin="round"/>
+          <line x1="24" y1="6" x2="24" y2="25" stroke="${p4}" stroke-width="1.5"/>
+          <line x1="8" y1="15" x2="24" y2="25" stroke="${p4}" stroke-width="1.5"/>
+          <line x1="40" y1="15" x2="24" y2="25" stroke="${p4}" stroke-width="1.5"/>
+          <path d="M16 21 L12 25 L16 29" stroke="${p1}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <line x1="22" y1="30" x2="26" y2="20" stroke="${p2}" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M32 21 L36 25 L32 29" stroke="${p1}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </g>`.trim();
+      } else {
+        return `<g class="ill-tech-infinity" transform="translate(2, 2)">
+          <ellipse cx="25" cy="24" rx="22" ry="10" fill="none" stroke="${p4}" stroke-width="1.2" stroke-dasharray="3 3" transform="rotate(-20 25 24)"/>
+          <path d="M25 24 C19 14, 8 14, 8 24 C8 34, 19 34, 25 24 C31 14, 42 14, 42 24 C42 34, 31 34, 25 24 Z" fill="${p3}" stroke="${p1}" stroke-width="2.8" stroke-linejoin="round"/>
+          <path d="M15 18 C19 14, 25 24, 31 30" stroke="${p2}" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <circle cx="8" cy="24" r="3.2" fill="${p1}" stroke="#FFFFFF" stroke-width="1"/>
+          <circle cx="42" cy="24" r="3.2" fill="${p2}" stroke="#FFFFFF" stroke-width="1"/>
+          <circle cx="38" cy="12" r="1.8" fill="${p4}"/>
+        </g>`.trim();
+      }
+    }
+
+    // 7. Creator, Podcast, Media, Audio & Music
+    if (s.includes('podcast') || s.includes('media') || s.includes('creator') || s.includes('music') || s.includes('audio') || s.includes('sound')) {
+      const mod = v % 2;
+      if (mod === 0) {
+        return `<g class="ill-media-mic" transform="translate(4, -2)">
+          <path d="M8 20 C6 24, 6 30, 8 34" stroke="${p4}" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <path d="M4 16 C1 23, 1 31, 4 38" stroke="${p2}" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+          <path d="M38 20 C40 24, 40 30, 38 34" stroke="${p4}" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <path d="M42 16 C45 23, 45 31, 42 38" stroke="${p2}" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+          <rect x="17" y="10" width="12" height="22" rx="6" fill="${p3}" stroke="${p1}" stroke-width="2"/>
+          <line x1="17" y1="16" x2="29" y2="16" stroke="${p1}" stroke-width="1.2"/>
+          <line x1="17" y1="21" x2="29" y2="21" stroke="${p1}" stroke-width="1.2"/>
+          <line x1="17" y1="26" x2="29" y2="26" stroke="${p1}" stroke-width="1.2"/>
+          <path d="M13 22 v5 c0 5.5 4.5 10 10 10 s10 -4.5 10 -10 v-5" fill="none" stroke="${p1}" stroke-width="2" stroke-linecap="round"/>
+          <line x1="23" y1="37" x2="23" y2="46" stroke="${p1}" stroke-width="2.5"/>
+          <line x1="16" y1="46" x2="30" y2="46" stroke="${p2}" stroke-width="3" stroke-linecap="round"/>
+        </g>`.trim();
+      } else {
+        return `<g class="ill-media-iris" transform="translate(3, 0)">
+          <circle cx="24" cy="25" r="22" fill="${p3}" stroke="${p1}" stroke-width="2"/>
+          <polygon points="24,10 35,16 29,27 18,21" fill="${p1}" stroke="${darkColor}" stroke-width="0.8"/>
+          <polygon points="35,16 38,29 27,33 24,20" fill="${p2}" stroke="${darkColor}" stroke-width="0.8"/>
+          <polygon points="38,29 30,38 21,30 29,21" fill="${p1}" stroke="${darkColor}" stroke-width="0.8"/>
+          <polygon points="30,38 17,37 19,25 32,26" fill="${p2}" stroke="${darkColor}" stroke-width="0.8"/>
+          <polygon points="17,37 10,26 19,19 26,30" fill="${p1}" stroke="${darkColor}" stroke-width="0.8"/>
+          <polygon points="10,26 17,13 26,19 19,32" fill="${p2}" stroke="${darkColor}" stroke-width="0.8"/>
+          <polygon points="24,20 28,22 28,27 24,29 20,27 20,22" fill="#FFFFFF"/>
+        </g>`.trim();
+      }
+    }
+
+    // 8. Fitness, Outdoor, Adventure & Athletics
+    if (s.includes('fitness') || s.includes('sport') || s.includes('athletic') || s.includes('outdoor') || s.includes('adventure') || s.includes('mountain') || s.includes('gym')) {
+      const mod = v % 2;
+      if (mod === 0) {
+        return `<g class="ill-outdoor-peaks" transform="translate(2, 2)">
+          <circle cx="25" cy="18" r="9" fill="${p4}" opacity="0.6"/>
+          <polygon points="33,14 46,38 20,38" fill="${p2}" stroke="${p1}" stroke-width="1.8" stroke-linejoin="round"/>
+          <polygon points="33,14 38,23 35,22 33,26 31,22 27,24" fill="#FFFFFF"/>
+          <polygon points="19,10 34,38 4,38" fill="${p3}" stroke="${p1}" stroke-width="2" stroke-linejoin="round"/>
+          <polygon points="19,10 24,21 21,20 19,24 17,19 13,22" fill="#FFFFFF" stroke="${p1}" stroke-width="1"/>
+          <path d="M19 10 L19 38" stroke="${p1}" stroke-width="1.8"/>
+          <polygon points="37,30 39,34 38,34 40,38 34,38 36,34 35,34" fill="${darkColor}"/>
+          <polygon points="41,32 43,35 42,35 44,38 38,38 40,35 39,35" fill="${p1}"/>
+        </g>`.trim();
+      } else {
+        return `<g class="ill-outdoor-compass" transform="translate(4, -1)">
+          <circle cx="23" cy="25" r="22" fill="${p3}" stroke="${p1}" stroke-width="2"/>
+          <circle cx="23" cy="25" r="18" fill="none" stroke="${p2}" stroke-width="1" stroke-dasharray="2 3"/>
+          <polygon points="23,6 23,25 20,25" fill="${p1}"/>
+          <polygon points="23,6 23,25 26,25" fill="${p2}"/>
+          <polygon points="23,44 23,25 26,25" fill="${p1}"/>
+          <polygon points="23,44 23,25 20,25" fill="${p2}"/>
+          <polygon points="42,25 23,25 23,22" fill="${p1}"/>
+          <polygon points="42,25 23,25 23,28" fill="${p2}"/>
+          <polygon points="4,25 23,25 23,28" fill="${p1}"/>
+          <polygon points="4,25 23,25 23,22" fill="${p2}"/>
+          <circle cx="23" cy="25" r="3" fill="#FFFFFF" stroke="${darkColor}" stroke-width="1.5"/>
+        </g>`.trim();
+      }
+    }
+
+    // 9. Default / Lifestyle / General Venture
+    const mod = v % 2;
+    if (mod === 0) {
+      return `<g class="ill-general-sunburst" transform="translate(3, 0)">
+        <circle cx="24" cy="25" r="22" fill="${p3}" stroke="${p1}" stroke-width="2"/>
+        <circle cx="24" cy="26" r="8" fill="${p2}" stroke="${p1}" stroke-width="1.5"/>
+        <line x1="24" y1="12" x2="24" y2="7" stroke="${p1}" stroke-width="2" stroke-linecap="round"/>
+        <line x1="14" y1="16" x2="10" y2="12" stroke="${p1}" stroke-width="2" stroke-linecap="round"/>
+        <line x1="34" y1="16" x2="38" y2="12" stroke="${p1}" stroke-width="2" stroke-linecap="round"/>
+        <line x1="10" y1="26" x2="5" y2="26" stroke="${p1}" stroke-width="2" stroke-linecap="round"/>
+        <line x1="38" y1="26" x2="43" y2="26" stroke="${p1}" stroke-width="2" stroke-linecap="round"/>
+        <path d="M9 32 Q24 29 39 32" stroke="${p1}" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M13 37 Q24 35 35 37" stroke="${p2}" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <path d="M17 41 Q24 40 31 41" stroke="${p4}" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+      </g>`.trim();
+    } else {
+      return `<g class="ill-general-shield" transform="translate(4, -1)">
+        <path d="M23 6 C35 6, 39 12, 39 24 C39 36, 28 44, 23 48 C18 44, 7 36, 7 24 C7 12, 11 6, 23 6 Z" fill="${p3}" stroke="${p1}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M23 10 C32 10, 35 15, 35 24 C35 33, 26 40, 23 43 C20 40, 11 33, 11 24 C11 15, 14 10, 23 10 Z" fill="none" stroke="${p2}" stroke-width="1.2" stroke-dasharray="3 2"/>
+        <path d="M12 18 L23 29 L34 18" stroke="${p1}" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <polygon points="23,12 24.5,15.5 28,16 25.5,18.5 26,22 23,20.2 20,22 20.5,18.5 18,16 21.5,15.5" fill="${p1}"/>
+        <circle cx="23" cy="36" r="2.5" fill="${p2}"/>
+      </g>`.trim();
+    }
+  }
+
+  function generateThreeLogoConcepts(brand, seed = 0) {
     const name = brand.name || "BrandDNA";
-    const initials = getInitials(name);
     const colors = brand.palette || brand.colors || [];
-    const p1 = colors[0]?.hex || '#2D5A46';
-    const p2 = colors[1]?.hex || '#C27D53';
-    const p3 = colors[2]?.hex || '#FAF6EE';
-    const p4 = colors[3]?.hex || '#E9C46A';
-    const darkColor = colors[4]?.hex || '#1C1917';
+    const p1 = colors[0]?.hex || '#059669';
+    const p2 = colors[1]?.hex || '#10B981';
+    const p3 = colors[2]?.hex || '#ECFDF5';
+    const p4 = colors[3]?.hex || '#A7F3D0';
+    const darkColor = colors[4]?.hex || '#111827';
 
     const heading = cleanFontName(brand.headingFont || brand.fonts?.heading);
     const body = cleanFontName(brand.bodyFont || brand.fonts?.body);
 
-    // Clean 24x24 SVG Path
-    let rawPath = brand.svgIconPath || getNiche24x24IconPath(brand.industry, brand.vibe);
-    rawPath = String(rawPath)
-      .replace(/^<path[^>]*d=["']/i, '')
-      .replace(/["'][^>]*\/?>(<\/path>)?$/i, '')
-      .trim();
-
     const displayName = name.length > 15 ? name.slice(0, 14) + '…' : name;
     const subSnippet = (brand.tagline || brand.industry || 'STUDIO EDITION').toUpperCase().slice(0, 24);
 
-    // Concept 1: Icon + Wordmark Lockup
+    // Dynamic rich vector illustrations
+    const ill1 = (brand.customIllustration && seed === 0)
+      ? brand.customIllustration
+      : getRichNicheIllustration(brand.industry, brand.vibe, seed, colors);
+
+    const ill2 = getRichNicheIllustration(brand.industry, brand.vibe, seed + 1, colors);
+    const ill3 = getRichNicheIllustration(brand.industry, brand.vibe, seed + 2, colors);
+
+    // Concept 1: Modern Illustrated Icon & Editorial Wordmark Lockup
     const concept1Inner = `
-  <!-- Concept 1: Icon + Wordmark Lockup -->
-  <rect width="240" height="120" rx="12" fill="#FFFFFF"/>
-  <rect x="1" y="1" width="238" height="118" rx="11" fill="none" stroke="#E7E5E4" stroke-width="1"/>
+  <!-- Concept 1: Modern Illustrated Icon & Editorial Wordmark Lockup -->
+  <rect width="240" height="120" rx="14" fill="#FFFFFF"/>
+  <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="#DCE3DE" stroke-width="1"/>
   
-  <!-- Icon Emblem Stage -->
-  <g transform="translate(18, 22)">
-    <rect width="66" height="74" rx="12" fill="${p3}" stroke="${p1}" stroke-opacity="0.25" stroke-width="1.2"/>
-    <g transform="translate(33, 37) translate(-18, -18) scale(1.5)">
-      <path d="${rawPath}" fill="${p1}" fill-opacity="0.14" stroke="${p1}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Illustrated Emblem Stage -->
+  <g transform="translate(16, 16)">
+    <rect width="72" height="88" rx="16" fill="${p3}" stroke="${p1}" stroke-opacity="0.3" stroke-width="1.5"/>
+    <rect x="3" y="3" width="66" height="82" rx="13" fill="none" stroke="${p2}" stroke-opacity="0.2" stroke-width="1" stroke-dasharray="3 2"/>
+    <g transform="translate(11, 18) scale(1.08)">
+      ${ill1}
     </g>
+    <circle cx="8" cy="8" r="1.5" fill="${p1}"/>
+    <circle cx="64" cy="8" r="1.5" fill="${p1}"/>
   </g>
 
   <!-- Wordmark Lockup -->
-  <g transform="translate(96, 42)">
-    <text x="0" y="16" class="brand-heading-text" font-family="'${heading}', Georgia, serif" font-weight="700" font-size="18" fill="${darkColor}" letter-spacing="-0.3">${displayName}</text>
-    <text x="0" y="34" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="7" fill="${p2}" letter-spacing="2">${subSnippet}</text>
-    <line x1="0" y1="44" x2="68" y2="44" stroke="${p4}" stroke-width="1.5" stroke-linecap="round"/>
+  <g transform="translate(99, 36)">
+    <text x="0" y="18" class="brand-heading-text" font-family="'${heading}', Georgia, serif" font-weight="700" font-size="18.5" fill="${darkColor}" letter-spacing="-0.3">${displayName}</text>
+    <text x="0" y="36" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="7" fill="${p1}" letter-spacing="2.2">${subSnippet}</text>
+    <g transform="translate(0, 48)">
+      <line x1="0" y1="0" x2="42" y2="0" stroke="${p4}" stroke-width="1.5" stroke-linecap="round"/>
+      <polygon points="46,-2.5 48.5,0 46,2.5 43.5,0" fill="${p1}"/>
+      <line x1="51" y1="0" x2="93" y2="0" stroke="${p4}" stroke-width="1.5" stroke-linecap="round"/>
+    </g>
+    <text x="0" y="60" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="6" fill="${p2}" letter-spacing="1.5">&bull; ORIGINAL VECTOR SYSTEM &bull;</text>
   </g>
 `.trim();
 
-    // Concept 2: Monogram Crest
+    // Concept 2: Heritage Emblem & Artisan Stamp
     const concept2Inner = `
-  <!-- Concept 2: Monogram Crest -->
-  <rect width="240" height="120" rx="12" fill="#FFFFFF"/>
-  <rect x="1" y="1" width="238" height="118" rx="11" fill="none" stroke="#E7E5E4" stroke-width="1"/>
+  <!-- Concept 2: Heritage Emblem & Artisan Stamp -->
+  <rect width="240" height="120" rx="14" fill="#FFFFFF"/>
+  <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="#DCE3DE" stroke-width="1"/>
 
-  <!-- Center Crest Shield -->
-  <g transform="translate(120, 48)">
-    <polygon points="0,-32 26,-18 26,14 0,32 -26,14 -26,-18" fill="${p3}" stroke="${p1}" stroke-width="1.8"/>
-    <polygon points="0,-24 19,-13 19,10 0,23 -19,10 -19,-13" fill="none" stroke="${p2}" stroke-width="1" stroke-dasharray="3 3"/>
-    <text x="0" y="8" class="brand-heading-text" font-family="'${heading}', Georgia, serif" font-weight="700" font-size="20" fill="${darkColor}" text-anchor="middle" letter-spacing="2">${initials}</text>
-    <circle cx="0" cy="-16" r="2.2" fill="${p4}"/>
+  <!-- Centered Medallion Stamp -->
+  <g transform="translate(120, 45)">
+    <circle cx="0" cy="0" r="34" fill="${p3}" stroke="${p1}" stroke-width="2"/>
+    <circle cx="0" cy="0" r="29" fill="none" stroke="${p2}" stroke-width="1" stroke-dasharray="3 2"/>
+    <g transform="translate(-25, -26) scale(1.04)">
+      ${ill2}
+    </g>
+    <polygon points="-40,0 -42,-3 -39,-2 -37,-4 -37,-1 -34,0 -37,1 -37,4 -39,2 -42,3" fill="${p1}"/>
+    <polygon points="40,0 38,-3 41,-2 43,-4 43,-1 46,0 43,1 43,4 41,2 38,3" fill="${p1}"/>
   </g>
 
-  <!-- Wordmark below Crest -->
-  <g transform="translate(120, 95)">
-    <text x="0" y="6" class="brand-heading-text" font-family="'${heading}', Georgia, serif" font-weight="700" font-size="12" fill="${darkColor}" text-anchor="middle" letter-spacing="2.5">${displayName.toUpperCase()}</text>
-    <text x="0" y="17" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="6" fill="${p2}" text-anchor="middle" letter-spacing="3.5">EST. 2026 &bull; IDENTITY MARK</text>
+  <!-- Wordmark below Stamp -->
+  <g transform="translate(120, 96)">
+    <text x="0" y="5" class="brand-heading-text" font-family="'${heading}', Georgia, serif" font-weight="700" font-size="13" fill="${darkColor}" text-anchor="middle" letter-spacing="3">${displayName.toUpperCase()}</text>
+    <text x="0" y="16" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="6" fill="${p1}" text-anchor="middle" letter-spacing="3.5">EST. 2026 &bull; ARTISANAL TRADEMARK MARK</text>
   </g>
 `.trim();
 
-    // Concept 3: Minimalist Dark-Card Variant
+    // Concept 3: Modern Kinetic Dark-Card Vector Emblem
     const concept3Inner = `
-  <!-- Concept 3: Minimalist Dark-Card Variant -->
-  <rect width="240" height="120" rx="12" fill="${darkColor}"/>
-  <rect x="1" y="1" width="238" height="118" rx="11" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-  
-  <circle cx="210" cy="20" r="70" fill="${p1}" opacity="0.25"/>
+  <!-- Concept 3: Modern Kinetic Dark-Card Vector Emblem -->
+  <rect width="240" height="120" rx="14" fill="${darkColor}"/>
+  <rect x="1" y="1" width="238" height="118" rx="13" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+  <circle cx="210" cy="20" r="70" fill="${p1}" opacity="0.22"/>
 
-  <g transform="translate(24, 26)">
-    <circle cx="34" cy="34" r="30" fill="none" stroke="${p4}" stroke-width="1.8"/>
-    <circle cx="34" cy="34" r="24" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" stroke-dasharray="3 3"/>
-    <g transform="translate(34, 34) translate(-14, -14) scale(1.15)">
-      <path d="${rawPath}" fill="${p4}" fill-opacity="0.2" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Left Futuristic Emblem Stage -->
+  <g transform="translate(18, 16)">
+    <circle cx="36" cy="44" r="34" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+    <circle cx="36" cy="44" r="28" fill="${p1}" fill-opacity="0.18" stroke="${p4}" stroke-width="1.4" stroke-dasharray="4 2"/>
+    <g transform="translate(12, 19) scale(1.05)">
+      ${ill3}
     </g>
   </g>
 
-  <g transform="translate(100, 44)">
-    <text x="0" y="14" class="brand-heading-text" font-family="'${heading}', sans-serif" font-weight="700" font-size="18" fill="#FFFFFF" letter-spacing="-0.2">${displayName}</text>
-    <text x="0" y="32" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="7.5" fill="${p4}" letter-spacing="2">${subSnippet}</text>
-    <g transform="translate(0, 42)">
-      <circle cx="4" cy="0" r="2.2" fill="${p2}"/>
-      <circle cx="13" cy="0" r="2.2" fill="${p1}"/>
-      <circle cx="22" cy="0" r="2.2" fill="${p4}"/>
+  <!-- Right Typography Stage -->
+  <g transform="translate(102, 42)">
+    <text x="0" y="16" class="brand-heading-text" font-family="'${heading}', sans-serif" font-weight="700" font-size="18" fill="#FFFFFF" letter-spacing="-0.2">${displayName}</text>
+    <text x="0" y="34" class="brand-body-text" font-family="'${body}', sans-serif" font-weight="600" font-size="7.2" fill="${p4}" letter-spacing="2.2">${subSnippet}</text>
+    <g transform="translate(0, 44)">
+      <circle cx="4" cy="0" r="2.5" fill="${p1}"/>
+      <circle cx="14" cy="0" r="2.5" fill="${p2}"/>
+      <circle cx="24" cy="0" r="2.5" fill="${p4}"/>
+      <line x1="33" y1="0" x2="68" y2="0" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
     </g>
   </g>
 `.trim();
@@ -920,14 +1313,14 @@
     };
   }
 
-  function renderThreeLogoStudio(brand) {
-    const logos = generateThreeLogoConcepts(brand);
+  function renderThreeLogoStudio(brand, seed = 0) {
+    const logos = generateThreeLogoConcepts(brand, seed);
 
     if (elements.logoConcept1Stage) {
       if (brand.customLogoUrl) {
         elements.logoConcept1Stage.innerHTML = `
           <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; width:100%; height:100%; padding:10px;">
-            <span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; background:#EFF6FF; color:#2563EB; padding:3px 8px; border-radius:9999px;">✓ Active Uploaded Logo</span>
+            <span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; background:#ECFDF5; color:#059669; padding:3px 8px; border-radius:9999px;">✓ Active Uploaded Logo</span>
             <img src="${brand.customLogoUrl}" alt="${brand.name}" style="max-height:85px; max-width:85%; object-fit:contain;">
           </div>
         `;
@@ -982,6 +1375,70 @@
       elements.btnCopyLogo3.onclick = () => {
         copyToClipboard(logos.concept3, 'Concept 3 SVG code copied!');
       };
+    }
+  }
+
+  // =========================================================================
+  // Logo Studio: Regenerate Logos Action (AI with Rich Procedural Fallback)
+  // =========================================================================
+  async function regenerateLogoConceptsAction() {
+    if (state.isRegeneratingLogos) return;
+    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
+    if (!brand) return;
+
+    state.isRegeneratingLogos = true;
+    if (elements.btnRegenerateLogos) elements.btnRegenerateLogos.disabled = true;
+    if (elements.regenerateLogosSpinner) elements.regenerateLogosSpinner.classList.remove('hidden');
+    if (elements.btnRegenerateLogosText) elements.btnRegenerateLogosText.textContent = 'Generating...';
+
+    try {
+      const rawKey = elements.apiKeyInput ? elements.apiKeyInput.value.trim() : '';
+      const hasKey = Boolean(rawKey && rawKey.length > 5);
+
+      if (hasKey) {
+        try {
+          const colorsHex = (brand.palette || brand.colors || []).map(c => c.hex).join(', ');
+          const prompt = `You are an elite vector logo designer.
+Generate a rich, custom niche-specific illustrated vector logo SVG element in valid JSON for:
+- Brand Name: "${brand.name}"
+- Industry / Niche: "${brand.industry}"
+- Colors: "${colorsHex}"
+- Font: "${brand.headingFont}"
+
+Return strict JSON:
+{
+  "customIllustration": "<g class='niche-ai-illustration'>...valid SVG paths, shapes and strokes tailored to this niche...</g>"
+}
+NO conversational text, return ONLY JSON.`;
+
+          const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.8, responseMimeType: "application/json" }
+          };
+
+          const data = await callGeminiEndpoint(payload);
+          const parsed = extractJsonFromGeminiResponse(data);
+          if (parsed?.customIllustration && typeof parsed.customIllustration === 'string' && parsed.customIllustration.includes('<')) {
+            brand.customIllustration = parsed.customIllustration;
+          }
+        } catch (geminiErr) {
+          console.warn('Gemini logo regeneration fallback to offline procedural engine:', geminiErr);
+        }
+      }
+
+      state.logoVariationSeed = ((state.logoVariationSeed || 0) + 1) % 10;
+      renderThreeLogoStudio(brand, state.logoVariationSeed);
+      showToast('✨ Generated 3 brand-new custom illustrated logo concepts!', 'success');
+    } catch (err) {
+      console.error('Error regenerating logos:', err);
+      state.logoVariationSeed = ((state.logoVariationSeed || 0) + 1) % 10;
+      renderThreeLogoStudio(brand, state.logoVariationSeed);
+      showToast('Generated 3 fresh illustrated logo concepts!', 'success');
+    } finally {
+      state.isRegeneratingLogos = false;
+      if (elements.btnRegenerateLogos) elements.btnRegenerateLogos.disabled = false;
+      if (elements.regenerateLogosSpinner) elements.regenerateLogosSpinner.classList.add('hidden');
+      if (elements.btnRegenerateLogosText) elements.btnRegenerateLogosText.textContent = '✨ Regenerate Logos';
     }
   }
 
@@ -6443,6 +6900,7 @@ You MUST return a single valid JSON object strictly matching this schema:
   "bodyFont": "Real Google Font (e.g. Plus Jakarta Sans, Space Grotesk, Inter, JetBrains Mono, DM Sans)",
   "voiceTone": ["ToneWord1", "ToneWord2", "ToneWord3"],
   "svgIconPath": "A clean, valid 24x24 viewBox SVG <path d='...'> string representing the brand's specific niche (e.g. M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z)",
+  "customLogoIllustration": "A rich, custom, niche-specific illustrated vector SVG snippet (<g>...</g> containing layered paths, detailed icons, emblems, or flourishes matching the brand's industry—never just plain circles or squares—using the brand's palette colors)",
   "launchCalendar": [
     { "day": 1, "title": "Teaser & Curiosity Poll", "format": "Story", "hook": "Day 1 Hook Headline" },
     { "day": 2, "title": "Founder / Origin Story", "format": "Carousel", "hook": "Day 2 Hook Headline" },
@@ -6500,6 +6958,9 @@ STRICT CONSTRAINTS:
       psychology: c.psychology || fallbackPalette[i]?.psychology || 'Harmonizes aesthetic balance and visual gravity.'
     }));
 
+    const customLogoIllustration = (raw?.customLogoIllustration && typeof raw.customLogoIllustration === 'string' && raw.customLogoIllustration.includes('<'))
+      ? raw.customLogoIllustration
+      : (raw?.customIllustration || null);
     const headingFont = raw?.headingFont || raw?.fonts?.heading || fallbackFonts.heading;
     const bodyFont = raw?.bodyFont || raw?.fonts?.body || fallbackFonts.body;
 
