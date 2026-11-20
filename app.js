@@ -6943,10 +6943,13 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
     if (hasHeaderKey) {
       if (payload && payload.action === 'generateImage') {
         const promptText = payload.prompt || '';
-        let imgUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=' + encodeURIComponent(rawKey);
+        const systemPrompt = "You are an elite vector artist and 3D industrial product packaging illustrator. Generate a clean, detailed 800x800 SVG commercial studio product & packaging illustration. Output ONLY valid, raw SVG starting with <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 800\" width=\"800\" height=\"800\"> and ending with </svg>. No markdown, no explanations.";
+        const fullPrompt = systemPrompt + "\n\nBrand Brief:\n" + promptText + "\nTarget: 800x800 studio product mockup. Output ONLY valid SVG.";
+
+        let imgUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(rawKey);
         const imgBody = {
-          contents: [{ parts: [{ text: promptText }] }],
-          generationConfig: { responseModalities: ["IMAGE"] }
+          contents: [{ parts: [{ text: fullPrompt }] }],
+          generationConfig: { temperature: 0.4, maxOutputTokens: 8192 }
         };
 
         let res = await fetch(imgUrl, {
@@ -6956,23 +6959,11 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
         });
 
         if (res.status === 404) {
-          imgUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=' + encodeURIComponent(rawKey);
+          imgUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + encodeURIComponent(rawKey);
           res = await fetch(imgUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(imgBody)
-          });
-        }
-
-        if (res.status === 404) {
-          const fallbackUrl = 'https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=' + encodeURIComponent(rawKey);
-          res = await fetch(fallbackUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              instances: [{ prompt: promptText }],
-              parameters: { sampleCount: 1, aspectRatio: payload.aspectRatio === '4:5' ? '3:4' : (payload.aspectRatio || '1:1'), outputMimeType: 'image/png' }
-            })
           });
         }
 
@@ -6981,29 +6972,25 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
           throw new Error(resData.error?.message || ('Direct Gemini Image API error (' + res.status + ')'));
         }
 
-        let base64Data = null;
-        let mimeType = 'image/png';
-        const candidate = resData.candidates?.[0];
-        if (candidate?.content?.parts) {
-          for (const part of candidate.content.parts) {
-            if (part.inlineData?.data) {
-              base64Data = part.inlineData.data;
-              mimeType = part.inlineData.mimeType || 'image/png';
-              break;
-            }
-          }
-        }
-        if (!base64Data && resData.predictions?.[0]?.bytesBase64Encoded) {
-          base64Data = resData.predictions[0].bytesBase64Encoded;
-          mimeType = resData.predictions[0].mimeType || 'image/png';
+        const rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        let cleanSvg = '';
+        const svgMatch = rawText.match(/<svg[\s\S]*?<\/svg>/i);
+        if (svgMatch) {
+          cleanSvg = svgMatch[0].trim();
+        } else if (rawText.includes('<svg')) {
+          const startIdx = rawText.indexOf('<svg');
+          cleanSvg = rawText.slice(startIdx).trim();
+          if (!cleanSvg.endsWith('</svg>')) cleanSvg += '</svg>';
         }
 
+        const dataUri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(cleanSvg);
         return {
           success: true,
-          imageBase64: base64Data,
-          image: base64Data ? ('data:' + mimeType + ';base64,' + base64Data) : null,
-          base64: base64Data,
-          mimeType: mimeType
+          imageUrl: dataUri,
+          image: dataUri,
+          base64: btoa(unescape(encodeURIComponent(cleanSvg))),
+          mimeType: 'image/svg+xml',
+          model: 'Gemini 2.5 Flash SVG'
         };
       }
 
@@ -9549,41 +9536,82 @@ Return ONLY valid JSON with NO commentary.
     const ratio = (state.selectedAspectRatio || '1:1').replace(':', 'x');
     const filename = `${brandSlug}-product-visual-${ratio}.png`;
 
-    if (state.currentVisualDataUrl) {
-      if (state.currentVisualDataUrl.startsWith('data:')) {
-        const a = document.createElement('a');
-        a.href = state.currentVisualDataUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        showToast(`Downloaded high-res product visual PNG! 📸`, 'success');
-      } else {
-        fetch(state.currentVisualDataUrl)
-          .then(res => res.blob())
-          .then(blob => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast(`Downloaded high-res product visual PNG! 📸`, 'success');
-          })
-          .catch(() => {
-            const a = document.createElement('a');
-            a.href = state.currentVisualDataUrl;
-            a.download = filename;
-            a.target = '_blank';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          });
-      }
-    } else {
+    if (!state.currentVisualDataUrl) {
       showToast('Visual is still preparing. Please try again.', 'warning');
+      return;
+    }
+
+    // If the visual is an SVG data URI, rasterize to a real high-res PNG canvas before downloading
+    if (state.currentVisualDataUrl.startsWith('data:image/svg+xml')) {
+      try {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          let w = 1080, h = 1080;
+          if (ratio === '4x5') { w = 1080; h = 1350; }
+          if (ratio === '16x9') { w = 1920; h = 1080; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const pngUrl = canvas.toDataURL('image/png');
+
+          const a = document.createElement('a');
+          a.href = pngUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          showToast(`Downloaded high-res product visual PNG! 📸`, 'success');
+        };
+        img.onerror = () => {
+          const a = document.createElement('a');
+          a.href = state.currentVisualDataUrl;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          showToast(`Downloaded product visual! 📸`, 'success');
+        };
+        img.src = state.currentVisualDataUrl;
+        return;
+      } catch (err) {
+        console.warn('Canvas rasterization fallback to direct download:', err);
+      }
+    }
+
+    if (state.currentVisualDataUrl.startsWith('data:')) {
+      const a = document.createElement('a');
+      a.href = state.currentVisualDataUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast(`Downloaded high-res product visual PNG! 📸`, 'success');
+    } else {
+      fetch(state.currentVisualDataUrl)
+        .then(res => res.blob())
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast(`Downloaded high-res product visual PNG! 📸`, 'success');
+        })
+        .catch(() => {
+          const a = document.createElement('a');
+          a.href = state.currentVisualDataUrl;
+          a.download = filename;
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        });
     }
   }
 

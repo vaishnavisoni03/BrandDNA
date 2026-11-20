@@ -54,73 +54,72 @@ export default async (req, context) => {
         }
       });
     }
-
-    // 4. Action: Image Generation via Google Gemini multimodal image models
+    // 4. Action: Image Generation via Gemini 2.5 Flash Free Tier (Clean 800x800 SVG Commercial Studio Illustration)
     if (requestBody.action === 'generateImage') {
       const promptText = requestBody.prompt || requestBody.instances?.[0]?.prompt || '';
+      const aspectRatio = requestBody.aspectRatio || '1:1';
 
-      const imagePayload = {
+      const systemPrompt = `You are an elite vector artist and 3D industrial product packaging illustrator.
+Your task is to create a stunning, professional, high-end 800x800 SVG vector commercial studio product & packaging illustration based on the user's brand brief.
+
+CRITICAL INSTRUCTIONS:
+1. Return ONLY pure, raw, valid SVG code starting with <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800"> and ending with </svg>.
+2. Do NOT output markdown code blocks (NO \`\`\`xml or \`\`\`svg), NO conversational text, NO explanations before or after.
+3. VISUAL QUALITY REQUIREMENTS:
+   - Rich studio backdrop with soft atmospheric radial gradient lighting (<radialGradient>, <linearGradient> in <defs>).
+   - Pedestal or architectural stage surface with realistic soft drop shadow blur (<filter id="blur"> or <filter id="dropShadow">).
+   - A hyper-detailed, photorealistic commercial product & packaging container (bottle, jar, box, vessel, device, or can) tailored to the niche and prompt.
+   - Clean luxury brand typography and label design on the packaging.
+   - Distinctive layered vector highlights, specular light reflections, metallic/glass finishes, and realistic textures.
+   - Strictly incorporate the specified Brand DNA colors into the product, label, and environmental lighting.
+4. Ensure all XML tags are closed properly and self-contained with no external resource dependencies.`;
+
+      const userPrompt = `Brand DNA Commercial Product Brief:
+${promptText}
+Target Canvas: 800x800 studio product mockup (Aspect ratio: ${aspectRatio}). Output ONLY valid SVG.`;
+
+      const requestPayload = {
         contents: [
           {
             parts: [
-              { text: promptText }
+              { text: `${systemPrompt}\n\n${userPrompt}` }
             ]
           }
         ],
         generationConfig: {
-          responseModalities: ["IMAGE"]
+          temperature: 0.4,
+          maxOutputTokens: 8192
         }
       };
 
-      // 4a. Primary Endpoint: gemini-2.0-flash-exp-image-generation:generateContent
-      let modelUsed = 'gemini-2.0-flash-exp-image-generation';
-      let imageUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${encodeURIComponent(apiKey)}`;
+      let modelUsed = 'gemini-2.5-flash';
+      let endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-      console.log(`[generateImage] Calling primary image endpoint: ${modelUsed}`);
-      let response = await fetch(imageUrl, {
+      console.log(`[generateImage] Synthesizing 800x800 SVG studio asset via ${modelUsed}`);
+      let response = await fetch(endpointUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(imagePayload)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestPayload)
       });
 
-      // 4b. Fallback: gemini-2.5-flash-image:generateContent if 404
+      // Fallback to gemini-1.5-flash if 404
       if (response.status === 404) {
-        console.warn(`[generateImage] ${modelUsed} returned HTTP 404. Trying fallback to gemini-2.5-flash-image`);
-        modelUsed = 'gemini-2.5-flash-image';
-        imageUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${encodeURIComponent(apiKey)}`;
-        response = await fetch(imageUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(imagePayload)
-        });
-      }
-
-      // 4c. Fallback: imagen-3.0-generate-002:predict if 404
-      if (response.status === 404) {
-        console.warn(`[generateImage] ${modelUsed} returned HTTP 404. Trying fallback to imagen-3.0-generate-002:predict`);
-        modelUsed = 'imagen-3.0-generate-002';
-        let imagenRatio = requestBody.aspectRatio === '4:5' ? '3:4' : (requestBody.aspectRatio || '1:1');
-        const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${encodeURIComponent(apiKey)}`;
-        response = await fetch(fallbackUrl, {
+        console.warn(`[generateImage] ${modelUsed} returned 404. Falling back to gemini-1.5-flash`);
+        modelUsed = 'gemini-1.5-flash';
+        endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+        response = await fetch(endpointUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            instances: [{ prompt: promptText }],
-            parameters: { sampleCount: 1, aspectRatio: imagenRatio, outputMimeType: 'image/png' }
-          })
+          body: JSON.stringify(requestPayload)
         });
       }
 
       const responseData = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        console.error(`[generateImage] API error from ${modelUsed} - Status: ${response.status}`, responseData);
+        console.error(`[generateImage] Error from ${modelUsed} - Status: ${response.status}:`, responseData);
         return new Response(JSON.stringify({
-          error: responseData.error?.message || `Image model ${modelUsed} failed with HTTP status ${response.status}`,
+          error: responseData.error?.message || `Gemini API returned status ${response.status}`,
           status: response.status,
           model: modelUsed,
           fallbackMode: true
@@ -133,33 +132,24 @@ export default async (req, context) => {
         });
       }
 
-      // Extract inlineData.data (gemini image format) or bytesBase64Encoded (imagen format)
-      let base64Data = null;
-      let mimeType = 'image/png';
-
-      // 1. Check gemini inlineData in candidate parts
-      const candidate = responseData.candidates?.[0];
-      if (candidate?.content?.parts) {
-        for (const part of candidate.content.parts) {
-          if (part.inlineData?.data) {
-            base64Data = part.inlineData.data;
-            mimeType = part.inlineData.mimeType || 'image/png';
-            break;
-          }
-        }
+      // Extract generated SVG text from candidates
+      const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      
+      let cleanSvg = '';
+      const svgMatch = rawText.match(/<svg[\s\S]*?<\/svg>/i);
+      if (svgMatch) {
+        cleanSvg = svgMatch[0].trim();
+      } else if (rawText.includes('<svg')) {
+        const startIdx = rawText.indexOf('<svg');
+        cleanSvg = rawText.slice(startIdx).trim();
+        if (!cleanSvg.endsWith('</svg>')) cleanSvg += '</svg>';
       }
 
-      // 2. Check imagen predictions format fallback
-      if (!base64Data && responseData.predictions?.[0]?.bytesBase64Encoded) {
-        base64Data = responseData.predictions[0].bytesBase64Encoded;
-        mimeType = responseData.predictions[0].mimeType || 'image/png';
-      }
-
-      if (!base64Data) {
-        console.warn(`[generateImage] No image binary data found in ${modelUsed} response (status ${response.status}):`, responseData);
+      if (!cleanSvg || cleanSvg.length < 50) {
+        console.warn(`[generateImage] Model ${modelUsed} returned invalid or empty SVG payload:`, rawText.slice(0, 200));
         return new Response(JSON.stringify({
-          error: `No image data returned from ${modelUsed} (status ${response.status})`,
-          status: response.status || 500,
+          error: 'Model response did not contain valid SVG illustration markup',
+          status: 500,
           model: modelUsed,
           fallbackMode: true
         }), {
@@ -171,15 +161,20 @@ export default async (req, context) => {
         });
       }
 
-      console.log(`[generateImage] Successfully synthesized image with ${modelUsed} (status ${response.status})`);
-      const dataUri = `data:${mimeType};base64,${base64Data}`;
+      // Base64 encode the clean SVG
+      const base64Svg = Buffer.from(cleanSvg, 'utf-8').toString('base64');
+      const dataUri = `data:image/svg+xml;base64,${base64Svg}`;
+
+      console.log(`[generateImage] Successfully generated 800x800 SVG product illustration via ${modelUsed} (${cleanSvg.length} chars)`);
+
       return new Response(JSON.stringify({
         success: true,
         imageUrl: dataUri,
-        imageBase64: base64Data,
         image: dataUri,
-        base64: base64Data,
-        mimeType: mimeType,
+        imageBase64: base64Svg,
+        base64: base64Svg,
+        svg: cleanSvg,
+        mimeType: 'image/svg+xml',
         model: modelUsed,
         prompt: promptText
       }), {
@@ -190,6 +185,7 @@ export default async (req, context) => {
         }
       });
     }
+
 
     // 5. Default Action: Gemini Text / Brand Identity Generation (gemini-3.8-flash)
     const primaryUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent';
