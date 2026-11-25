@@ -9550,13 +9550,11 @@ Return ONLY valid JSON with NO commentary.
   function generateBrandKitHtml(brand) {
     const brandSlug = sanitizeHandle(brand.name);
     const colors = brand.palette || brand.colors || [];
-    const headingFont = brand.headingFont || brand.fonts?.heading || 'Plus Jakarta Sans';
-    const bodyFont = brand.bodyFont || brand.fonts?.body || 'Plus Jakarta Sans';
-    const p1 = colors[0]?.hex || '#245336';
-    const p2 = colors[1]?.hex || '#C49A45';
-    const p3 = colors[2]?.hex || '#FAF9F6';
-    const p4 = colors[3]?.hex || '#3D2619';
-    const p5 = colors[4]?.hex || '#18181B';
+    const p1 = colors[0]?.hex || '#1D4ED8';
+    const p2 = colors[1]?.hex || '#0F0F0F';
+    const p3 = colors[2]?.hex || '#F0EDE6';
+    const p4 = colors[3]?.hex || '#D6D3CB';
+    const p5 = colors[4]?.hex || '#FAFAFA';
     const logos = generateThreeLogoConcepts(brand, 0);
 
     return `<!DOCTYPE html>
@@ -9564,153 +9562,172 @@ Return ONLY valid JSON with NO commentary.
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${brand.name} — Brand Identity & Design System Kit</title>
+  <title>${brand.name} — Stark Architectural Identity System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --color-primary: ${p1};
       --color-secondary: ${p2};
-      --color-surface: ${p3};
-      --color-accent: ${p4};
-      --color-dark: ${p5};
-      --font-heading: 'Fraunces', Georgia, serif;
-      --font-body: 'Space Grotesk', -apple-system, sans-serif;
+      --color-surface: #FAFAFA;
+      --color-sand: #F0EDE6;
+      --color-grid: #D6D3CB;
+      --color-jet: #0F0F0F;
+      --color-klein: #1D4ED8;
+      --font-heading: 'Syne', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
+      --font-body: 'Space Grotesk', -apple-system, sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #FBF8F1;
-      color: #1A241E;
+      background: #FAFAFA;
+      color: #0F0F0F;
       font-family: var(--font-body);
       line-height: 1.6;
-      padding: 40px 24px;
+      padding: 48px 32px;
     }
-    .container { max-width: 960px; margin: 0 auto; }
+    .container { max-width: 1040px; margin: 0 auto; }
     header {
-      border-bottom: 2px solid #1A241E;
-      padding-bottom: 32px;
-      margin-bottom: 40px;
+      border: 1px solid #D6D3CB;
+      background: #F0EDE6;
+      padding: 40px;
+      margin-bottom: 32px;
     }
-    .badge {
+    .micro-label {
       display: inline-block;
       font-family: var(--font-mono);
       font-size: 11px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      background: #F3E6B3;
-      color: #1A241E;
-      border: 1.5px solid #1A241E;
-      box-shadow: 2px 2px 0px #1A241E;
-      padding: 4px 12px;
-      border-radius: 9999px;
-      margin-bottom: 12px;
-      font-weight: 700;
+      letter-spacing: 0.12em;
+      background: #FAFAFA;
+      color: #0F0F0F;
+      border: 1px solid #D6D3CB;
+      padding: 4px 10px;
+      margin-bottom: 16px;
     }
     h1 {
       font-family: var(--font-heading);
-      font-size: 3rem;
-      letter-spacing: -0.02em;
+      font-size: 3.4rem;
+      letter-spacing: -0.03em;
+      font-weight: 800;
       margin-bottom: 8px;
-      color: #1A241E;
+      color: #0F0F0F;
+      line-height: 1.1;
     }
     .subtitle {
-      font-size: 1.15rem;
-      color: #425046;
-      margin-bottom: 16px;
+      font-size: 1.1rem;
+      color: #6B6862;
+      margin-bottom: 24px;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 12px;
     }
     .tagline-box {
-      background: #FFFDF9;
-      border: 1.5px solid #1A241E;
-      border-left: 5px solid #C85A32;
-      box-shadow: 3px 3px 0px #1A241E;
-      padding: 16px 20px;
-      border-radius: 8px;
-      font-style: italic;
-      font-size: 1.15rem;
-      color: #1A241E;
+      background: #FAFAFA;
+      border: 1px solid #D6D3CB;
+      border-left: 4px solid #1D4ED8;
+      padding: 20px 24px;
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #0F0F0F;
     }
     section {
-      background: #FFFDF9;
-      border: 1.5px solid #1A241E;
-      box-shadow: 4px 4px 0px #1A241E;
-      border-radius: 10px;
-      padding: 28px;
+      background: #FAFAFA;
+      border: 1px solid #D6D3CB;
+      padding: 32px;
       margin-bottom: 32px;
     }
     h2 {
       font-family: var(--font-heading);
-      font-size: 1.4rem;
-      margin-bottom: 20px;
-      color: #1A241E;
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      color: #0F0F0F;
+    }
+    .section-kicker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #6B6862;
+      margin-bottom: 24px;
+      display: block;
     }
     .palette-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 16px;
-      margin-top: 16px;
     }
     .swatch-card {
-      background: #FFFDF9;
-      border: 1.5px solid #1A241E;
-      box-shadow: 3px 3px 0px #1A241E;
-      border-radius: 8px;
-      overflow: hidden;
+      background: #FAFAFA;
+      border: 1px solid #D6D3CB;
     }
-    .swatch-color { height: 100px; border-bottom: 1.5px solid #1A241E; }
-    .swatch-meta { padding: 12px; font-size: 12px; }
-    .swatch-hex { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: #1A241E; }
-    .swatch-role { color: #425046; font-size: 11px; margin-top: 2px; }
+    .swatch-color { height: 110px; border-bottom: 1px solid #D6D3CB; }
+    .swatch-meta { padding: 16px; }
+    .swatch-hex { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: #0F0F0F; }
+    .swatch-role { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #6B6862; margin-top: 4px; }
+    .swatch-name { font-weight: 600; font-size: 13px; margin-top: 6px; }
     .logos-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
     }
     .logo-item {
-      border: 1.5px solid #1A241E;
-      box-shadow: 3px 3px 0px #1A241E;
-      border-radius: 8px;
-      padding: 24px;
+      border: 1px solid #D6D3CB;
+      padding: 32px;
       text-align: center;
-      background: #FBF8F1;
+      background: #F0EDE6;
     }
-    .logo-svg-wrap { height: 110px; display: flex; align-items: center; justify-content: center; }
+    .logo-svg-wrap { height: 120px; display: flex; align-items: center; justify-content: center; }
+    .logo-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; color: #0F0F0F; margin-top: 16px; }
     .type-specimen {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
     }
     .type-card {
-      border: 1.5px solid #1A241E;
-      box-shadow: 3px 3px 0px #1A241E;
-      padding: 20px;
-      border-radius: 8px;
-      background: #FBF8F1;
+      border: 1px solid #D6D3CB;
+      padding: 24px;
+      background: #F0EDE6;
     }
-    .type-sample-heading { font-family: var(--font-heading); font-size: 1.8rem; margin: 12px 0; color: #1A241E; }
-    .type-sample-body { font-family: var(--font-body); font-size: 1rem; color: #425046; }
-    .tones-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-    .tone-badge { background: #F3E6B3; color: #1A241E; border: 1.5px solid #1A241E; box-shadow: 2px 2px 0px #1A241E; padding: 4px 12px; border-radius: 9999px; font-weight: 600; font-size: 12px; }
-    footer { text-align: center; color: #607065; font-size: 12px; margin-top: 48px; }
+    .type-sample-heading { font-family: var(--font-heading); font-size: 2rem; font-weight: 800; margin: 16px 0; color: #0F0F0F; }
+    .type-sample-body { font-family: var(--font-body); font-size: 1rem; color: #404040; line-height: 1.6; }
+    .tones-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+    .tone-badge { background: #F0EDE6; color: #0F0F0F; border: 1px solid #D6D3CB; padding: 6px 14px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+    footer {
+      border-top: 1px solid #D6D3CB;
+      padding-top: 24px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #8E8A83;
+      margin-top: 48px;
+    }
     @media print {
       body { background: #fff; padding: 0; }
-      section { break-inside: avoid; border: 1.5px solid #1A241E; box-shadow: none; }
+      header, section, .swatch-card, .logo-item, .type-card { break-inside: avoid; border: 1px solid #000; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <span class="badge">Brand DNA Design System</span>
+      <span class="micro-label">SPECIFICATION // EDITION 2026</span>
       <h1>${brand.name}</h1>
-      <p class="subtitle">${brand.industry} &bull; Targeted for ${brand.audience}</p>
+      <p class="subtitle">${brand.industry} &bull; TARGET: ${brand.audience}</p>
       <div class="tagline-box">&ldquo;${brand.tagline}&rdquo;</div>
     </header>
 
     <section>
-      <h2>🎨 Color Palette &amp; Design Tokens</h2>
-      <p style="color:#52525B; font-size:14px; margin-bottom:12px;">${brand.paletteNarrative || 'Harmonized color palette tailored to brand archetype.'}</p>
+      <h2>COLOR SPECIFICATION</h2>
+      <span class="section-kicker">STRUCTURAL PALETTE &bull; WCAG VERIFIED</span>
       <div class="palette-grid">
         ${colors.map(c => `
           <div class="swatch-card">
@@ -9718,7 +9735,7 @@ Return ONLY valid JSON with NO commentary.
             <div class="swatch-meta">
               <div class="swatch-hex">${c.hex.toUpperCase()}</div>
               <div class="swatch-role">${c.role}</div>
-              <div style="font-weight:600; margin-top:4px;">${c.name}</div>
+              <div class="swatch-name">${c.name}</div>
             </div>
           </div>
         `).join('')}
@@ -9726,52 +9743,55 @@ Return ONLY valid JSON with NO commentary.
     </section>
 
     <section>
-      <h2>✨ Vector Logo Mark Concepts</h2>
+      <h2>VECTOR EMBLEMS</h2>
+      <span class="section-kicker">GEOMETRIC SVG MARKS &bull; HIGH FIDELITY</span>
       <div class="logos-grid">
         <div class="logo-item">
           <div class="logo-svg-wrap">${logos.concept1}</div>
-          <p style="font-size:12px; font-weight:600; color:#71717A; margin-top:10px;">Primary Vector Mark</p>
+          <div class="logo-label">SPEC 01 // PRIMARY MARK</div>
         </div>
         <div class="logo-item">
           <div class="logo-svg-wrap">${logos.concept2}</div>
-          <p style="font-size:12px; font-weight:600; color:#71717A; margin-top:10px;">Modern Minimalist</p>
+          <div class="logo-label">SPEC 02 // MINIMAL EMBLEM</div>
         </div>
         <div class="logo-item">
           <div class="logo-svg-wrap">${logos.concept3}</div>
-          <p style="font-size:12px; font-weight:600; color:#71717A; margin-top:10px;">Monogram Seal</p>
+          <div class="logo-label">SPEC 03 // SEAL MONOGRAM</div>
         </div>
       </div>
     </section>
 
     <section>
-      <h2>🔤 Typography System</h2>
+      <h2>TYPOGRAPHIC SCALE</h2>
+      <span class="section-kicker">STRUCTURAL HIERARCHY &bull; PRINT &amp; DIGITAL</span>
       <div class="type-specimen">
         <div class="type-card">
-          <span class="badge">Heading Font</span>
-          <div class="type-sample-heading">${headingFont}</div>
-          <p style="font-size:13px; color:#71717A;">Used for editorial displays, packaging frontals, and hero copy.</p>
+          <span class="micro-label">HEADING SPECIMEN</span>
+          <div class="type-sample-heading">SYNE BOLD</div>
+          <p style="font-size:13px; color:#6B6862; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.04em;">Used strictly for editorial headlines, exhibition titles, and primary packaging display.</p>
         </div>
         <div class="type-card">
-          <span class="badge">Body Font</span>
-          <div class="type-sample-body" style="margin-top:12px; font-size:1.1rem; font-weight:500;">${bodyFont}</div>
-          <p class="type-sample-body" style="margin-top:8px;">${brand.sampleBody || 'Engineered for seamless legibility across mobile screens and product packaging.'}</p>
+          <span class="micro-label">BODY SPECIMEN</span>
+          <div class="type-sample-body" style="margin-top:16px;">Space Grotesk + JetBrains Mono</div>
+          <p class="type-sample-body" style="margin-top:8px; font-size:13px; color:#6B6862;">${brand.sampleBody || 'Engineered for architectural readability across structural panels, interface micro-labels, and technical specification cards.'}</p>
         </div>
       </div>
     </section>
 
     <section>
-      <h2>🎙️ Voice &amp; Tone Guidelines</h2>
+      <h2>SYSTEM VOICE &amp; ARCHETYPE</h2>
+      <span class="section-kicker">EDITORIAL TONE TOKENS</span>
       <div class="tones-list">
         ${(brand.tones || []).map(t => `<span class="tone-badge">${t}</span>`).join('')}
       </div>
-      <div style="margin-top:20px;">
-        <h4 style="font-size:14px; text-transform:uppercase; letter-spacing:0.05em; color:#71717A; margin-bottom:6px;">Sample Brand Narrative</h4>
-        <p style="font-size:15px; color:#3F3F46; line-height:1.7;">${brand.sampleHeadline ? `“${brand.sampleHeadline}” ` : ''}${brand.sampleBody || ''}</p>
+      <div style="margin-top:24px; padding:20px; background:#F0EDE6; border:1px solid #D6D3CB;">
+        <span class="micro-label" style="margin-bottom:8px;">MANIFESTO</span>
+        <p style="font-size:15px; color:#0F0F0F; line-height:1.7;">${brand.sampleHeadline ? `“${brand.sampleHeadline}” — ` : ''}${brand.sampleBody || ''}</p>
       </div>
     </section>
 
     <footer>
-      Generated with BrandDNA Studio &bull; Fast, Tactile Light-Mode Brand Playground
+      BrandDNA Studio &bull; Stark Architectural Gallery Theme &bull; 100% Client-Side System
     </footer>
   </div>
 </body>
