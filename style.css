@@ -5,78 +5,107 @@
 
 /* --- CSS Variables & Design System --- */
 :root {
-  /* Surface & Backgrounds: Warm Studio Paper */
-  --bg-porcelain: #FAF9F6;
-  --bg-alabaster: #FAF9F6;
-  --bg-card: #FFFFFF;
-  --bg-card-subtle: #FAF9F6;
-  --bg-input: #FFFFFF;
-  --bg-hover: #F2EFE9;
+  /* ==========================================================================
+     TACTILE RISO-PRINT & PHYSICAL STATIONERY STUDIO TOKENS
+     ========================================================================== */
+  /* Palette: Unbleached Cotton & Pure Card Surfaces */
+  --bg-cotton: #FBF8F1;          /* Unbleached cotton background */
+  --bg-porcelain: #FBF8F1;       /* Cotton alias */
+  --bg-alabaster: #FBF8F1;       /* Cotton alias */
+  --bg-card: #FFFDF9;            /* Pure card surfaces */
+  --bg-card-subtle: #F6F1E5;     /* Warm stationery secondary surface */
+  --bg-input: #FFFDF9;           /* Pure paper input */
+  --bg-hover: #F3E6B3;           /* Soft butter-cream hover */
 
-  /* Ambient Glows: Soft Sunlit Warmth */
-  --glow-sky: #F4EFE6;
-  --glow-lavender: #FAF6EE;
-  --glow-peach: #F4EFE6;
-  --glow-mint: #ECFDF5;
+  /* Ambient Glows: Flattened into Cotton Warmth (No SaaS Mesh Blur) */
+  --glow-sky: #FBF8F1;
+  --glow-lavender: #FBF8F1;
+  --glow-peach: #FBF8F1;
+  --glow-mint: #FBF8F1;
 
-  /* Text & Contrast: Deep Charcoal */
-  --text-slate: #18181B;
-  --text-charcoal: #18181B;
-  --text-body: #27272A;
-  --text-muted: #71717A;
-  --text-light: #A1A1AA;
+  /* Deep Forest-Black Ink Typography & Contrast (#1A241E) */
+  --ink-primary: #1A241E;        /* Deep forest-black ink */
+  --ink-secondary: #3D4A41;      /* Secondary archival ink */
+  --ink-tertiary: #607065;       /* Faded letterpress ink */
+  --text-slate: #1A241E;
+  --text-charcoal: #1A241E;
+  --text-body: #1A241E;
+  --text-muted: #425046;
+  --text-light: #607065;
 
-  /* Structural Borders & Shadows: Crisp 1px */
-  --border-stone: #E4E2DD;
-  --border-focus: #059669;
-  --shadow-bento: 0 1px 3px rgba(24, 24, 27, 0.04), 0 4px 12px rgba(24, 24, 27, 0.02);
-  --shadow-hover: 0 6px 20px rgba(24, 24, 27, 0.06), 0 1px 4px rgba(24, 24, 27, 0.03);
-  --shadow-active: 0 2px 6px rgba(24, 24, 27, 0.04);
-  --radius-card: 16px;
-  --radius-md: 12px;
-  --radius-sm: 8px;
+  /* Physical Stationery Borders & Hard-Edge Offset Shadows */
+  --border-ink: #1A241E;
+  --border-stone: #1A241E;       /* Crisp 1.5px solid #1A241E everywhere */
+  --border-focus: #C85A32;       /* Terracotta focus accent */
+  --border-width: 1.5px;
+  --border-riso: 1.5px solid #1A241E;
+
+  /* Offset Hard-Edge Shadows: 4px 4px 0px #1A241E (Zero Blur) */
+  --shadow-riso: 4px 4px 0px #1A241E;
+  --shadow-riso-sm: 2px 2px 0px #1A241E;
+  --shadow-riso-lg: 6px 6px 0px #1A241E;
+  --shadow-bento: 4px 4px 0px #1A241E;
+  --shadow-hover: 5px 5px 0px #1A241E;
+  --shadow-active: 1px 1px 0px #1A241E;
+
+  /* Paper Die-Cut Corners */
+  --radius-card: 10px;
+  --radius-md: 8px;
+  --radius-sm: 6px;
   --radius-pill: 9999px;
 
-  /* Primary Brand Accents: Emerald & Mint */
-  --emerald-500: #10B981;
-  --emerald-600: #059669;
-  --emerald-700: #047857;
-  --emerald-50: #ECFDF5;
-  --emerald-100: #D1FAE5;
-  --emerald-200: #A7F3D0;
-  --emerald-glow: rgba(5, 150, 105, 0.16);
+  /* Warm Terracotta Primary Buttons & Accents (#C85A32) */
+  --terracotta-500: #C85A32;
+  --terracotta-600: #B24A24;
+  --terracotta-700: #963A18;
+  --terracotta-50: #FAF0EC;
 
-  /* Legacy references remapped to Emerald */
-  --cobalt-500: #10B981;
-  --cobalt-600: #059669;
-  --cobalt-700: #047857;
-  --cobalt-50: #ECFDF5;
-  --cobalt-glow: rgba(5, 150, 105, 0.16);
+  /* Soft Butter-Cream Active Tags & Badges (#F3E6B3) */
+  --butter-cream: #F3E6B3;
+  --butter-cream-subtle: #FAF3D8;
+  --active-tag-bg: #F3E6B3;
 
-  --teal-500: #10B981;
-  --teal-600: #059669;
-  --teal-700: #047857;
-  --teal-50: #ECFDF5;
-  --teal-glow: rgba(5, 150, 105, 0.16);
+  /* Legacy references remapped to Terracotta & Butter-Cream (Zero generic SaaS greens/blues) */
+  --emerald-500: #C85A32;
+  --emerald-600: #B24A24;
+  --emerald-700: #963A18;
+  --emerald-50: #F3E6B3;
+  --emerald-100: #F3E6B3;
+  --emerald-200: #F3E6B3;
+  --emerald-glow: transparent;
 
-  --tangerine-500: #059669;
-  --tangerine-600: #047857;
-  --tangerine-50: #ECFDF5;
-  --tangerine-glow: rgba(5, 150, 105, 0.16);
+  --cobalt-500: #C85A32;
+  --cobalt-600: #B24A24;
+  --cobalt-700: #963A18;
+  --cobalt-50: #F3E6B3;
+  --cobalt-glow: transparent;
 
-  /* Font Families: Plus Jakarta Sans + JetBrains Mono */
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --teal-500: #C85A32;
+  --teal-600: #B24A24;
+  --teal-700: #963A18;
+  --teal-50: #F3E6B3;
+  --teal-glow: transparent;
+
+  --tangerine-500: #C85A32;
+  --tangerine-600: #B24A24;
+  --tangerine-50: #F3E6B3;
+  --tangerine-glow: transparent;
+
+  /* Typography: Fraunces Display Titles + Space Grotesk UI Controls */
+  --font-display: 'Fraunces', Georgia, serif;
   --font-serif: 'Fraunces', Georgia, serif;
+  --font-ui: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* Dynamic Brand Runtime Variables */
-  --dynamic-primary: #059669;
-  --dynamic-secondary: #047857;
-  --dynamic-accent: #10B981;
-  --dynamic-dark: #18181B;
-  --dynamic-light: #FAF9F6;
-  --dynamic-heading-font: 'Plus Jakarta Sans', sans-serif;
-  --dynamic-body-font: 'Plus Jakarta Sans', sans-serif;
+  --dynamic-primary: #C85A32;
+  --dynamic-secondary: #1A241E;
+  --dynamic-accent: #F3E6B3;
+  --dynamic-dark: #1A241E;
+  --dynamic-light: #FFFDF9;
+  --dynamic-heading-font: 'Fraunces', serif;
+  --dynamic-body-font: 'Space Grotesk', sans-serif;
 }
 
 /* --- Base & Reset --- */
@@ -107,14 +136,7 @@ body {
 
 /* --- Ambient Sunlit Glow (Peach & Fresh Mint Top Mesh) --- */
 .ambient-glow {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 620px;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
+  display: none !important;
 }
 
 .glow-sky,
@@ -126,7 +148,7 @@ body {
   height: 520px;
   border-radius: 50%;
   background: radial-gradient(circle, var(--glow-sky) 0%, rgba(209, 250, 229, 0.45) 50%, rgba(245, 247, 245, 0) 80%);
-  filter: blur(70px);
+  filter: none;
   opacity: 0.85;
 }
 
@@ -139,7 +161,7 @@ body {
   height: 540px;
   border-radius: 50%;
   background: radial-gradient(circle, var(--glow-lavender) 0%, rgba(236, 253, 245, 0.5) 55%, rgba(245, 247, 245, 0) 80%);
-  filter: blur(75px);
+  filter: none;
   opacity: 0.85;
 }
 
@@ -1844,7 +1866,7 @@ body {
 .ig-art-shape {
   position: absolute;
   border-radius: 50%;
-  filter: blur(45px);
+  filter: none;
   opacity: 0.6;
 }
 
@@ -1887,8 +1909,8 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   background: rgba(255, 255, 255, 0.22);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   padding: 0.3rem 0.75rem;
   border-radius: var(--radius-pill);
 }
@@ -2121,8 +2143,8 @@ body {
   position: fixed;
   inset: 0;
   background: rgba(17, 24, 39, 0.5);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   z-index: 10000;
   display: flex;
   align-items: center;
@@ -6080,7 +6102,7 @@ body {
   justify-content: center;
   font-size: 0.75rem;
   cursor: pointer;
-  backdrop-filter: blur(4px);
+  backdrop-filter: none;
   transition: all 0.15s ease;
   z-index: 2;
 }
@@ -6709,4 +6731,499 @@ body {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
+}
+
+/* ==========================================================================
+   RISO-PRINT & PHYSICAL STATIONERY CORE STYLES
+   ========================================================================== */
+body {
+  background-color: var(--bg-cotton) !important;
+  color: var(--ink-primary) !important;
+  font-family: var(--font-ui) !important;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(#1A241E 0.5px, transparent 0.5px) !important;
+  background-size: 24px 24px !important;
+  background-position: 0 0 !important;
+  opacity: 0.99;
+}
+
+/* Expressive Fraunces Display Headings */
+h1, h2, h3, h4,
+.card-title,
+.app-title,
+.hero-title,
+.section-title,
+.punchy-tagline-text,
+.sample-headline,
+.mock-hero-title,
+.card-brand-display,
+.label-brand-title,
+.modal-title,
+.voice-rewriter-title span,
+.tagline-text {
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.015em !important;
+  color: var(--ink-primary) !important;
+}
+
+/* Space Grotesk Clean UI Controls */
+button,
+input,
+select,
+textarea,
+.btn,
+.card-eyebrow,
+.card-kicker,
+.badge,
+.status-label,
+.btn-tone-step,
+.demo-chip-pill,
+.btn-chameleon-tab,
+.swatch-role-pill,
+.nav-links,
+.tab,
+.tag,
+.vibe-name,
+.vibe-desc,
+.input-label,
+.card-brand-industry,
+.contact-role,
+.contact-name {
+  font-family: var(--font-ui) !important;
+}
+
+/* JetBrains Mono Technical Codes */
+.swatch-hex,
+kbd,
+code,
+pre,
+.mock-browser-url,
+.batch-code,
+.font-mono,
+.label-batch-code,
+.spec-k,
+.spec-v {
+  font-family: var(--font-mono) !important;
+}
+
+/* Bento Cards: Pure Card Surfaces + Crisp 1.5px Solid #1A241E + 4px Hard-Edge Shadow */
+.bento-card,
+.input-panel-card,
+.sidebar-card,
+.history-sidebar,
+.card-brand-chameleon,
+.modal-content,
+.modal-card {
+  background: var(--bg-card) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 4px 4px 0px var(--border-ink) !important;
+  border-radius: var(--radius-card) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.bento-card:hover,
+.input-panel-card:hover,
+.card-brand-chameleon:hover {
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 5px 5px 0px var(--border-ink) !important;
+}
+
+/* Primary Warm Terracotta Buttons (#C85A32) */
+.btn-primary,
+#btn-generate,
+#btn-download-html-kit,
+.mock-btn-primary,
+.btn-generate-main,
+.btn-suggest-names {
+  background: var(--terracotta-500) !important;
+  color: #FFFDF9 !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 3px 3px 0px var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-ui) !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.btn-primary:hover,
+#btn-generate:hover,
+#btn-download-html-kit:hover,
+.mock-btn-primary:hover,
+.btn-suggest-names:hover {
+  background: var(--terracotta-600) !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 4px 4px 0px var(--border-ink) !important;
+  color: #FFFDF9 !important;
+}
+
+.btn-primary:active,
+#btn-generate:active,
+#btn-download-html-kit:active,
+.mock-btn-primary:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: 1px 1px 0px var(--border-ink) !important;
+}
+
+/* Secondary & Utility Buttons */
+.btn-secondary,
+.btn-action,
+.btn-icon,
+.icon-btn,
+.btn-copy,
+.btn-shuffle,
+.btn-refresh,
+.btn-new-brand,
+.btn-sample-brand,
+.btn-logo-action,
+.mock-btn-secondary {
+  background: var(--bg-card) !important;
+  color: var(--ink-primary) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 2px 2px 0px var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-ui) !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.btn-secondary:hover,
+.btn-action:hover,
+.btn-icon:hover,
+.icon-btn:hover,
+.btn-copy:hover,
+.btn-shuffle:hover,
+.btn-logo-action:hover,
+.mock-btn-secondary:hover {
+  background: var(--butter-cream) !important;
+  color: var(--ink-primary) !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 3px 3px 0px var(--border-ink) !important;
+}
+
+.btn-secondary:active,
+.btn-action:active,
+.btn-logo-action:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: 0px 0px 0px var(--border-ink) !important;
+}
+
+/* Active Tags & Badges: Soft Butter-Cream (#F3E6B3) with 1.5px Solid #1A241E */
+.demo-chip-pill.active,
+.btn-chameleon-tab.active,
+.vibe-card.active,
+.tone-tag,
+.card-icon-pill,
+.card-eyebrow,
+.card-kicker,
+.tone-badge-val,
+.swatch-role-pill,
+.badge-studio-meta,
+.engine-badge {
+  background: var(--butter-cream) !important;
+  color: var(--ink-primary) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  font-weight: 600 !important;
+}
+
+/* Demo Chips Bar */
+.live-demo-chips-bar {
+  background: var(--bg-card) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 3px 3px 0px var(--border-ink) !important;
+  border-radius: var(--radius-card) !important;
+}
+
+.demo-chip-pill {
+  background: var(--bg-card) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 2px 2px 0px var(--border-ink) !important;
+  border-radius: var(--radius-pill) !important;
+  color: var(--ink-primary) !important;
+  transition: all 0.15s ease !important;
+}
+
+.demo-chip-pill:hover {
+  background: var(--butter-cream) !important;
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 3px 3px 0px var(--border-ink) !important;
+}
+
+.demo-chip-pill.active {
+  background: var(--butter-cream) !important;
+  box-shadow: 3px 3px 0px var(--border-ink) !important;
+  transform: translate(-1px, -1px) !important;
+  font-weight: 700 !important;
+}
+
+/* Tone Slider Widget */
+.tone-slider-widget {
+  background: var(--bg-card) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 2px 2px 0px var(--border-ink) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+.tone-segmented-bar {
+  background: var(--bg-cotton) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+.btn-tone-step {
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: var(--ink-secondary) !important;
+  font-family: var(--font-ui) !important;
+  font-weight: 600 !important;
+  border-radius: var(--radius-pill) !important;
+  transition: all 0.15s ease !important;
+}
+
+.btn-tone-step.active {
+  background: var(--terracotta-500) !important;
+  color: #FFFDF9 !important;
+  border: 1px solid var(--border-ink) !important;
+  box-shadow: 1px 1px 0px var(--border-ink) !important;
+  font-weight: 700 !important;
+}
+
+/* Chameleon Touchpoint Switcher */
+.chameleon-switcher-group {
+  background: var(--bg-cotton) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+.btn-chameleon-tab {
+  background: transparent !important;
+  color: var(--ink-secondary) !important;
+  border: 1.5px solid transparent !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+.btn-chameleon-tab.active {
+  background: var(--butter-cream) !important;
+  color: var(--ink-primary) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 2px 2px 0px var(--border-ink) !important;
+}
+
+/* Chameleon Viewports */
+.chameleon-stage-viewport {
+  background: var(--bg-cotton) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: inset 1px 1px 0px rgba(26, 36, 30, 0.06) !important;
+}
+
+.mock-browser-chrome {
+  background: var(--butter-cream) !important;
+  border-bottom: 1.5px solid var(--border-ink) !important;
+}
+
+.mock-browser-url {
+  background: var(--bg-card) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  color: var(--ink-primary) !important;
+  box-shadow: 1px 1px 0px var(--border-ink) !important;
+}
+
+.hero-preview-body {
+  background: var(--bg-card) !important;
+}
+
+/* 3D Business Card */
+.card-tilt-canvas-wrap {
+  background: var(--bg-cotton) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.tilt-business-card {
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 6px 6px 0px var(--border-ink) !important;
+  border-radius: 12px !important;
+}
+
+/* Packaging Vessel */
+.packaging-mockup-stage {
+  background: var(--bg-cotton) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.cylinder-vessel {
+  background: var(--bg-card) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 4px 4px 0px var(--border-ink) !important;
+}
+
+.cylinder-cap {
+  background: var(--bg-card-subtle) !important;
+  border: 1.5px solid var(--border-ink) !important;
+}
+
+.label-wrap {
+  background: var(--bg-card) !important;
+  border: 1.5px dashed var(--border-ink) !important;
+}
+
+/* Palette Swatches & Lock/Shuffle Toolbar */
+.swatch-item {
+  background: var(--bg-card) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 3px 3px 0px var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.swatch-item:hover {
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 4px 4px 0px var(--border-ink) !important;
+}
+
+.swatch-color-box {
+  border-bottom: 1.5px solid var(--border-ink) !important;
+}
+
+.btn-lock-swatch {
+  background: var(--bg-card) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 1px 1px 0px var(--border-ink) !important;
+  border-radius: 6px !important;
+}
+
+.btn-lock-swatch.is-locked {
+  background: var(--butter-cream) !important;
+}
+
+.palette-shuffle-toolbar {
+  background: var(--bg-card) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 2px 2px 0px var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+kbd.kbd-space {
+  background: var(--butter-cream) !important;
+  color: var(--ink-primary) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 1px 1px 0px var(--border-ink) !important;
+  border-radius: 4px !important;
+  font-family: var(--font-mono) !important;
+}
+
+/* Vector Logo Lab */
+.logo-concept-card {
+  background: var(--bg-card) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 4px 4px 0px var(--border-ink) !important;
+  border-radius: var(--radius-card) !important;
+  overflow: hidden !important;
+}
+
+.logo-concept-stage,
+.logo-concept-card .logo-stage-wrap {
+  background: var(--bg-cotton) !important;
+  border-bottom: 1.5px solid var(--border-ink) !important;
+}
+
+.logo-actions-row {
+  background: var(--bg-card) !important;
+}
+
+/* Inputs, Textareas, Selects */
+input[type="text"],
+input[type="password"],
+select,
+textarea,
+.api-key-input {
+  background: var(--bg-card) !important;
+  color: var(--ink-primary) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: inset 1px 1px 0px rgba(26, 36, 30, 0.08) !important;
+  font-family: var(--font-ui) !important;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+select:focus,
+textarea:focus,
+.api-key-input:focus {
+  border-color: var(--terracotta-500) !important;
+  box-shadow: 2px 2px 0px var(--border-ink) !important;
+  outline: none !important;
+}
+
+/* Vibe Cards */
+.vibe-card {
+  background: var(--bg-card) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 3px 3px 0px var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.vibe-card:hover {
+  transform: translate(-1px, -1px) !important;
+  box-shadow: 4px 4px 0px var(--border-ink) !important;
+}
+
+.vibe-card.active {
+  background: var(--butter-cream) !important;
+  box-shadow: 4px 4px 0px var(--border-ink) !important;
+  transform: translate(-1px, -1px) !important;
+}
+
+/* Header & Top Bar */
+.app-header {
+  background: var(--bg-card) !important;
+  border-bottom: 1.5px solid var(--border-ink) !important;
+  box-shadow: 0 2px 0px var(--border-ink) !important;
+}
+
+.api-key-input-wrapper {
+  background: var(--bg-cotton) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  border-radius: var(--radius-pill) !important;
+}
+
+.api-key-input-wrapper .api-key-input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Tagline Quote Box */
+.tagline-quote-box {
+  background: var(--bg-cotton) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  border-left: 5px solid var(--terracotta-500) !important;
+  box-shadow: 2px 2px 0px var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+/* WCAG Contrast Audit Box */
+.contrast-preview-box {
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 3px 3px 0px var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+/* Toasts */
+.toast {
+  background: var(--bg-card) !important;
+  color: var(--ink-primary) !important;
+  border: 1.5px solid var(--border-ink) !important;
+  box-shadow: 4px 4px 0px var(--border-ink) !important;
+  border-radius: var(--radius-md) !important;
+  font-family: var(--font-ui) !important;
+}
+
+.toast.toast-success {
+  border-left: 6px solid var(--terracotta-500) !important;
 }

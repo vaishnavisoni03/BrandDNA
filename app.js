@@ -9567,7 +9567,7 @@ Return ONLY valid JSON with NO commentary.
   <title>${brand.name} — Brand Identity & Design System Kit</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(headingFont)}:wght@400;600;700;800&family=${encodeURIComponent(bodyFont)}:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --color-primary: ${p1};
@@ -9575,21 +9575,21 @@ Return ONLY valid JSON with NO commentary.
       --color-surface: ${p3};
       --color-accent: ${p4};
       --color-dark: ${p5};
-      --font-heading: '${headingFont}', Georgia, serif;
-      --font-body: '${bodyFont}', -apple-system, sans-serif;
+      --font-heading: 'Fraunces', Georgia, serif;
+      --font-body: 'Space Grotesk', -apple-system, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #FAF9F6;
-      color: #18181B;
+      background: #FBF8F1;
+      color: #1A241E;
       font-family: var(--font-body);
       line-height: 1.6;
       padding: 40px 24px;
     }
     .container { max-width: 960px; margin: 0 auto; }
     header {
-      border-bottom: 2px solid #E4E2DD;
+      border-bottom: 2px solid #1A241E;
       padding-bottom: 32px;
       margin-bottom: 40px;
     }
@@ -9599,38 +9599,43 @@ Return ONLY valid JSON with NO commentary.
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      background: #F4EFE6;
-      color: #71717A;
-      padding: 4px 10px;
+      background: #F3E6B3;
+      color: #1A241E;
+      border: 1.5px solid #1A241E;
+      box-shadow: 2px 2px 0px #1A241E;
+      padding: 4px 12px;
       border-radius: 9999px;
       margin-bottom: 12px;
+      font-weight: 700;
     }
     h1 {
       font-family: var(--font-heading);
-      font-size: 2.8rem;
+      font-size: 3rem;
       letter-spacing: -0.02em;
       margin-bottom: 8px;
-      color: var(--color-primary);
+      color: #1A241E;
     }
     .subtitle {
       font-size: 1.15rem;
-      color: #52525B;
+      color: #425046;
       margin-bottom: 16px;
     }
     .tagline-box {
-      background: #FFFFFF;
-      border: 1px solid #E4E2DD;
-      border-left: 4px solid var(--color-primary);
+      background: #FFFDF9;
+      border: 1.5px solid #1A241E;
+      border-left: 5px solid #C85A32;
+      box-shadow: 3px 3px 0px #1A241E;
       padding: 16px 20px;
       border-radius: 8px;
       font-style: italic;
-      font-size: 1.1rem;
-      color: #27272A;
+      font-size: 1.15rem;
+      color: #1A241E;
     }
     section {
-      background: #FFFFFF;
-      border: 1px solid #E4E2DD;
-      border-radius: 16px;
+      background: #FFFDF9;
+      border: 1.5px solid #1A241E;
+      box-shadow: 4px 4px 0px #1A241E;
+      border-radius: 10px;
       padding: 28px;
       margin-bottom: 32px;
     }
@@ -9638,6 +9643,7 @@ Return ONLY valid JSON with NO commentary.
       font-family: var(--font-heading);
       font-size: 1.4rem;
       margin-bottom: 20px;
+      color: #1A241E;
     }
     .palette-grid {
       display: grid;
@@ -9646,25 +9652,28 @@ Return ONLY valid JSON with NO commentary.
       margin-top: 16px;
     }
     .swatch-card {
-      border: 1px solid #E4E2DD;
-      border-radius: 12px;
+      background: #FFFDF9;
+      border: 1.5px solid #1A241E;
+      box-shadow: 3px 3px 0px #1A241E;
+      border-radius: 8px;
       overflow: hidden;
     }
-    .swatch-color { height: 100px; }
+    .swatch-color { height: 100px; border-bottom: 1.5px solid #1A241E; }
     .swatch-meta { padding: 12px; font-size: 12px; }
-    .swatch-hex { font-family: var(--font-mono); font-weight: 700; font-size: 13px; }
-    .swatch-role { color: #71717A; font-size: 11px; margin-top: 2px; }
+    .swatch-hex { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: #1A241E; }
+    .swatch-role { color: #425046; font-size: 11px; margin-top: 2px; }
     .logos-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 20px;
     }
     .logo-item {
-      border: 1px solid #E4E2DD;
-      border-radius: 12px;
+      border: 1.5px solid #1A241E;
+      box-shadow: 3px 3px 0px #1A241E;
+      border-radius: 8px;
       padding: 24px;
       text-align: center;
-      background: #FAF9F6;
+      background: #FBF8F1;
     }
     .logo-svg-wrap { height: 110px; display: flex; align-items: center; justify-content: center; }
     .type-specimen {
@@ -9673,19 +9682,20 @@ Return ONLY valid JSON with NO commentary.
       gap: 24px;
     }
     .type-card {
-      border: 1px solid #E4E2DD;
+      border: 1.5px solid #1A241E;
+      box-shadow: 3px 3px 0px #1A241E;
       padding: 20px;
-      border-radius: 12px;
-      background: #FAF9F6;
+      border-radius: 8px;
+      background: #FBF8F1;
     }
-    .type-sample-heading { font-family: var(--font-heading); font-size: 1.8rem; margin: 12px 0; }
-    .type-sample-body { font-family: var(--font-body); font-size: 1rem; color: #52525B; }
+    .type-sample-heading { font-family: var(--font-heading); font-size: 1.8rem; margin: 12px 0; color: #1A241E; }
+    .type-sample-body { font-family: var(--font-body); font-size: 1rem; color: #425046; }
     .tones-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-    .tone-badge { background: #F4EFE6; padding: 4px 12px; border-radius: 9999px; font-weight: 600; font-size: 12px; }
-    footer { text-align: center; color: #A1A1AA; font-size: 12px; margin-top: 48px; }
+    .tone-badge { background: #F3E6B3; color: #1A241E; border: 1.5px solid #1A241E; box-shadow: 2px 2px 0px #1A241E; padding: 4px 12px; border-radius: 9999px; font-weight: 600; font-size: 12px; }
+    footer { text-align: center; color: #607065; font-size: 12px; margin-top: 48px; }
     @media print {
       body { background: #fff; padding: 0; }
-      section { break-inside: avoid; border: 1px solid #ddd; }
+      section { break-inside: avoid; border: 1.5px solid #1A241E; box-shadow: none; }
     }
   </style>
 </head>
