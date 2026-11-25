@@ -48,6 +48,178 @@
   // 2. Curated Brand Archetypes & Presets
   // =========================================================================
   const PRESET_BRANDS = {
+    matcha: {
+      name: "Matcha Café",
+      industry: "Artisanal Japanese Tea & Café",
+      audience: "Urban aesthetes & ritual tea lovers seeking mindful energy",
+      vibe: "eco-organic",
+      tagline: "Ceremonial craft for mindful mornings.",
+      headingFont: "Fraunces",
+      bodyFont: "Plus Jakarta Sans",
+      voiceTone: ["Mindful", "Tactile", "Harmonious"],
+      tones: ["Mindful", "Tactile", "Harmonious"],
+      svgIconPath: NICHE_24X24_ICONS.leaf,
+      palette: [
+        { hex: "#245336", role: "Primary Dominant", name: "Deep Ceremonial Jade", psychology: "Grounding and serene; evokes shade-grown tencha leaves." },
+        { hex: "#F4EFE6", role: "Surface Canvas", name: "Warm Oat Linen", psychology: "Gentle natural warmth; provides breathable organic space." },
+        { hex: "#C49A45", role: "Secondary Accent", name: "Kyoto Golden Ochre", psychology: "Warm handcrafted craft; echoes bamboo whisks and gilded pottery." },
+        { hex: "#3D2619", role: "Contrast Anchor", name: "Roasted Umber", psychology: "Deep earthen stability; anchors typography with warm wood tones." },
+        { hex: "#FDFCFA", role: "Highlight Ember", name: "Alabaster Froth", psychology: "Luminous purity; channels delicate micro-foam matcha whisking." }
+      ],
+      colors: [
+        { hex: "#245336", role: "Primary Dominant", name: "Deep Ceremonial Jade" },
+        { hex: "#F4EFE6", role: "Surface Canvas", name: "Warm Oat Linen" },
+        { hex: "#C49A45", role: "Secondary Accent", name: "Kyoto Golden Ochre" },
+        { hex: "#3D2619", role: "Contrast Anchor", name: "Roasted Umber" },
+        { hex: "#FDFCFA", role: "Highlight Ember", name: "Alabaster Froth" }
+      ],
+      paletteNarrative: "A tranquil Japanese tea ceremony palette balancing shade-grown ceremonial jade, warm oat linen, and bamboo ochre.",
+      fonts: {
+        heading: "Fraunces",
+        headingWeight: "Bold 700",
+        body: "Plus Jakarta Sans",
+        bodyWeight: "Regular 400"
+      },
+      sampleHeadline: "Slow down. Savor the green silence.",
+      sampleBody: "Single-origin Uji matcha stone-ground to microscopic perfection for clarity, calm focus, and restorative daily rituals.",
+      social: {
+        handle: "matchacafe.studio",
+        location: "Kyoto &bull; Shibuya &bull; New York",
+        category: "Ceremonial Bar &bull; Reserve 2026",
+        caption: "True calm is an art form. Whisked fresh in hand-thrown chawan vessels daily at dawn.",
+        hashtags: "#MatchaCafe #UjiMatcha #CeremonialTea #MindfulMornings #QuietLuxury"
+      }
+    },
+
+    fintech: {
+      name: "Neo-Fintech",
+      industry: "Algorithmic Wealth & Decentralized Treasury",
+      audience: "Tech founders, quantitative traders & next-gen wealth builders",
+      vibe: "tech-futuristic",
+      tagline: "Autonomous capital at the speed of code.",
+      headingFont: "Space Grotesk",
+      bodyFont: "JetBrains Mono",
+      voiceTone: ["Algorithmic", "Uncompromising", "Kinetic"],
+      tones: ["Algorithmic", "Uncompromising", "Kinetic"],
+      svgIconPath: NICHE_24X24_ICONS.prism,
+      palette: [
+        { hex: "#1D4ED8", role: "Primary Dominant", name: "Electric Cobalt", psychology: "High-conviction authority; signals institutional security and cryptographic speed." },
+        { hex: "#06B6D4", role: "Secondary Accent", name: "Luminous Cyan", psychology: "Precision data flow; evokes fiber-optic liquidity streams." },
+        { hex: "#0F172A", role: "Contrast Anchor", name: "Obsidian Deep", psychology: "Bedrock algorithmic security; impenetrable and solid." },
+        { hex: "#F1F5F9", role: "Surface Canvas", name: "Liquid Frost", psychology: "Crisp low-latency interface clarity." },
+        { hex: "#10B981", role: "Highlight Ember", name: "Alpha Mint", psychology: "Positive yield signal; immediate verification and growth." }
+      ],
+      colors: [
+        { hex: "#1D4ED8", role: "Primary Dominant", name: "Electric Cobalt" },
+        { hex: "#06B6D4", role: "Secondary Accent", name: "Luminous Cyan" },
+        { hex: "#0F172A", role: "Contrast Anchor", name: "Obsidian Deep" },
+        { hex: "#F1F5F9", role: "Surface Canvas", name: "Liquid Frost" },
+        { hex: "#10B981", role: "Highlight Ember", name: "Alpha Mint" }
+      ],
+      paletteNarrative: "A high-velocity institutional financial palette combining electric cobalt authority, obsidian bedrock, and alpha mint signal pulses.",
+      fonts: {
+        heading: "Space Grotesk",
+        headingWeight: "Bold 700",
+        body: "JetBrains Mono",
+        bodyWeight: "Regular 400"
+      },
+      sampleHeadline: "Automate treasury. Eliminate counterparty drag.",
+      sampleBody: "Next-generation programmable liquidity rails with real-time yield routing and mathematical proof of solvency.",
+      social: {
+        handle: "neofintech.io",
+        location: "Zurich &bull; Singapore &bull; Global",
+        category: "Treasury Protocol &bull; v4 Engine",
+        caption: "Smart treasuries do not wait for banking hours. Continuous settlement is now live.",
+        hashtags: "#NeoFintech #AlgorithmicWealth #SmartTreasury #DeFi #ContinuousLiquidity"
+      }
+    },
+
+    audio: {
+      name: "Indie Audio",
+      industry: "Analog Hi-Fi & Spatial Acoustic Hardware",
+      audience: "Audiophiles, vinyl collectors & sound designers",
+      vibe: "bold-genz",
+      tagline: "Pure acoustic resonance, uncompressed.",
+      headingFont: "Syne",
+      bodyFont: "Plus Jakarta Sans",
+      voiceTone: ["Analog", "Visceral", "Unfiltered"],
+      tones: ["Analog", "Visceral", "Unfiltered"],
+      svgIconPath: NICHE_24X24_ICONS.bolt,
+      palette: [
+        { hex: "#1C1917", role: "Contrast Anchor", name: "Vinyl Black", psychology: "Deep acoustic silence; the physical darkness from which sound emerges." },
+        { hex: "#D97706", role: "Primary Dominant", name: "Warm Amber Glow", psychology: "Vacuum tube thermionic warmth; human and analog." },
+        { hex: "#CA8A04", role: "Secondary Accent", name: "Brass Acoustic", psychology: "Harmonic timbre; machined precision hardware details." },
+        { hex: "#FAF5EE", role: "Surface Canvas", name: "Parchment Cream", psychology: "Unbleached album sleeve texture; tangible warmth." },
+        { hex: "#9A3412", role: "Highlight Ember", name: "Copper Coil", psychology: "Electromagnetic induction; pure signal fidelity." }
+      ],
+      colors: [
+        { hex: "#1C1917", role: "Contrast Anchor", name: "Vinyl Black" },
+        { hex: "#D97706", role: "Primary Dominant", name: "Warm Amber Glow" },
+        { hex: "#CA8A04", role: "Secondary Accent", name: "Brass Acoustic" },
+        { hex: "#FAF5EE", role: "Surface Canvas", name: "Parchment Cream" },
+        { hex: "#9A3412", role: "Highlight Ember", name: "Copper Coil" }
+      ],
+      paletteNarrative: "A tactile analog studio palette engineered around warm vacuum-tube amber, vinyl black depth, and machined acoustic brass.",
+      fonts: {
+        heading: "Syne",
+        headingWeight: "Bold 700",
+        body: "Plus Jakarta Sans",
+        bodyWeight: "Regular 400"
+      },
+      sampleHeadline: "Hear what compression threw away.",
+      sampleBody: "Hand-wound planar magnetic drivers encased in milled solid walnut. Zero digital upsampling, zero artificial color.",
+      social: {
+        handle: "indieaudio.lab",
+        location: "Berlin &bull; London &bull; Brooklyn",
+        category: "Acoustic Laboratory &bull; Series Mk. III",
+        caption: "Sound is tactile. Feel the frequency response of genuine thermionic tubes in our new headphone studio release.",
+        hashtags: "#IndieAudio #AnalogHiFi #VinylSound #AcousticCraft #AudiophileCommunity"
+      }
+    },
+
+    skincare: {
+      name: "Botanical Skincare",
+      industry: "Biophilic Active Botanicals & Clinical Clean Beauty",
+      audience: "Conscious skincare purists seeking clinical botanical potency",
+      vibe: "eco-organic",
+      tagline: "Clinical botanical potency for cellular radiance.",
+      headingFont: "Fraunces",
+      bodyFont: "Plus Jakarta Sans",
+      voiceTone: ["Radiant", "Pure", "Restorative"],
+      tones: ["Radiant", "Pure", "Restorative"],
+      svgIconPath: NICHE_24X24_ICONS.lotus,
+      palette: [
+        { hex: "#3A5A40", role: "Primary Dominant", name: "Evergreen Sage", psychology: "Cellular renewal and botanical vitality; soothing equilibrium." },
+        { hex: "#E8B4B8", role: "Secondary Accent", name: "Wild Orchid Blossom", psychology: "Delicate dermal softness; gentle active rejuvenation." },
+        { hex: "#FAF8F5", role: "Surface Canvas", name: "Porcelain Clay", psychology: "Pure dermal canvas; mineral calm and clarity." },
+        { hex: "#588157", role: "Highlight Ember", name: "Olive Biome", psychology: "Nourishing microbiome harmony; resilient barrier support." },
+        { hex: "#1C2A1E", role: "Contrast Anchor", name: "Deep Lichen", psychology: "Grounded forest depth; editorial confidence." }
+      ],
+      colors: [
+        { hex: "#3A5A40", role: "Primary Dominant", name: "Evergreen Sage" },
+        { hex: "#E8B4B8", role: "Secondary Accent", name: "Wild Orchid Blossom" },
+        { hex: "#FAF8F5", role: "Surface Canvas", name: "Porcelain Clay" },
+        { hex: "#588157", role: "Highlight Ember", name: "Olive Biome" },
+        { hex: "#1C2A1E", role: "Contrast Anchor", name: "Deep Lichen" }
+      ],
+      paletteNarrative: "A restorative dermal flora palette of evergreen sage, orchid blossom, and mineral porcelain clay for biophilic balance.",
+      fonts: {
+        heading: "Fraunces",
+        headingWeight: "Bold 700",
+        body: "Plus Jakarta Sans",
+        bodyWeight: "Regular 400"
+      },
+      sampleHeadline: "Rooted in flora. Proven by dermal science.",
+      sampleBody: "Cold-pressed bio-fermented sea kelp and adaptogenic snow mushroom to nourish your skin's living protective lipid matrix.",
+      social: {
+        handle: "botanical.skincare",
+        location: "Geneva &bull; Vancouver &bull; Kyoto",
+        category: "Cellular Dermal Care &bull; Active Batch 09",
+        caption: "Nature creates the molecule. We preserve its active potency without thermal breakdown or synthetic stabilizers.",
+        hashtags: "#BotanicalSkincare #CleanBeauty #BioFerment #CellularRadiance #SkinBarrierHealth"
+      }
+    },
+
     komorebi: {
       name: "Komorebi Living",
       industry: "Artisanal Home & Bio-Wellness",
@@ -420,9 +592,9 @@
     taglineCount: 8,
     auditBgColor: '#2563EB',
     auditTextColor: '#FFFFFF',
-    selectedAspectRatio: '1:1',
-    isGeneratingVisual: false,
-    currentVisualDataUrl: null,
+    lockedColors: [false, false, false, false, false],
+    activeChameleonView: 'hero',
+    brandTone: 'bold',
     isLiked: false,
     likedCount: 1420,
     isSaved: false,
@@ -494,27 +666,59 @@
     regenerateLogosSpinner: document.getElementById('regenerate-logos-spinner'),
     btnRegenerateLogosText: document.getElementById('btn-regenerate-logos-text'),
 
-    // AI Product & Visual Studio (Google Imagen 3)
-    cardVisualStudio: document.getElementById('card-visual-studio'),
-    visualPromptInput: document.getElementById('visual-prompt-input'),
-    btnSuggestVisualPrompt: document.getElementById('btn-suggest-visual-prompt'),
-    ratioSelectorGroup: document.getElementById('ratio-selector-group'),
-    btnRatioPills: document.querySelectorAll('#ratio-selector-group .btn-ratio-pill'),
-    visualInjectNiche: document.getElementById('visual-inject-niche'),
-    visualInjectVibe: document.getElementById('visual-inject-vibe'),
-    visualInjectPalette: document.getElementById('visual-inject-palette'),
-    btnGenerateVisual: document.getElementById('btn-generate-visual'),
-    visualGenerateSpinner: document.getElementById('visual-generate-spinner'),
-    btnGenerateVisualText: document.getElementById('btn-generate-visual-text'),
-    visualStageContainer: document.getElementById('visual-stage-container'),
-    visualStageLoading: document.getElementById('visual-stage-loading'),
-    visualLoadingSub: document.getElementById('visual-loading-sub'),
-    visualResultImg: document.getElementById('visual-result-img'),
-    visualStagePlaceholder: document.getElementById('visual-stage-placeholder'),
-    visualDimensionsBadge: document.getElementById('visual-dimensions-badge'),
-    btnDownloadVisual: document.getElementById('btn-download-visual'),
-    visualEngineBadge: document.getElementById('visual-engine-badge'),
-    visualStatusBanner: document.getElementById('visual-status-banner'),
+// Tactile Brand Playground & Interactive Chameleon
+    btnDownloadHtmlKit: document.getElementById('btn-download-html-kit'),
+    demoChipPills: document.querySelectorAll('.demo-chip-pill'),
+    toneSliderWidget: document.getElementById('tone-slider-widget'),
+    toneBadgeVal: document.getElementById('tone-badge-val'),
+    btnToneSteps: document.querySelectorAll('.btn-tone-step'),
+
+    // Live Brand Chameleon Touchpoints
+    cardBrandChameleon: document.getElementById('card-brand-chameleon'),
+    chameleonTabs: document.querySelectorAll('.btn-chameleon-tab'),
+    chameleonViewHero: document.getElementById('chameleon-view-hero'),
+    chameleonViewCard: document.getElementById('chameleon-view-card'),
+    chameleonViewPackaging: document.getElementById('chameleon-view-packaging'),
+
+    // Hero Touchpoint Elements
+    mockBrowserUrl: document.getElementById('mock-browser-url'),
+    mockNavLogo: document.getElementById('mock-nav-logo'),
+    mockNavName: document.getElementById('mock-nav-name'),
+    mockNavCta: document.getElementById('mock-nav-cta'),
+    mockHeroKicker: document.getElementById('mock-hero-kicker'),
+    mockHeroTitle: document.getElementById('mock-hero-title'),
+    mockHeroTagline: document.getElementById('mock-hero-tagline'),
+    mockBtnPrimary: document.getElementById('mock-btn-primary'),
+    mockBtnSecondary: document.getElementById('mock-btn-secondary'),
+    proofStat1: document.getElementById('proof-stat-1'),
+    proofStat2: document.getElementById('proof-stat-2'),
+    proofStat3: document.getElementById('proof-stat-3'),
+
+    // 3D Business Card Elements
+    cardTiltCanvasWrap: document.getElementById('card-tilt-canvas-wrap'),
+    tiltBusinessCard: document.getElementById('tilt-business-card'),
+    cardLogoSlot: document.getElementById('card-logo-slot'),
+    cardChipBadge: document.getElementById('card-chip-badge'),
+    cardBrandDisplay: document.getElementById('card-brand-display'),
+    cardBrandIndustry: document.getElementById('card-brand-industry'),
+    cardContactHandle: document.getElementById('card-contact-handle'),
+    cardMiniPalette: document.getElementById('card-mini-palette'),
+
+    // Packaging Label Elements
+    cylinderVessel: document.getElementById('cylinder-vessel'),
+    labelFoilSeal: document.getElementById('label-foil-seal'),
+    labelBrandTitle: document.getElementById('label-brand-title'),
+    labelBrandTagline: document.getElementById('label-brand-tagline'),
+    labelDividerLine: document.getElementById('label-divider-line'),
+    labelDesc: document.getElementById('label-desc'),
+
+    // Palette Spacebar Shuffle & Locking
+    btnShuffleUnlockedCard: document.getElementById('btn-shuffle-unlocked-card'),
+
+    // Logo PNG Download Buttons
+    btnDownloadPng1: document.getElementById('btn-download-png-1'),
+    btnDownloadPng2: document.getElementById('btn-download-png-2'),
+    btnDownloadPng3: document.getElementById('btn-download-png-3'),
 
     swatchesGrid: document.getElementById('swatches-grid'),
     paletteNarrative: document.getElementById('palette-narrative'),
@@ -1542,6 +1746,22 @@
     if (elements.btnCopyLogo3) {
       elements.btnCopyLogo3.onclick = () => {
         copyToClipboard(logos.concept3, 'Concept 3 SVG code copied!');
+      };
+    }
+
+    if (elements.btnDownloadPng1) {
+      elements.btnDownloadPng1.onclick = () => {
+        downloadSvgAsPng(logos.concept1, `${brandSlug}-logo-concept1.png`);
+      };
+    }
+    if (elements.btnDownloadPng2) {
+      elements.btnDownloadPng2.onclick = () => {
+        downloadSvgAsPng(logos.concept2, `${brandSlug}-logo-concept2.png`);
+      };
+    }
+    if (elements.btnDownloadPng3) {
+      elements.btnDownloadPng3.onclick = () => {
+        downloadSvgAsPng(logos.concept3, `${brandSlug}-logo-concept3.png`);
       };
     }
 
@@ -6764,7 +6984,7 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
       const activeSlug = localStorage.getItem(STORAGE_KEY_ACTIVE_SLUG);
       if (activeSlug === slug) {
         localStorage.removeItem(STORAGE_KEY_ACTIVE_SLUG);
-        renderBrand(PRESET_BRANDS.komorebi);
+        renderBrand(PRESET_BRANDS.matcha || PRESET_BRANDS.komorebi);
       }
     }
   }
@@ -6934,67 +7154,14 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
   }
 
   // =========================================================================
-  // 14. Unified Gemini AI Proxy & Serverless Dispatcher
+  // 14. Unified Gemini AI Proxy & Serverless Dispatcher (gemini-2.5-flash)
   // =========================================================================
   async function callGeminiEndpoint(payload) {
     const rawKey = elements.apiKeyInput ? elements.apiKeyInput.value.trim() : '';
     const hasHeaderKey = Boolean(rawKey && rawKey.length > 5);
 
     if (hasHeaderKey) {
-      if (payload && payload.action === 'generateImage') {
-        const promptText = payload.prompt || '';
-        const systemPrompt = "You are an elite vector artist and 3D industrial product packaging illustrator. Generate a clean, detailed 800x800 SVG commercial studio product & packaging illustration. Output ONLY valid, raw SVG starting with <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 800\" width=\"800\" height=\"800\"> and ending with </svg>. No markdown, no explanations.";
-        const fullPrompt = systemPrompt + "\n\nBrand Brief:\n" + promptText + "\nTarget: 800x800 studio product mockup. Output ONLY valid SVG.";
-
-        let imgUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(rawKey);
-        const imgBody = {
-          contents: [{ parts: [{ text: fullPrompt }] }],
-          generationConfig: { temperature: 0.4, maxOutputTokens: 8192 }
-        };
-
-        let res = await fetch(imgUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(imgBody)
-        });
-
-        if (res.status === 404) {
-          imgUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + encodeURIComponent(rawKey);
-          res = await fetch(imgUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(imgBody)
-          });
-        }
-
-        const resData = await res.json();
-        if (!res.ok) {
-          throw new Error(resData.error?.message || ('Direct Gemini Image API error (' + res.status + ')'));
-        }
-
-        const rawText = resData.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        let cleanSvg = '';
-        const svgMatch = rawText.match(/<svg[\s\S]*?<\/svg>/i);
-        if (svgMatch) {
-          cleanSvg = svgMatch[0].trim();
-        } else if (rawText.includes('<svg')) {
-          const startIdx = rawText.indexOf('<svg');
-          cleanSvg = rawText.slice(startIdx).trim();
-          if (!cleanSvg.endsWith('</svg>')) cleanSvg += '</svg>';
-        }
-
-        const dataUri = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(cleanSvg);
-        return {
-          success: true,
-          imageUrl: dataUri,
-          image: dataUri,
-          base64: btoa(unescape(encodeURIComponent(cleanSvg))),
-          mimeType: 'image/svg+xml',
-          model: 'Gemini 2.5 Flash SVG'
-        };
-      }
-
-      const primaryUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=' + encodeURIComponent(rawKey);
+      const primaryUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(rawKey);
       let res = await fetch(primaryUrl, {
         method: 'POST',
         headers: {
@@ -7003,19 +7170,6 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
         },
         body: JSON.stringify(payload)
       });
-
-      if (res.status === 404) {
-        console.warn('gemini-3.8-flash direct returned 404, attempting fallback to gemini-1.5-flash');
-        const fallbackUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + encodeURIComponent(rawKey);
-        res = await fetch(fallbackUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-goog-api-key': rawKey
-          },
-          body: JSON.stringify(payload)
-        });
-      }
 
       if (!res.ok) {
         const errorText = await res.text();
@@ -7298,15 +7452,20 @@ STRICT CONSTRAINTS:
 
     if (elements.swatchesGrid) {
       elements.swatchesGrid.innerHTML = '';
-      brand.palette.forEach((swatch) => {
+      if (!state.lockedColors) state.lockedColors = [false, false, false, false, false];
+      brand.palette.forEach((swatch, idx) => {
+        const isLocked = !!state.lockedColors[idx];
         const swatchItem = document.createElement('div');
-        swatchItem.className = 'swatch-item';
+        swatchItem.className = `swatch-item ${isLocked ? 'is-locked-card' : ''}`;
         swatchItem.setAttribute('title', `Click to copy ${swatch.hex} and audit contrast`);
         swatchItem.innerHTML = `
-          <div class="swatch-color-box" style="background-color: ${swatch.hex};">
+          <div class="swatch-color-box" style="background-color: ${swatch.hex}; position: relative;">
+            <button type="button" class="btn-lock-swatch ${isLocked ? 'is-locked' : ''}" data-idx="${idx}" title="${isLocked ? 'Locked (Click to unlock)' : 'Unlocked (Click to lock)'}">
+              ${isLocked ? '🔒' : '🔓'}
+            </button>
             <div class="swatch-copy-hint">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              <span>Copy &amp; Audit</span>
+              <span>Copy HEX</span>
             </div>
           </div>
           <div class="swatch-details">
@@ -7318,6 +7477,20 @@ STRICT CONSTRAINTS:
             <div class="swatch-psychology">${swatch.psychology}</div>
           </div>
         `;
+
+        const lockBtn = swatchItem.querySelector('.btn-lock-swatch');
+        if (lockBtn) {
+          lockBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            state.lockedColors[idx] = !state.lockedColors[idx];
+            const locked = state.lockedColors[idx];
+            lockBtn.classList.toggle('is-locked', locked);
+            lockBtn.textContent = locked ? '🔒' : '🔓';
+            lockBtn.title = locked ? 'Locked (Click to unlock)' : 'Unlocked (Click to lock)';
+            swatchItem.classList.toggle('is-locked-card', locked);
+            showToast(locked ? `🔒 Locked ${swatch.name} (${swatch.hex})` : `🔓 Unlocked ${swatch.name}`, 'info', 1400);
+          });
+        }
 
         swatchItem.addEventListener('click', () => {
           copyToClipboard(swatch.hex, `Copied ${swatch.hex} & updated live contrast audit!`);
@@ -7380,6 +7553,7 @@ STRICT CONSTRAINTS:
     updateWcagAudit(initialBgColor, state.auditTextColor);
 
     renderInstagramMockup(brand);
+    updateChameleonPreviews(brand);
 
     const currentInputSentence = elements.inputVoiceRewrite ? (elements.inputVoiceRewrite.value || "We sell good coffee") : "We sell good coffee";
     const initialRewrite = proceduralVoiceRewrite(currentInputSentence, brand);
@@ -8349,22 +8523,32 @@ Return ONLY a valid JSON array matching this schema:
   ];
 
   function handleShufflePalette() {
-    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
-    const currentPrimary = (brand.palette && brand.palette[0]?.hex) || '';
+    const brand = state.currentBrand || PRESET_BRANDS.matcha || PRESET_BRANDS.komorebi;
+    if (!state.lockedColors) state.lockedColors = [false, false, false, false, false];
 
+    const currentPrimary = (brand.palette && brand.palette[0]?.hex) || '';
     const candidates = REMIX_PALETTE_POOL.filter(p => p.colors[0].hex.toLowerCase() !== currentPrimary.toLowerCase());
     const pool = candidates.length > 0 ? candidates : REMIX_PALETTE_POOL;
     const chosen = pool[Math.floor(Math.random() * pool.length)];
 
-    brand.palette = chosen.colors;
-    brand.colors = chosen.colors;
+    // Respect locked colors: preserve swatches that are locked
+    const blended = (brand.palette || brand.colors || []).map((existingSwatch, idx) => {
+      if (state.lockedColors[idx]) {
+        return existingSwatch;
+      }
+      return chosen.colors[idx] || existingSwatch;
+    });
+
+    brand.palette = blended;
+    brand.colors = blended;
     brand.paletteNarrative = chosen.narrative;
 
     state.currentBrand = brand;
     renderBrand(brand);
     saveActiveProjectToStorage();
 
-    showToast(`🎨 Remixed Palette: ${chosen.name}!`, 'success', 2200);
+    const lockedCount = state.lockedColors.filter(Boolean).length;
+    showToast(`🎨 Shuffled unlocked colors (${lockedCount} locked)! Press Space anytime`, 'success', 2000);
   }
 
   function handleShuffleFonts() {
@@ -9049,571 +9233,549 @@ Return ONLY valid JSON with NO commentary.
   }
 
   // =========================================================================
-  // 17e. AI Product & Visual Studio (Gemini 2.5 Flash Image & Local Canvas/SVG Fallback)
+  // 17e. Tactile Brand Playground (Chameleon, Tone Slider, 3D Tilt, PNG/SVG Studio, HTML Kit Export)
   // =========================================================================
 
-  function getNicheVisualPrompts(brand) {
-    const name = brand?.name || "BrandDNA";
-    const niche = brand?.industry || "Design & Lifestyle";
-    const colors = brand?.palette || brand?.colors || [];
-    const p1Name = colors[0]?.name ? `${colors[0].name.toLowerCase()} (${colors[0].hex})` : (colors[0]?.hex || '#059669');
-    const p2Name = colors[1]?.name ? `${colors[1].name.toLowerCase()} (${colors[1].hex})` : (colors[1]?.hex || '#10B981');
-    const p3Name = colors[2]?.name ? `${colors[2].name.toLowerCase()} (${colors[2].hex})` : (colors[2]?.hex || '#ECFDF5');
-    const p4Name = colors[3]?.name ? `${colors[3].name.toLowerCase()} (${colors[3].hex})` : (colors[3]?.hex || '#A7F3D0');
-    const darkName = colors[4]?.name ? `${colors[4].name.toLowerCase()} (${colors[4].hex})` : (colors[4]?.hex || '#111827');
-    const ind = (niche || '').toLowerCase();
-
-    if (ind.includes('coffee') || ind.includes('chai') || ind.includes('cafe') || ind.includes('tea')) {
-      return [
-        `Artisanal ceramic cup in ${p1Name} with delicate latte art on raw linen coaster beside organic coffee beans for ${name}, warm morning window light with ${p2Name} undertones`,
-        `Minimalist dark amber glass cold brew bottle with embossed ${name} label resting on distressed concrete bar, dramatic moody side lighting in ${p4Name} tones`,
-        `Handcrafted matcha whisk and ceramic bowl in ${p1Name} with vibrant green froth on weathered cedar tabletop for ${name}, Japanese wabi-sabi aesthetic`
-      ];
-    }
-
-    if (ind.includes('bakery') || ind.includes('culinary') || ind.includes('food') || ind.includes('pastry') || ind.includes('sweet')) {
-      return [
-        `Artisan sourdough loaf dusted with organic rye flour beside raw ceramic butter dish in ${p1Name} on light oak kitchen table for ${name}, golden hour sunshine`,
-        `Luxury artisanal chocolate truffles with gold leaf flakes in minimalist matte ${p1Name} textured gift box with embossed ${name} mark, editorial flatlay`,
-        `Warm flaky pastry resting on matte ${p2Name} stoneware plate beside antique copper kettle for ${name}, gentle morning steam, editorial gourmet style`
-      ];
-    }
-
-    if (ind.includes('skincare') || ind.includes('beauty') || ind.includes('botanical') || ind.includes('wellness') || ind.includes('cosmetic')) {
-      return [
-        `Frosted glass serum dropper bottle for ${name} with ${p1Name} label resting on smooth mossy river stone, soft morning sunlight and ${p4Name} dewy mist`,
-        `Minimalist ceramic cosmetic jar in ${p3Name} with brushed gold lid for ${name}, surrounded by botanical monstera leaves on a travertine pedestal`,
-        `Luxury facial oil in fluted glass container for ${name} casting caustic reflections on pristine water surface with ${p1Name} color grading, hyper-clean spa lighting`
-      ];
-    }
-
-    if (ind.includes('streetwear') || ind.includes('fashion') || ind.includes('sneaker') || ind.includes('apparel') || ind.includes('clothing')) {
-      return [
-        `Minimalist luxury heavyweight cotton hoodie in ${p1Name} folded on raw brutalist concrete plinth with architectural shadows and ${name} garment badge`,
-        `Designer leather sneaker with ${p1Name} and ${p4Name} color blocking resting on frosted acrylic display cube for ${name}, subtle neon rim light`,
-        `Editorial apparel collection display for ${name} with textured raw linen fabric swatches in ${p1Name} and matte aluminum garment tag, Vogue studio style`
-      ];
-    }
-
-    if (ind.includes('jewelry') || ind.includes('watch') || ind.includes('luxury') || ind.includes('gold') || ind.includes('diamond')) {
-      return [
-        `Brushed titanium automatic wristwatch for ${name} resting on midnight ${p1Name} velvet cushion with precision dial reflections, dramatic spotlighting`,
-        `Handcrafted 18k sculptural gold signet ring for ${name} on white Carrara marble slab casting sharp geometric shadows with ${p2Name} ambient bounce`,
-        `Prismatic brilliant-cut diamond pendant for ${name} suspended in crystal clear water with micro air bubbles, hyper-detailed macro lighting`
-      ];
-    }
-
-    if (ind.includes('tech') || ind.includes('ai') || ind.includes('saas') || ind.includes('cloud') || ind.includes('software')) {
-      return [
-        `Futuristic precision-machined aluminum desktop console for ${name} glowing with soft ${p1Name} neon ambient illumination on matte ${darkName} workstation`,
-        `Minimalist magnetic wireless charger in ${p1Name} with glowing LED halo on natural walnut desk beside architectural mug for ${name}`,
-        `Sleek matte glass smart device concept for ${name} floating with holographic chromatic light reflections in ${p4Name} against dark studio gradient`
-      ];
-    }
-
-    if (ind.includes('podcast') || ind.includes('media') || ind.includes('music') || ind.includes('audio')) {
-      return [
-        `Matte obsidian audiophile studio condenser microphone for ${name} on brass arm mount in warm acoustic-paneled creator studio with ${p1Name} accents`,
-        `Bespoke walnut and matte ${p1Name} over-ear studio headphones for ${name} resting on brass desktop stand with warm incandescent studio backlight`,
-        `Vintage-modern analog audio interface for ${name} with illuminated VU meters in ${p4Name} and polished aluminum knobs on dark slate desk`
-      ];
-    }
-
-    if (ind.includes('fitness') || ind.includes('outdoor') || ind.includes('adventure') || ind.includes('sport')) {
-      return [
-        `Ergonomic matte-finish insulated trail hydration flask in ${p1Name} for ${name} resting on mossy alpine granite rock with mist-shrouded mountain range`,
-        `Ultra-lightweight ripstop carbon-composite hiking pack in ${p1Name} for ${name} on sun-bleached driftwood at sunrise ocean shoreline`,
-        `Precision-milled brass compass and weathered topographic trail journal for ${name} on heavy waxed canvas blanket in ${p2Name}, morning adventure lighting`
-      ];
-    }
-
-    return [
-      `Luxury bespoke packaging gift box for ${name} in ${p1Name} with embossed foil emblem and ${p2Name} textured ribbon resting on warm travertine stone`,
-      `Commercial hero product showcase for ${name} in ${niche} on sculptural geometric plinths with harmonious ${p1Name} color-graded backdrop, studio lighting`,
-      `Minimalist lifestyle flatlay for ${name} featuring handcrafted leather goods in ${p1Name}, ceramic vessel in ${p3Name}, and editorial stationery`
-    ];
-  }
-
-  function getDefaultProductIdea(brand) {
-    const suggestions = getNicheVisualPrompts(brand);
-    return suggestions[0];
-  }
-
-  function suggestVisualIdea() {
-    const brand = state.currentBrand || PRESET_BRANDS.komorebi || (typeof generateProceduralBrand === 'function' ? generateProceduralBrand("Komorebi Botanicals", "Skincare & Wellness", "Organic Minimalist") : null);
-    if (!brand) return;
-
-    const input = elements.visualPromptInput || document.getElementById('visual-prompt-input');
-    if (!input) return;
-
-    const suggestions = getNicheVisualPrompts(brand);
-    const currentVal = input.value.trim();
-    
-    let nextPrompt = suggestions.find(s => s !== currentVal);
-    if (!nextPrompt) {
-      const randIdx = Math.floor(Math.random() * suggestions.length);
-      nextPrompt = suggestions[randIdx];
-    }
-
-    input.value = nextPrompt;
-    input.dataset.isDefault = 'false';
-    showToast('✨ Updated with tailored product concept prompt!', 'info', 2500);
-    return nextPrompt;
-  }
-  window.suggestVisualIdea = suggestVisualIdea;
-
-  function getEnrichedVisualPrompt(userPrompt, brand, ratio) {
-    const brandName = brand?.name || "BrandDNA";
-    const niche = brand?.industry || "Design & Lifestyle";
-    const vibe = brand?.vibe || "Modern Minimalist";
-    const colorsHex = (brand?.palette || brand?.colors || []).map(c => c.hex).join(', ');
-    const base = (userPrompt || '').trim() || getDefaultProductIdea(brand);
-
-    return `${base}, commercial high-end product photography for ${brandName}, ${niche} industry, ${vibe} aesthetic, color grading strictly harmonized with brand palette [${colorsHex}], professional studio softbox lighting, 8k resolution, raytraced reflections, hyper-detailed materials and textures, shot on 85mm f/1.4 lens, clean architectural backdrop, editorial Vogue quality, no text distortions, ultra-photorealistic.`;
-  }
-
-    function logVisualStatus(message, type = 'info') {
-    const banner = (elements && elements.visualStatusBanner) || document.getElementById('visual-status-banner');
-    if (!banner) return;
-    if (!message) {
-      banner.classList.add('hidden');
-      banner.textContent = '';
-      return;
-    }
-    const icon = type === 'error' ? '⚠️' : type === 'success' ? '✅' : type === 'warning' ? '⚡' : 'ℹ️';
-    banner.className = 'visual-status-banner status-' + type;
-    banner.innerHTML = '<span class="status-icon">' + icon + '</span> <span class="status-text">' + message + '</span>';
-    banner.classList.remove('hidden');
-  }
-
-  function updateVisualStudioContext(brand) {
-    if (!brand) return;
-
-    if (elements.visualInjectNiche) {
-      elements.visualInjectNiche.textContent = `Niche: ${brand.industry ? brand.industry.split('&')[0].trim() : 'Design'}`;
-    }
-    if (elements.visualInjectVibe) {
-      elements.visualInjectVibe.textContent = `Vibe: ${brand.vibe || 'Minimalist'}`;
-    }
-
-    if (elements.visualInjectPalette) {
-      elements.visualInjectPalette.innerHTML = '';
-      const colors = brand.palette || brand.colors || [];
-      colors.slice(0, 5).forEach(c => {
-        const dot = document.createElement('span');
-        dot.className = 'inject-dot';
-        dot.style.backgroundColor = c.hex;
-        dot.setAttribute('title', `${c.name}: ${c.hex}`);
-        elements.visualInjectPalette.appendChild(dot);
-      });
-    }
-
-    if (elements.visualPromptInput) {
-      if (!elements.visualPromptInput.value || elements.visualPromptInput.dataset.isDefault === 'true') {
-        elements.visualPromptInput.value = getDefaultProductIdea(brand);
-        elements.visualPromptInput.dataset.isDefault = 'true';
-      }
-    }
-
-    if (!state.currentVisualDataUrl) {
-      renderProceduralVisualFallback(brand, state.selectedAspectRatio || '1:1', elements.visualPromptInput ? elements.visualPromptInput.value : '');
-    }
-  }
-
-  function handleSelectAspectRatio(ratio) {
-    if (!['1:1', '4:5', '16:9'].includes(ratio)) return;
-    state.selectedAspectRatio = ratio;
-
-    if (elements.btnRatioPills) {
-      elements.btnRatioPills.forEach(pill => {
-        const r = pill.getAttribute('data-ratio');
-        if (r === ratio) {
-          pill.classList.add('active');
-          pill.setAttribute('aria-checked', 'true');
-        } else {
-          pill.classList.remove('active');
-          pill.setAttribute('aria-checked', 'false');
-        }
-      });
-    }
-
-    if (elements.visualStageContainer) {
-      elements.visualStageContainer.classList.remove('ratio-1-1', 'ratio-4-5', 'ratio-16-9');
-      elements.visualStageContainer.classList.add(`ratio-${ratio.replace(':', '-')}`);
-    }
-
-    if (elements.visualDimensionsBadge) {
-      const dimMap = {
-        '1:1': '1080 × 1080 px • PNG',
-        '4:5': '1080 × 1350 px • PNG',
-        '16:9': '1920 × 1080 px • PNG'
-      };
-      elements.visualDimensionsBadge.textContent = dimMap[ratio] || '1080 × 1080 px • PNG';
-    }
-
-    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
-    if (brand && (!elements.visualResultImg || elements.visualResultImg.classList.contains('hidden') || !state.currentVisualDataUrl?.startsWith('data:image/png;base64'))) {
-      renderProceduralVisualFallback(brand, ratio, elements.visualPromptInput ? elements.visualPromptInput.value : '');
-    }
-  }
-
-  function generateProceduralVisualSvg(brand, ratio, promptText) {
-    let width = 1080, height = 1080;
-    if (ratio === '4:5') { width = 1080; height = 1350; }
-    if (ratio === '16:9') { width = 1920; height = 1080; }
-
-    const colors = brand.palette || brand.colors || [];
-    const p1 = colors[0]?.hex || '#059669';
-    const p2 = colors[1]?.hex || '#10B981';
-    const p3 = colors[2]?.hex || '#ECFDF5';
-    const p4 = colors[3]?.hex || '#A7F3D0';
-    const darkColor = colors[4]?.hex || '#111827';
-    const headingFont = cleanFontName(brand.headingFont || brand.fonts?.heading || 'Plus Jakarta Sans');
-    const bodyFont = cleanFontName(brand.bodyFont || brand.fonts?.body || 'Inter');
-    const name = brand.name || "BrandDNA";
-    const ind = (brand.industry || 'STUDIO COLLECTION').toUpperCase();
-
-    let productMarkup = '';
-    const indLower = (brand.industry || '').toLowerCase();
-
-    if (indLower.includes('coffee') || indLower.includes('chai') || indLower.includes('tea') || indLower.includes('cafe')) {
-      productMarkup = `
-        <ellipse cx="0" cy="90" rx="140" ry="24" fill="${p2}" opacity="0.4"/>
-        <ellipse cx="0" cy="85" rx="120" ry="18" fill="${p3}" stroke="${p1}" stroke-width="3"/>
-        <path d="M-60 -30 L60 -30 L45 80 C45 85, -45 85, -45 80 Z" fill="#FFFFFF" stroke="${p1}" stroke-width="4"/>
-        <ellipse cx="0" cy="-30" rx="60" ry="16" fill="${p2}" stroke="${p1}" stroke-width="3"/>
-        <ellipse cx="0" cy="-30" rx="52" ry="12" fill="${darkColor}"/>
-        <ellipse cx="0" cy="-30" rx="42" ry="8" fill="${p2}" opacity="0.8"/>
-        <path d="M-20 -50 Q-35 -80, -15 -110 Q5 -140, -10 -170" fill="none" stroke="${p4}" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
-        <path d="M15 -50 Q30 -85, 10 -120 Q-10 -150, 5 -180" fill="none" stroke="${p4}" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
-        <rect x="-35" y="10" width="70" height="40" rx="6" fill="${p3}" stroke="${p4}" stroke-width="1.5"/>
-        <text x="0" y="34" font-family="'${headingFont}', serif" font-weight="700" font-size="10" fill="${darkColor}" text-anchor="middle" letter-spacing="1">${name.slice(0, 10).toUpperCase()}</text>
-      `;
-    } else if (indLower.includes('bakery') || indLower.includes('food') || indLower.includes('pastry')) {
-      productMarkup = `
-        <ellipse cx="0" cy="90" rx="150" ry="25" fill="${p1}" opacity="0.3"/>
-        <ellipse cx="0" cy="80" rx="140" ry="20" fill="${p3}" stroke="${p4}" stroke-width="3"/>
-        <ellipse cx="0" cy="10" rx="110" ry="70" fill="${p2}" stroke="${p1}" stroke-width="4"/>
-        <ellipse cx="-20" cy="-5" rx="90" ry="50" fill="${p3}" fill-opacity="0.35"/>
-        <path d="M-60 -10 Q-30 -40, 10 -30 Q40 -20, 60 5" fill="none" stroke="${p1}" stroke-width="5" stroke-linecap="round"/>
-        <path d="M-40 20 Q0 -10, 40 10" fill="none" stroke="${p1}" stroke-width="4" stroke-linecap="round"/>
-        <rect x="-40" y="45" width="80" height="25" rx="5" fill="#FFFFFF" stroke="${p1}" stroke-width="2"/>
-        <text x="0" y="62" font-family="'${headingFont}', serif" font-weight="700" font-size="9" fill="${darkColor}" text-anchor="middle" letter-spacing="1.5">${name.slice(0, 10).toUpperCase()}</text>
-      `;
-    } else if (indLower.includes('tech') || indLower.includes('ai') || indLower.includes('saas') || indLower.includes('cloud')) {
-      productMarkup = `
-        <ellipse cx="0" cy="110" rx="160" ry="30" fill="${p1}" opacity="0.35"/>
-        <polygon points="0,-120 100,-60 100,60 0,120 -100,60 -100,-60" fill="${darkColor}" stroke="${p1}" stroke-width="4"/>
-        <polygon points="0,-100 80,-50 80,50 0,100 -80,50 -80,-50" fill="url(#prismGrad)" stroke="${p4}" stroke-width="2" stroke-dasharray="6 4"/>
-        <circle cx="0" cy="0" r="35" fill="${p1}" fill-opacity="0.3" stroke="${p4}" stroke-width="3"/>
-        <polygon points="0,-18 16,9 -16,9" fill="${p3}"/>
-        <text x="0" y="45" font-family="monospace" font-weight="700" font-size="10" fill="${p4}" text-anchor="middle" letter-spacing="2">SYS.CORE</text>
-      `;
-    } else if (indLower.includes('streetwear') || indLower.includes('fashion') || indLower.includes('apparel')) {
-      productMarkup = `
-        <ellipse cx="0" cy="110" rx="150" ry="25" fill="${p1}" opacity="0.3"/>
-        <rect x="-110" y="-80" width="220" height="170" rx="14" fill="${darkColor}" stroke="${p1}" stroke-width="3"/>
-        <rect x="-95" y="-65" width="190" height="140" rx="8" fill="url(#prismGrad)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
-        <line x1="0" y1="-80" x2="0" y2="90" stroke="${p1}" stroke-width="4"/>
-        <line x1="-110" y1="5" x2="110" y2="5" stroke="${p1}" stroke-width="4"/>
-        <circle cx="0" cy="5" r="28" fill="${p3}" stroke="${p1}" stroke-width="3"/>
-        <text x="0" y="11" font-family="'${headingFont}', serif" font-weight="800" font-size="14" fill="${darkColor}" text-anchor="middle">${name.slice(0, 1)}</text>
-        <rect x="-60" y="45" width="120" height="24" rx="12" fill="${p1}"/>
-        <text x="0" y="61" font-family="'${bodyFont}', sans-serif" font-weight="700" font-size="9" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">DEBUT EDITION</text>
-      `;
-    } else {
-      productMarkup = `
-        <rect x="-85" y="-120" width="170" height="260" rx="35" fill="#FFFFFF" fill-opacity="0.85" stroke="${p1}" stroke-width="4"/>
-        <rect x="-70" y="-105" width="140" height="230" rx="25" fill="${p3}" fill-opacity="0.6"/>
-        <path d="M-65 15 C-30 0, 30 30, 65 15 L65 110 C65 120, -65 120, -65 110 Z" fill="${p1}" fill-opacity="0.35"/>
-        <rect x="-42" y="-160" width="84" height="42" rx="8" fill="${p2}" stroke="${darkColor}" stroke-width="3"/>
-        <rect x="-18" y="-195" width="36" height="36" rx="18" fill="${p1}"/>
-        <rect x="-5" y="-120" width="10" height="200" rx="4" fill="#FFFFFF" fill-opacity="0.6"/>
-        <rect x="-55" y="-40" width="110" height="110" rx="10" fill="#FFFFFF" stroke="${p4}" stroke-width="1.5"/>
-        <text x="0" y="-12" font-family="'${headingFont}', serif" font-weight="700" font-size="13" fill="${darkColor}" text-anchor="middle" letter-spacing="1">${name.slice(0, 14).toUpperCase()}</text>
-        <line x1="-30" y1="2" x2="30" y2="2" stroke="${p1}" stroke-width="1.5"/>
-        <text x="0" y="20" font-family="'${bodyFont}', sans-serif" font-weight="600" font-size="8" fill="${p1}" text-anchor="middle" letter-spacing="2">ORGANIC ESSENCE</text>
-        <text x="0" y="38" font-family="'${bodyFont}', sans-serif" font-weight="500" font-size="7" fill="#6B7280" text-anchor="middle" letter-spacing="1.5">30 ML / 1.0 FL. OZ.</text>
-      `;
-    }
-
-    return `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
-      <defs>
-        <radialGradient id="bgGrad" cx="50%" cy="40%" r="80%">
-          <stop offset="0%" stop-color="${p3}" stop-opacity="0.95"/>
-          <stop offset="45%" stop-color="#E2E8E4"/>
-          <stop offset="100%" stop-color="${darkColor}"/>
-        </radialGradient>
-        <radialGradient id="pedestalGrad" cx="50%" cy="30%" r="70%">
-          <stop offset="0%" stop-color="#FFFFFF"/>
-          <stop offset="65%" stop-color="${p3}"/>
-          <stop offset="100%" stop-color="${p4}"/>
-        </radialGradient>
-        <radialGradient id="prismGrad" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stop-color="${p3}" stop-opacity="0.9"/>
-          <stop offset="100%" stop-color="${p1}" stop-opacity="0.6"/>
-        </radialGradient>
-        <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="35" result="blur"/>
-          <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-        </filter>
-        <filter id="dropShadow" x="-25%" y="-25%" width="150%" height="150%">
-          <feDropShadow dx="0" dy="28" stdDeviation="22" flood-color="#000000" flood-opacity="0.32"/>
-        </filter>
-      </defs>
-
-      <rect width="${width}" height="${height}" fill="url(#bgGrad)"/>
-      <ellipse cx="${width/2}" cy="${height * 0.74}" rx="${width * 0.44}" ry="${height * 0.17}" fill="#000000" opacity="0.36" filter="url(#softGlow)"/>
-
-      <g transform="translate(${width/2}, ${height * 0.65})">
-        <ellipse cx="0" cy="50" rx="${width * 0.28}" ry="35" fill="${p1}" opacity="0.3"/>
-        <path d="M-${width * 0.26} 0 L-${width * 0.26} 50 C-${width * 0.26} 85, ${width * 0.26} 85, ${width * 0.26} 50 L${width * 0.26} 0 Z" fill="${darkColor}" opacity="0.88"/>
-        <ellipse cx="0" cy="0" rx="${width * 0.26}" ry="36" fill="url(#pedestalGrad)" stroke="${p1}" stroke-width="3"/>
-      </g>
-
-      <g transform="translate(${width/2}, ${height * 0.43})" filter="url(#dropShadow)">
-        ${productMarkup}
-      </g>
-
-      <g transform="translate(60, ${height - 60})">
-        <text x="0" y="0" font-family="'${headingFont}', Georgia, serif" font-weight="800" font-size="28" fill="${darkColor}" letter-spacing="-0.5">${name}</text>
-        <text x="0" y="24" font-family="'${bodyFont}', sans-serif" font-weight="600" font-size="12" fill="${p1}" letter-spacing="2.5">${ind} &bull; STUDIO EDITION</text>
-      </g>
-
-      <g transform="translate(${width - 240}, 50)">
-        <rect width="180" height="34" rx="17" fill="${darkColor}" fill-opacity="0.75"/>
-        <text x="90" y="22" font-family="'${bodyFont}', sans-serif" font-weight="700" font-size="11" fill="#FFFFFF" text-anchor="middle" letter-spacing="1.5">${ratio} &bull; STUDIO MOCKUP</text>
-      </g>
-    </svg>
-    `.trim();
-  }
-
-  async function renderProceduralVisualFallback(brand, ratio, promptText) {
-    let width = 1080, height = 1080;
-    if (ratio === '4:5') { width = 1080; height = 1350; }
-    if (ratio === '16:9') { width = 1920; height = 1080; }
-
-    const svgString = generateProceduralVisualSvg(brand, ratio, promptText);
-
-    if (elements.visualStagePlaceholder) {
-      elements.visualStagePlaceholder.innerHTML = svgString;
-    }
-
-    if (elements.visualResultImg) {
-      elements.visualResultImg.classList.add('hidden');
-    }
-
+  // Helper: Download SVG as High-Resolution PNG via Canvas
+  function downloadSvgAsPng(svgMarkup, filename = 'logo.png') {
     try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 1024;
+      const ctx = canvas.getContext('2d');
       const img = new Image();
-      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-      const blobUrl = URL.createObjectURL(svgBlob);
+      const cleanSvg = svgMarkup.includes('xmlns') ? svgMarkup : svgMarkup.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+      const svgBlob = new Blob([cleanSvg], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
 
       img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          state.currentVisualDataUrl = canvas.toDataURL('image/png');
-          URL.revokeObjectURL(blobUrl);
-        } catch (e) {
-          state.currentVisualDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
-          URL.revokeObjectURL(blobUrl);
-        }
+        ctx.clearRect(0, 0, 1024, 1024);
+        ctx.drawImage(img, 0, 0, 1024, 1024);
+        URL.revokeObjectURL(url);
+        const pngUrl = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = pngUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast(`Downloaded ${filename}! 📸`, 'success');
       };
       img.onerror = () => {
-        state.currentVisualDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
-        URL.revokeObjectURL(blobUrl);
+        URL.revokeObjectURL(url);
+        downloadFile(filename.replace('.png', '.svg'), cleanSvg, 'image/svg+xml');
+        showToast('Exported SVG asset!', 'info');
       };
-      img.src = blobUrl;
-    } catch (e) {
-      state.currentVisualDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
+      img.src = url;
+    } catch (err) {
+      console.error('PNG rasterization error:', err);
+      showToast('Could not convert SVG to PNG', 'warning');
     }
   }
 
-  async function handleGenerateVisual() {
-    if (state.isGeneratingVisual) return;
-    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
+  // Live Brand Chameleon: Real-time Touchpoint Renderer
+  function updateChameleonPreviews(brand) {
     if (!brand) return;
+    const colors = brand.palette || brand.colors || [];
+    const p1 = colors[0]?.hex || '#245336';
+    const p2 = colors[1]?.hex || '#C49A45';
+    const p3 = colors[2]?.hex || '#FAF9F6';
+    const p4 = colors[3]?.hex || '#3D2619';
+    const p5 = colors[4]?.hex || '#18181B';
+    const brandHandle = sanitizeHandle(brand.name);
+    const headingFont = brand.headingFont || brand.fonts?.heading || 'Plus Jakarta Sans';
+    const bodyFont = brand.bodyFont || brand.fonts?.body || 'Plus Jakarta Sans';
 
-    const userPrompt = (elements.visualPromptInput ? elements.visualPromptInput.value.trim() : '') || getDefaultProductIdea(brand);
-    const ratio = state.selectedAspectRatio || '1:1';
-    const enrichedPrompt = getEnrichedVisualPrompt(userPrompt, brand, ratio);
-
-    state.isGeneratingVisual = true;
-    if (elements.btnGenerateVisual) elements.btnGenerateVisual.disabled = true;
-    if (elements.visualGenerateSpinner) elements.visualGenerateSpinner.classList.remove('hidden');
-    if (elements.btnGenerateVisualText) elements.btnGenerateVisualText.textContent = 'Generating with AI...';
-    if (elements.visualStageLoading) elements.visualStageLoading.classList.remove('hidden');
-    if (elements.visualLoadingSub) elements.visualLoadingSub.textContent = 'Synthesizing ' + ratio + ' commercial visual via Netlify...';
-
-    let success = false;
-    let imageDataUrl = null;
-    let engineSource = '';
-    let lastError = null;
-
-    logVisualStatus('Connecting to Netlify serverless proxy (/.netlify/functions/gemini)...', 'info');
-    if (elements.visualEngineBadge) {
-      elements.visualEngineBadge.textContent = '⚡ Netlify Calling...';
-      elements.visualEngineBadge.className = 'badge-studio-meta';
+    // Touchpoint 1: Website Hero
+    if (elements.mockBrowserUrl) {
+      elements.mockBrowserUrl.textContent = `https://${brandHandle}.studio`;
+    }
+    if (elements.mockNavLogo) {
+      elements.mockNavLogo.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="${p1}"><path d="${brand.svgIconPath || NICHE_24X24_ICONS.leaf}"/></svg>`;
+    }
+    if (elements.mockNavName) {
+      elements.mockNavName.textContent = brand.name;
+      elements.mockNavName.style.fontFamily = `'${headingFont}', serif`;
+    }
+    if (elements.mockNavCta) {
+      elements.mockNavCta.style.background = p1;
+      elements.mockNavCta.style.color = '#FFFFFF';
+    }
+    if (elements.mockHeroKicker) {
+      elements.mockHeroKicker.textContent = `✦ ${brand.industry}`;
+      elements.mockHeroKicker.style.color = p1;
+    }
+    if (elements.mockHeroTitle) {
+      elements.mockHeroTitle.textContent = brand.tagline || brand.sampleHeadline;
+      elements.mockHeroTitle.style.fontFamily = `'${headingFont}', serif`;
+      elements.mockHeroTitle.style.color = p4 || p1;
+    }
+    if (elements.mockHeroTagline) {
+      elements.mockHeroTagline.textContent = brand.sampleBody || `${brand.industry} • Engineered for ${brand.audience}`;
+      elements.mockHeroTagline.style.fontFamily = `'${bodyFont}', sans-serif`;
+    }
+    if (elements.mockBtnPrimary) {
+      elements.mockBtnPrimary.style.background = p1;
+      elements.mockBtnPrimary.style.color = '#FFFFFF';
+    }
+    if (elements.mockBtnSecondary) {
+      elements.mockBtnSecondary.style.borderColor = p1;
+      elements.mockBtnSecondary.style.color = p1;
     }
 
-    // 1. Try Netlify Serverless Function (gemini-2.5-flash-image) via callGeminiEndpoint
-    try {
-      const data = await callGeminiEndpoint({
-        action: 'generateImage',
-        prompt: enrichedPrompt,
-        aspectRatio: ratio
+    // Dynamic proof points tailored to archetype
+    if (elements.proofStat1) elements.proofStat1.textContent = brand.vibe === 'tech-futuristic' ? 'Sub-Millisecond Settlement' : (brand.vibe === 'bold-genz' ? 'Zero Lossless Compression' : '100% Organic Origin');
+    if (elements.proofStat2) elements.proofStat2.textContent = brand.vibe === 'tech-futuristic' ? 'Cryptographic Solvency' : (brand.vibe === 'bold-genz' ? 'Machined Solid Brass' : 'Small-Batch Handcrafted');
+    if (elements.proofStat3) elements.proofStat3.textContent = brand.vibe === 'tech-futuristic' ? 'Autonomous AI Yield' : (brand.vibe === 'bold-genz' ? 'Analog Thermionic Flow' : 'Restorative Ritual Grade');
+
+    // Touchpoint 2: 3D-Tilting Business Card
+    if (elements.tiltBusinessCard) {
+      elements.tiltBusinessCard.style.background = `linear-gradient(135deg, ${p4 || '#18181B'} 0%, ${p1} 100%)`;
+    }
+    if (elements.cardLogoSlot) {
+      elements.cardLogoSlot.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="${p2}"><path d="${brand.svgIconPath || NICHE_24X24_ICONS.sparkle}"/></svg>`;
+    }
+    if (elements.cardChipBadge) {
+      elements.cardChipBadge.textContent = `${(brand.vibe || 'studio').toUpperCase().replace('-', ' ')} EDITION`;
+    }
+    if (elements.cardBrandDisplay) {
+      elements.cardBrandDisplay.textContent = brand.name;
+      elements.cardBrandDisplay.style.fontFamily = `'${headingFont}', serif`;
+    }
+    if (elements.cardBrandIndustry) {
+      elements.cardBrandIndustry.textContent = brand.industry;
+    }
+    if (elements.cardContactHandle) {
+      elements.cardContactHandle.innerHTML = `hello@${brandHandle}.studio &bull; www.${brandHandle}.studio`;
+    }
+    if (elements.cardMiniPalette) {
+      elements.cardMiniPalette.innerHTML = colors.map(c => `<span class="card-palette-dot" style="background:${c.hex}" title="${c.name}"></span>`).join('');
+    }
+
+    // Touchpoint 3: Packaging Label
+    if (elements.cylinderVessel) {
+      elements.cylinderVessel.style.borderColor = `${p1}33`;
+    }
+    if (elements.labelFoilSeal) {
+      elements.labelFoilSeal.style.background = `radial-gradient(circle, ${p2} 0%, ${p1} 100%)`;
+      elements.labelFoilSeal.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="#FFFFFF"><path d="${brand.svgIconPath || NICHE_24X24_ICONS.leaf}"/></svg>`;
+    }
+    if (elements.labelBrandTitle) {
+      elements.labelBrandTitle.textContent = brand.name;
+      elements.labelBrandTitle.style.fontFamily = `'${headingFont}', serif`;
+      elements.labelBrandTitle.style.color = p1;
+    }
+    if (elements.labelBrandTagline) {
+      elements.labelBrandTagline.textContent = brand.tagline;
+      elements.labelBrandTagline.style.fontFamily = `'${bodyFont}', sans-serif`;
+    }
+    if (elements.labelDividerLine) {
+      elements.labelDividerLine.style.background = `linear-gradient(90deg, transparent, ${p2}, transparent)`;
+    }
+    if (elements.labelDesc) {
+      elements.labelDesc.textContent = `Formulated with pure ${brand.industry.toLowerCase()} integrity.`;
+    }
+  }
+
+  // Chameleon Tab Switcher
+  function initChameleonTabs() {
+    if (!elements.chameleonTabs || elements.chameleonTabs.length === 0) return;
+    elements.chameleonTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const view = tab.getAttribute('data-view');
+        elements.chameleonTabs.forEach(t => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+
+        if (elements.chameleonViewHero) elements.chameleonViewHero.classList.toggle('hidden', view !== 'hero');
+        if (elements.chameleonViewCard) elements.chameleonViewCard.classList.toggle('hidden', view !== 'card');
+        if (elements.chameleonViewPackaging) elements.chameleonViewPackaging.classList.toggle('hidden', view !== 'packaging');
+      });
+    });
+  }
+
+  // Tactile 3D Tilt for Business Card and Bento Cards
+  function init3DTiltEffects() {
+    // 3D Business Card Tilt
+    const wrap = elements.cardTiltCanvasWrap;
+    const card = elements.tiltBusinessCard;
+    if (wrap && card) {
+      wrap.addEventListener('mousemove', (e) => {
+        const rect = wrap.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const rotX = ((y - centerY) / centerY) * -16;
+        const rotY = ((x - centerX) / centerX) * 16;
+        card.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+
+        const glare = document.getElementById('card-specular-glare');
+        if (glare) {
+          const glareX = (x / rect.width) * 100;
+          const glareY = (y / rect.height) * 100;
+          glare.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 65%)`;
+          glare.style.opacity = '1';
+        }
       });
 
-      const dataUri = data?.imageUrl || data?.image || (data?.imageBase64 || data?.base64 ? ('data:' + (data?.mimeType || 'image/png') + ';base64,' + (data.imageBase64 || data.base64)) : null);
-      if (dataUri) {
-        imageDataUrl = dataUri;
-        success = true;
-        engineSource = 'Gemini 2.5 Flash Image';
-        logVisualStatus('Success: Generated visual asset via Google Gemini 2.5 Flash Image (200 OK)', 'success');
-      } else {
-        throw new Error('No image binary payload returned from Gemini endpoint');
-      }
-    } catch (netErr) {
-      lastError = netErr;
-      const errorMsg = netErr?.message || 'Serverless endpoint unavailable';
-      console.warn('Netlify Gemini endpoint error:', netErr);
-      logVisualStatus('Netlify Gemini API Notice: ' + errorMsg + '. Activating fallback...', 'warning');
-      if (elements.visualEngineBadge) {
-        elements.visualEngineBadge.textContent = '⚠️ API Error (Fallback Active)';
-        elements.visualEngineBadge.className = 'badge-studio-meta badge-status-error';
-      }
+      wrap.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+        const glare = document.getElementById('card-specular-glare');
+        if (glare) glare.style.opacity = '0';
+      });
     }
 
-    // 2. Fallback: Procedural Studio HTML5 Canvas / SVG Render (100% offline guarantee)
-    try {
-      if (success && imageDataUrl) {
-        state.currentVisualDataUrl = imageDataUrl;
-        if (elements.visualResultImg) {
-          elements.visualResultImg.src = imageDataUrl;
-          elements.visualResultImg.classList.remove('hidden');
-        }
-        if (elements.visualStagePlaceholder) elements.visualStagePlaceholder.innerHTML = '';
-        if (elements.visualEngineBadge) {
-          elements.visualEngineBadge.textContent = '✨ ' + engineSource + ' (Live)';
-          elements.visualEngineBadge.className = 'badge-studio-meta badge-status-success';
-        }
-        showToast('✨ Generated photorealistic visual with ' + engineSource + '!', 'success');
-      } else {
-        await renderProceduralVisualFallback(brand, ratio, userPrompt);
-        if (elements.visualEngineBadge) {
-          elements.visualEngineBadge.textContent = '🎨 Studio Render (Offline)';
-          elements.visualEngineBadge.className = 'badge-studio-meta';
-        }
-        const errorDetail = lastError?.message ? (' (' + lastError.message + ')') : '';
-        logVisualStatus('Rendered commercial studio mockup. Model status: Offline/Fallback mode active' + errorDetail, 'info');
-        showToast('Generated commercial studio visual mockup!', 'success');
-      }
-    } catch (err) {
-      console.error('Visual display error:', err);
-      await renderProceduralVisualFallback(brand, ratio, userPrompt);
-      logVisualStatus('Rendered studio mockup: ' + (err?.message || 'Ready'), 'info');
-    } finally {
-      state.isGeneratingVisual = false;
-      if (elements.btnGenerateVisual) elements.btnGenerateVisual.disabled = false;
-      if (elements.visualGenerateSpinner) elements.visualGenerateSpinner.classList.add('hidden');
-      if (elements.btnGenerateVisualText) elements.btnGenerateVisualText.textContent = 'Generate Visual';
-      if (elements.visualStageLoading) elements.visualStageLoading.classList.add('hidden');
-    }
+    // Subtle 3D Tilt for Bento Cards
+    const bentoCards = document.querySelectorAll('.bento-card');
+    bentoCards.forEach(bc => {
+      bc.addEventListener('mousemove', (e) => {
+        const r = bc.getBoundingClientRect();
+        const cx = r.width / 2;
+        const cy = r.height / 2;
+        const rx = ((e.clientY - r.top - cy) / cy) * -2.5;
+        const ry = ((e.clientX - r.left - cx) / cx) * 2.5;
+        bc.style.transform = `perspective(1200px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-2px)`;
+      });
+      bc.addEventListener('mouseleave', () => {
+        bc.style.transform = '';
+      });
+    });
   }
 
-  window.generateVisual = handleGenerateVisual;
-  window.handleGenerateVisual = handleGenerateVisual;
-  window.suggestVisualIdea = suggestVisualIdea;
-  window.suggestVisualPrompt = suggestVisualIdea;
+  // 1-Click 'Try a Live Brand' Demo Chips
+  function initDemoChips() {
+    if (!elements.demoChipPills || elements.demoChipPills.length === 0) return;
+    elements.demoChipPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        const demoKey = pill.getAttribute('data-demo');
+        const preset = PRESET_BRANDS[demoKey];
+        if (preset) {
+          elements.demoChipPills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
 
-  function handleDownloadVisual() {
-    const brand = state.currentBrand || PRESET_BRANDS.komorebi;
-    const brandSlug = sanitizeHandle(brand?.name || 'brand');
-    const ratio = (state.selectedAspectRatio || '1:1').replace(':', 'x');
-    const filename = `${brandSlug}-product-visual-${ratio}.png`;
+          if (elements.inputBrandName) elements.inputBrandName.value = preset.name;
+          if (elements.industrySelect) elements.industrySelect.value = preset.industry;
+          if (elements.inputAudience) elements.inputAudience.value = preset.audience;
 
-    if (!state.currentVisualDataUrl) {
-      showToast('Visual is still preparing. Please try again.', 'warning');
-      return;
+          state.selectedVibe = preset.vibe;
+          if (elements.vibeCards) {
+            elements.vibeCards.forEach(c => {
+              c.classList.toggle('active', c.getAttribute('data-vibe') === preset.vibe);
+            });
+          }
+
+          renderBrand(preset);
+          showToast(`⚡ Loaded ${preset.name} Demo Brand!`, 'success', 2200);
+        }
+      });
+    });
+  }
+
+  // Brand Tone Slider & Dynamic Tagline/Hook Rewriter
+  function applyBrandTone(tone) {
+    const brand = state.currentBrand || PRESET_BRANDS.matcha || PRESET_BRANDS.komorebi;
+    state.brandTone = tone;
+
+    if (elements.toneBadgeVal) {
+      elements.toneBadgeVal.textContent = tone.charAt(0).toUpperCase() + tone.slice(1);
     }
 
-    // If the visual is an SVG data URI, rasterize to a real high-res PNG canvas before downloading
-    if (state.currentVisualDataUrl.startsWith('data:image/svg+xml')) {
-      try {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => {
-          let w = 1080, h = 1080;
-          if (ratio === '4x5') { w = 1080; h = 1350; }
-          if (ratio === '16x9') { w = 1920; h = 1080; }
-          const canvas = document.createElement('canvas');
-          canvas.width = w;
-          canvas.height = h;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, w, h);
-          const pngUrl = canvas.toDataURL('image/png');
-
-          const a = document.createElement('a');
-          a.href = pngUrl;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          showToast(`Downloaded high-res product visual PNG! 📸`, 'success');
-        };
-        img.onerror = () => {
-          const a = document.createElement('a');
-          a.href = state.currentVisualDataUrl;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          showToast(`Downloaded product visual! 📸`, 'success');
-        };
-        img.src = state.currentVisualDataUrl;
-        return;
-      } catch (err) {
-        console.warn('Canvas rasterization fallback to direct download:', err);
+    // Archetype tone voice rewrites
+    const toneVariants = {
+      minimalist: {
+        tagline: `Essential ${brand.name.split(' ')[0]}. Pure stillness.`,
+        headline: "Less, but elevated.",
+        body: `Distilled to the purest essence of ${brand.industry.toLowerCase()}. Zero noise, zero excess.`,
+        tones: ["Essential", "Understated", "Pure"]
+      },
+      bold: {
+        tagline: brand.tagline || "Command the future without compromise.",
+        headline: brand.sampleHeadline || "Built to lead.",
+        body: brand.sampleBody || `Uncompromising performance and presence in ${brand.industry.toLowerCase()}.`,
+        tones: brand.tones || ["Disruptive", "High-Impact", "Bold"]
+      },
+      playful: {
+        tagline: `Meet ${brand.name}. Your new daily obsession.`,
+        headline: "Never boring. Always vibrant.",
+        body: `Bringing joy, color, and serious delight to ${brand.industry.toLowerCase()}.`,
+        tones: ["Irreverent", "Witty", "Delightful"]
       }
+    };
+
+    const chosen = toneVariants[tone] || toneVariants.bold;
+    brand.tagline = chosen.tagline;
+    brand.sampleHeadline = chosen.headline;
+    brand.sampleBody = chosen.body;
+    brand.tones = chosen.tones;
+
+    if (elements.punchyTaglineText) elements.punchyTaglineText.textContent = chosen.tagline;
+    if (elements.sampleHeadline) elements.sampleHeadline.textContent = `“${chosen.headline}”`;
+    if (elements.sampleBody) elements.sampleBody.textContent = chosen.body;
+
+    if (elements.toneTagsRow) {
+      elements.toneTagsRow.innerHTML = '';
+      chosen.tones.forEach(t => {
+        const tag = document.createElement('span');
+        tag.className = 'tone-tag';
+        tag.textContent = t;
+        elements.toneTagsRow.appendChild(tag);
+      });
     }
 
-    if (state.currentVisualDataUrl.startsWith('data:')) {
-      const a = document.createElement('a');
-      a.href = state.currentVisualDataUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast(`Downloaded high-res product visual PNG! 📸`, 'success');
-    } else {
-      fetch(state.currentVisualDataUrl)
-        .then(res => res.blob())
-        .then(blob => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          showToast(`Downloaded high-res product visual PNG! 📸`, 'success');
-        })
-        .catch(() => {
-          const a = document.createElement('a');
-          a.href = state.currentVisualDataUrl;
-          a.download = filename;
-          a.target = '_blank';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
+    updateChameleonPreviews(brand);
+    showToast(`Tone shifted to ${tone.toUpperCase()}! 🎙️`, 'info', 1800);
+  }
+
+  function initToneSlider() {
+    if (!elements.btnToneSteps || elements.btnToneSteps.length === 0) return;
+    elements.btnToneSteps.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tone = btn.getAttribute('data-tone');
+        elements.btnToneSteps.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-checked', 'false');
         });
-    }
+        btn.classList.add('active');
+        btn.setAttribute('aria-checked', 'true');
+        applyBrandTone(tone);
+      });
+    });
   }
+
+  // Standalone Brand Kit (.HTML) Generator
+  function generateBrandKitHtml(brand) {
+    const brandSlug = sanitizeHandle(brand.name);
+    const colors = brand.palette || brand.colors || [];
+    const headingFont = brand.headingFont || brand.fonts?.heading || 'Plus Jakarta Sans';
+    const bodyFont = brand.bodyFont || brand.fonts?.body || 'Plus Jakarta Sans';
+    const p1 = colors[0]?.hex || '#245336';
+    const p2 = colors[1]?.hex || '#C49A45';
+    const p3 = colors[2]?.hex || '#FAF9F6';
+    const p4 = colors[3]?.hex || '#3D2619';
+    const p5 = colors[4]?.hex || '#18181B';
+    const logos = generateThreeLogoConcepts(brand, 0);
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${brand.name} — Brand Identity & Design System Kit</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(headingFont)}:wght@400;600;700;800&family=${encodeURIComponent(bodyFont)}:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: ${p1};
+      --color-secondary: ${p2};
+      --color-surface: ${p3};
+      --color-accent: ${p4};
+      --color-dark: ${p5};
+      --font-heading: '${headingFont}', Georgia, serif;
+      --font-body: '${bodyFont}', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #FAF9F6;
+      color: #18181B;
+      font-family: var(--font-body);
+      line-height: 1.6;
+      padding: 40px 24px;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    header {
+      border-bottom: 2px solid #E4E2DD;
+      padding-bottom: 32px;
+      margin-bottom: 40px;
+    }
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: #F4EFE6;
+      color: #71717A;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-family: var(--font-heading);
+      font-size: 2.8rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      color: var(--color-primary);
+    }
+    .subtitle {
+      font-size: 1.15rem;
+      color: #52525B;
+      margin-bottom: 16px;
+    }
+    .tagline-box {
+      background: #FFFFFF;
+      border: 1px solid #E4E2DD;
+      border-left: 4px solid var(--color-primary);
+      padding: 16px 20px;
+      border-radius: 8px;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: #27272A;
+    }
+    section {
+      background: #FFFFFF;
+      border: 1px solid #E4E2DD;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 32px;
+    }
+    h2 {
+      font-family: var(--font-heading);
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+    }
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .swatch-card {
+      border: 1px solid #E4E2DD;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .swatch-color { height: 100px; }
+    .swatch-meta { padding: 12px; font-size: 12px; }
+    .swatch-hex { font-family: var(--font-mono); font-weight: 700; font-size: 13px; }
+    .swatch-role { color: #71717A; font-size: 11px; margin-top: 2px; }
+    .logos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .logo-item {
+      border: 1px solid #E4E2DD;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      background: #FAF9F6;
+    }
+    .logo-svg-wrap { height: 110px; display: flex; align-items: center; justify-content: center; }
+    .type-specimen {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .type-card {
+      border: 1px solid #E4E2DD;
+      padding: 20px;
+      border-radius: 12px;
+      background: #FAF9F6;
+    }
+    .type-sample-heading { font-family: var(--font-heading); font-size: 1.8rem; margin: 12px 0; }
+    .type-sample-body { font-family: var(--font-body); font-size: 1rem; color: #52525B; }
+    .tones-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .tone-badge { background: #F4EFE6; padding: 4px 12px; border-radius: 9999px; font-weight: 600; font-size: 12px; }
+    footer { text-align: center; color: #A1A1AA; font-size: 12px; margin-top: 48px; }
+    @media print {
+      body { background: #fff; padding: 0; }
+      section { break-inside: avoid; border: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="badge">Brand DNA Design System</span>
+      <h1>${brand.name}</h1>
+      <p class="subtitle">${brand.industry} &bull; Targeted for ${brand.audience}</p>
+      <div class="tagline-box">&ldquo;${brand.tagline}&rdquo;</div>
+    </header>
+
+    <section>
+      <h2>🎨 Color Palette &amp; Design Tokens</h2>
+      <p style="color:#52525B; font-size:14px; margin-bottom:12px;">${brand.paletteNarrative || 'Harmonized color palette tailored to brand archetype.'}</p>
+      <div class="palette-grid">
+        ${colors.map(c => `
+          <div class="swatch-card">
+            <div class="swatch-color" style="background-color: ${c.hex};"></div>
+            <div class="swatch-meta">
+              <div class="swatch-hex">${c.hex.toUpperCase()}</div>
+              <div class="swatch-role">${c.role}</div>
+              <div style="font-weight:600; margin-top:4px;">${c.name}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </section>
+
+    <section>
+      <h2>✨ Vector Logo Mark Concepts</h2>
+      <div class="logos-grid">
+        <div class="logo-item">
+          <div class="logo-svg-wrap">${logos.concept1}</div>
+          <p style="font-size:12px; font-weight:600; color:#71717A; margin-top:10px;">Primary Vector Mark</p>
+        </div>
+        <div class="logo-item">
+          <div class="logo-svg-wrap">${logos.concept2}</div>
+          <p style="font-size:12px; font-weight:600; color:#71717A; margin-top:10px;">Modern Minimalist</p>
+        </div>
+        <div class="logo-item">
+          <div class="logo-svg-wrap">${logos.concept3}</div>
+          <p style="font-size:12px; font-weight:600; color:#71717A; margin-top:10px;">Monogram Seal</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>🔤 Typography System</h2>
+      <div class="type-specimen">
+        <div class="type-card">
+          <span class="badge">Heading Font</span>
+          <div class="type-sample-heading">${headingFont}</div>
+          <p style="font-size:13px; color:#71717A;">Used for editorial displays, packaging frontals, and hero copy.</p>
+        </div>
+        <div class="type-card">
+          <span class="badge">Body Font</span>
+          <div class="type-sample-body" style="margin-top:12px; font-size:1.1rem; font-weight:500;">${bodyFont}</div>
+          <p class="type-sample-body" style="margin-top:8px;">${brand.sampleBody || 'Engineered for seamless legibility across mobile screens and product packaging.'}</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>🎙️ Voice &amp; Tone Guidelines</h2>
+      <div class="tones-list">
+        ${(brand.tones || []).map(t => `<span class="tone-badge">${t}</span>`).join('')}
+      </div>
+      <div style="margin-top:20px;">
+        <h4 style="font-size:14px; text-transform:uppercase; letter-spacing:0.05em; color:#71717A; margin-bottom:6px;">Sample Brand Narrative</h4>
+        <p style="font-size:15px; color:#3F3F46; line-height:1.7;">${brand.sampleHeadline ? `“${brand.sampleHeadline}” ` : ''}${brand.sampleBody || ''}</p>
+      </div>
+    </section>
+
+    <footer>
+      Generated with BrandDNA Studio &bull; Fast, Tactile Light-Mode Brand Playground
+    </footer>
+  </div>
+</body>
+</html>`;
+  }
+
+  function handleDownloadBrandKitHtml() {
+    const brand = state.currentBrand || PRESET_BRANDS.matcha || PRESET_BRANDS.komorebi;
+    const brandSlug = sanitizeHandle(brand.name);
+    const htmlContent = generateBrandKitHtml(brand);
+    downloadFile(`${brandSlug}-BrandKit.html`, htmlContent, 'text/html');
+    showToast(`Downloaded ${brand.name} Brand Kit (.HTML)! 📦`, 'success', 3000);
+  }
+
 
   // =========================================================================
   // 18. API Key & Engine Badge Handling
@@ -10042,33 +10204,26 @@ ${(b.palette || b.colors).map(c => `- **${c.hex}** | ${c.name} (${c.role}): ${c.
     }
 
     // Remix Colors & Fonts Control Bar
-    // AI Product & Visual Studio (Google Imagen 3)
-    if (elements.btnGenerateVisual) {
-      elements.btnGenerateVisual.addEventListener('click', handleGenerateVisual);
+// Tactile Brand Playground: Chameleon, Demos, Tone & Kit
+    initDemoChips();
+    initToneSlider();
+    initChameleonTabs();
+    init3DTiltEffects();
+
+    // Spacebar Palette Shuffle & Unlocked Card Shuffle
+    if (elements.btnShuffleUnlockedCard) {
+      elements.btnShuffleUnlockedCard.addEventListener('click', handleShufflePalette);
     }
-    if (elements.btnSuggestVisualPrompt) {
-      elements.btnSuggestVisualPrompt.addEventListener('click', () => {
-        const brand = state.currentBrand || PRESET_BRANDS.komorebi;
-        if (brand && elements.visualPromptInput) {
-          const suggestions = getNicheVisualPrompts(brand);
-          const currentVal = elements.visualPromptInput.value;
-          const nextPrompt = suggestions.find(s => s !== currentVal) || suggestions[0];
-          elements.visualPromptInput.value = nextPrompt;
-          elements.visualPromptInput.dataset.isDefault = 'false';
-          showToast('Updated prompt with fresh product concept idea!', 'info');
-        }
-      });
-    }
-    if (elements.btnRatioPills && elements.btnRatioPills.length > 0) {
-      elements.btnRatioPills.forEach(pill => {
-        pill.addEventListener('click', () => {
-          const ratio = pill.getAttribute('data-ratio');
-          if (ratio) handleSelectAspectRatio(ratio);
-        });
-      });
-    }
-    if (elements.btnDownloadVisual) {
-      elements.btnDownloadVisual.addEventListener('click', handleDownloadVisual);
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+        e.preventDefault();
+        handleShufflePalette();
+      }
+    });
+
+    // Standalone Brand Kit (.HTML) Export
+    if (elements.btnDownloadHtmlKit) {
+      elements.btnDownloadHtmlKit.addEventListener('click', handleDownloadBrandKitHtml);
     }
 
     if (elements.btnRegenerateLogos) {
