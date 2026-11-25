@@ -9550,11 +9550,11 @@ Return ONLY valid JSON with NO commentary.
   function generateBrandKitHtml(brand) {
     const brandSlug = sanitizeHandle(brand.name);
     const colors = brand.palette || brand.colors || [];
-    const p1 = colors[0]?.hex || '#1D4ED8';
-    const p2 = colors[1]?.hex || '#0F0F0F';
-    const p3 = colors[2]?.hex || '#F0EDE6';
-    const p4 = colors[3]?.hex || '#D6D3CB';
-    const p5 = colors[4]?.hex || '#FAFAFA';
+    const p1 = colors[0]?.hex || '#E63926';
+    const p2 = colors[1]?.hex || '#141413';
+    const p3 = colors[2]?.hex || '#ECE8DF';
+    const p4 = colors[3]?.hex || '#5C5A55';
+    const p5 = colors[4]?.hex || '#FFFFFF';
     const logos = generateThreeLogoConcepts(brand, 0);
 
     return `<!DOCTYPE html>
@@ -9562,63 +9562,65 @@ Return ONLY valid JSON with NO commentary.
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${brand.name} — Stark Architectural Identity System</title>
+  <title>${brand.name} — Bespoke Swiss Editorial Brand Specification</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --color-primary: ${p1};
       --color-secondary: ${p2};
-      --color-surface: #FAFAFA;
-      --color-sand: #F0EDE6;
-      --color-grid: #D6D3CB;
-      --color-jet: #0F0F0F;
-      --color-klein: #1D4ED8;
-      --font-heading: 'Syne', sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --font-body: 'Space Grotesk', -apple-system, sans-serif;
+      --bg-archival: #F4F1EA;
+      --bg-chalk: #FFFFFF;
+      --ink-charcoal: #141413;
+      --text-stone: #5C5A55;
+      --vermilion: #E63926;
+      --font-heading: 'Instrument Serif', Georgia, serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #FAFAFA;
-      color: #0F0F0F;
+      background: #F4F1EA;
+      color: #141413;
       font-family: var(--font-body);
       line-height: 1.6;
       padding: 48px 32px;
     }
     .container { max-width: 1040px; margin: 0 auto; }
     header {
-      border: 1px solid #D6D3CB;
-      background: #F0EDE6;
-      padding: 40px;
+      border: 1px solid #141413;
+      background: #FFFFFF;
+      padding: 44px;
       margin-bottom: 32px;
+      border-radius: 2px;
     }
     .micro-label {
       display: inline-block;
       font-family: var(--font-mono);
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      background: #FAFAFA;
-      color: #0F0F0F;
-      border: 1px solid #D6D3CB;
-      padding: 4px 10px;
+      letter-spacing: 0.08em;
+      background: #ECE8DF;
+      color: #141413;
+      border: 1px solid #141413;
+      border-radius: 2px;
+      padding: 3px 8px;
       margin-bottom: 16px;
     }
     h1 {
       font-family: var(--font-heading);
-      font-size: 3.4rem;
-      letter-spacing: -0.03em;
-      font-weight: 800;
+      font-size: 3.8rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
       margin-bottom: 8px;
-      color: #0F0F0F;
+      color: #141413;
       line-height: 1.1;
     }
     .subtitle {
-      font-size: 1.1rem;
-      color: #6B6862;
+      font-size: 1.05rem;
+      color: #5C5A55;
       margin-bottom: 24px;
       font-family: var(--font-mono);
       text-transform: uppercase;
@@ -9626,35 +9628,37 @@ Return ONLY valid JSON with NO commentary.
       font-size: 12px;
     }
     .tagline-box {
-      background: #FAFAFA;
-      border: 1px solid #D6D3CB;
-      border-left: 4px solid #1D4ED8;
+      background: #ECE8DF;
+      border: 1px solid #141413;
+      border-left: 4px solid #E63926;
+      border-radius: 2px;
       padding: 20px 24px;
       font-family: var(--font-heading);
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: #0F0F0F;
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: #141413;
     }
     section {
-      background: #FAFAFA;
-      border: 1px solid #D6D3CB;
-      padding: 32px;
+      background: #FFFFFF;
+      border: 1px solid #141413;
+      border-radius: 2px;
+      padding: 36px;
       margin-bottom: 32px;
     }
     h2 {
       font-family: var(--font-heading);
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      margin-bottom: 8px;
-      color: #0F0F0F;
+      font-size: 2rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+      color: #141413;
     }
     .section-kicker {
       font-family: var(--font-mono);
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #6B6862;
+      letter-spacing: 0.08em;
+      color: #5C5A55;
       margin-bottom: 24px;
       display: block;
     }
@@ -9664,13 +9668,14 @@ Return ONLY valid JSON with NO commentary.
       gap: 16px;
     }
     .swatch-card {
-      background: #FAFAFA;
-      border: 1px solid #D6D3CB;
+      background: #FFFFFF;
+      border: 1px solid #141413;
+      border-radius: 2px;
     }
-    .swatch-color { height: 110px; border-bottom: 1px solid #D6D3CB; }
-    .swatch-meta { padding: 16px; }
-    .swatch-hex { font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: #0F0F0F; }
-    .swatch-role { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #6B6862; margin-top: 4px; }
+    .swatch-color { height: 110px; border-bottom: 1px solid #141413; }
+    .swatch-meta { padding: 14px; }
+    .swatch-hex { font-family: var(--font-mono); font-weight: 600; font-size: 13px; color: #141413; }
+    .swatch-role { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #5C5A55; margin-top: 4px; }
     .swatch-name { font-weight: 600; font-size: 13px; margin-top: 6px; }
     .logos-grid {
       display: grid;
@@ -9678,36 +9683,38 @@ Return ONLY valid JSON with NO commentary.
       gap: 20px;
     }
     .logo-item {
-      border: 1px solid #D6D3CB;
+      border: 1px solid #141413;
+      border-radius: 2px;
       padding: 32px;
       text-align: center;
-      background: #F0EDE6;
+      background: #ECE8DF;
     }
     .logo-svg-wrap { height: 120px; display: flex; align-items: center; justify-content: center; }
-    .logo-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; color: #0F0F0F; margin-top: 16px; }
+    .logo-label { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: #141413; margin-top: 16px; }
     .type-specimen {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
     }
     .type-card {
-      border: 1px solid #D6D3CB;
+      border: 1px solid #141413;
+      border-radius: 2px;
       padding: 24px;
-      background: #F0EDE6;
+      background: #ECE8DF;
     }
-    .type-sample-heading { font-family: var(--font-heading); font-size: 2rem; font-weight: 800; margin: 16px 0; color: #0F0F0F; }
-    .type-sample-body { font-family: var(--font-body); font-size: 1rem; color: #404040; line-height: 1.6; }
+    .type-sample-heading { font-family: var(--font-heading); font-size: 2.6rem; font-weight: 400; margin: 16px 0; color: #141413; line-height: 1.1; }
+    .type-sample-body { font-family: var(--font-body); font-size: 0.95rem; color: #5C5A55; line-height: 1.6; }
     .tones-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
-    .tone-badge { background: #F0EDE6; color: #0F0F0F; border: 1px solid #D6D3CB; padding: 6px 14px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+    .tone-badge { background: #ECE8DF; color: #141413; border: 1px solid #141413; border-radius: 2px; padding: 4px 10px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
     footer {
-      border-top: 1px solid #D6D3CB;
+      border-top: 1px solid #141413;
       padding-top: 24px;
       text-align: center;
       font-family: var(--font-mono);
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #8E8A83;
+      letter-spacing: 0.08em;
+      color: #5C5A55;
       margin-top: 48px;
     }
     @media print {
@@ -9719,15 +9726,15 @@ Return ONLY valid JSON with NO commentary.
 <body>
   <div class="container">
     <header>
-      <span class="micro-label">SPECIFICATION // EDITION 2026</span>
+      <span class="micro-label">SWISS EDITORIAL SPECIFICATION &bull; ARCHIVE RECORD</span>
       <h1>${brand.name}</h1>
       <p class="subtitle">${brand.industry} &bull; TARGET: ${brand.audience}</p>
       <div class="tagline-box">&ldquo;${brand.tagline}&rdquo;</div>
     </header>
 
     <section>
-      <h2>COLOR SPECIFICATION</h2>
-      <span class="section-kicker">STRUCTURAL PALETTE &bull; WCAG VERIFIED</span>
+      <h2>Chromatic Palette</h2>
+      <span class="section-kicker">CURATED COLOR SPECIFICATION &bull; HAUSER &amp; WIRTH ARCHIVE</span>
       <div class="palette-grid">
         ${colors.map(c => `
           <div class="swatch-card">
@@ -9743,16 +9750,16 @@ Return ONLY valid JSON with NO commentary.
     </section>
 
     <section>
-      <h2>VECTOR EMBLEMS</h2>
-      <span class="section-kicker">GEOMETRIC SVG MARKS &bull; HIGH FIDELITY</span>
+      <h2>Vector Emblems</h2>
+      <span class="section-kicker">BESPOKE VECTOR GRAPHIC STUDIES &bull; SWISS MODERNIST MARKS</span>
       <div class="logos-grid">
         <div class="logo-item">
           <div class="logo-svg-wrap">${logos.concept1}</div>
-          <div class="logo-label">SPEC 01 // PRIMARY MARK</div>
+          <div class="logo-label">SPEC 01 // PRIMARY SYMBOL</div>
         </div>
         <div class="logo-item">
           <div class="logo-svg-wrap">${logos.concept2}</div>
-          <div class="logo-label">SPEC 02 // MINIMAL EMBLEM</div>
+          <div class="logo-label">SPEC 02 // EDITORIAL MARK</div>
         </div>
         <div class="logo-item">
           <div class="logo-svg-wrap">${logos.concept3}</div>
@@ -9762,36 +9769,36 @@ Return ONLY valid JSON with NO commentary.
     </section>
 
     <section>
-      <h2>TYPOGRAPHIC SCALE</h2>
-      <span class="section-kicker">STRUCTURAL HIERARCHY &bull; PRINT &amp; DIGITAL</span>
+      <h2>Typographic Scale</h2>
+      <span class="section-kicker">EDITORIAL HIERARCHY &bull; INSTRUMENT SERIF + INTER + IBM PLEX MONO</span>
       <div class="type-specimen">
         <div class="type-card">
-          <span class="micro-label">HEADING SPECIMEN</span>
-          <div class="type-sample-heading">SYNE BOLD</div>
-          <p style="font-size:13px; color:#6B6862; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.04em;">Used strictly for editorial headlines, exhibition titles, and primary packaging display.</p>
+          <span class="micro-label">PRIMARY HEADING SPECIMEN</span>
+          <div class="type-sample-heading">Instrument Serif</div>
+          <p style="font-size:13px; color:#5C5A55; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.04em;">Used for book cover displays, exhibition titles, and editorial packaging.</p>
         </div>
         <div class="type-card">
           <span class="micro-label">BODY SPECIMEN</span>
-          <div class="type-sample-body" style="margin-top:16px;">Space Grotesk + JetBrains Mono</div>
-          <p class="type-sample-body" style="margin-top:8px; font-size:13px; color:#6B6862;">${brand.sampleBody || 'Engineered for architectural readability across structural panels, interface micro-labels, and technical specification cards.'}</p>
+          <div class="type-sample-body" style="margin-top:16px;">Inter + IBM Plex Mono</div>
+          <p class="type-sample-body" style="margin-top:8px; font-size:13px; color:#5C5A55;">${brand.sampleBody || 'Engineered for Swiss editorial clarity across exhibition catalog entries, technical documentation, and product packaging.'}</p>
         </div>
       </div>
     </section>
 
     <section>
-      <h2>SYSTEM VOICE &amp; ARCHETYPE</h2>
-      <span class="section-kicker">EDITORIAL TONE TOKENS</span>
+      <h2>Brand Voice &amp; Tone</h2>
+      <span class="section-kicker">EDITORIAL TONE DISCIPLINE</span>
       <div class="tones-list">
         ${(brand.tones || []).map(t => `<span class="tone-badge">${t}</span>`).join('')}
       </div>
-      <div style="margin-top:24px; padding:20px; background:#F0EDE6; border:1px solid #D6D3CB;">
-        <span class="micro-label" style="margin-bottom:8px;">MANIFESTO</span>
-        <p style="font-size:15px; color:#0F0F0F; line-height:1.7;">${brand.sampleHeadline ? `“${brand.sampleHeadline}” — ` : ''}${brand.sampleBody || ''}</p>
+      <div style="margin-top:24px; padding:20px; background:#ECE8DF; border:1px solid #141413; border-radius:2px;">
+        <span class="micro-label" style="margin-bottom:8px;">EDITORIAL NARRATIVE</span>
+        <p style="font-size:15px; color:#141413; line-height:1.7;">${brand.sampleHeadline ? `“${brand.sampleHeadline}” — ` : ''}${brand.sampleBody || ''}</p>
       </div>
     </section>
 
     <footer>
-      BrandDNA Studio &bull; Stark Architectural Gallery Theme &bull; 100% Client-Side System
+      BrandDNA Studio &bull; Bespoke Swiss Editorial Agency Theme &bull; Zürich / New York
     </footer>
   </div>
 </body>
