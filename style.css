@@ -8370,3 +8370,127 @@ textarea:focus,
 .toast.toast-success {
   border-left: 4px solid var(--vermilion) !important;
 }
+
+/* =========================================================================
+   Swiss Editorial Controls: 3D Business Card Editor & Tagline Regenerator
+   ========================================================================= */
+.card-inline-editor-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: var(--panel-sand, #F0EDE6) !important;
+  border: 1px solid var(--border-ink, #141413) !important;
+  border-radius: 2px !important;
+  flex-wrap: wrap;
+}
+
+.card-editor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.card-editor-label {
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace) !important;
+  font-size: 0.65rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  color: var(--text-stone, #5C5A55) !important;
+}
+
+.card-editor-input {
+  background: var(--bg-chalk, #FFFFFF) !important;
+  color: var(--ink-charcoal, #141413) !important;
+  border: 1px solid var(--border-ink, #141413) !important;
+  border-radius: 2px !important;
+  padding: 6px 10px !important;
+  font-size: 0.82rem !important;
+  font-family: var(--font-body, 'Inter', sans-serif) !important;
+  width: 100% !important;
+  box-shadow: none !important;
+}
+
+.card-editor-input:focus {
+  border-color: var(--vermilion, #E63926) !important;
+  outline: 1px solid var(--vermilion, #E63926) !important;
+}
+
+.contact-name[contenteditable="true"],
+.contact-role[contenteditable="true"] {
+  outline: none;
+  cursor: text;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  border-radius: 1px;
+  padding: 0 2px;
+}
+
+.contact-name[contenteditable="true"]:hover,
+.contact-role[contenteditable="true"]:hover {
+  background: rgba(230, 57, 38, 0.08);
+}
+
+.contact-name[contenteditable="true"]:focus,
+.contact-role[contenteditable="true"]:focus {
+  background: rgba(230, 57, 38, 0.15);
+  box-shadow: 0 1px 0 var(--vermilion, #E63926);
+}
+
+.tagline-regen-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-regenerate-tagline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-chalk, #FFFFFF) !important;
+  color: var(--ink-charcoal, #141413) !important;
+  border: 1px solid var(--border-ink, #141413) !important;
+  border-radius: 2px !important;
+  padding: 6px 12px !important;
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace) !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: none !important;
+}
+
+.btn-regenerate-tagline:hover {
+  background: var(--ink-charcoal, #141413) !important;
+  color: #FFFFFF !important;
+}
+
+.btn-regenerate-tagline:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+.regen-tagline-icon {
+  font-size: 0.9rem;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.btn-regenerate-tagline:hover .regen-tagline-icon {
+  transform: rotate(90deg);
+}
+
+.tagline-regen-hint {
+  font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+  font-size: 0.66rem;
+  color: var(--text-stone, #5C5A55);
+  letter-spacing: 0.03em;
+}

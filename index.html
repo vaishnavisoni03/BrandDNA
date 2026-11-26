@@ -873,6 +873,18 @@
 
               <!-- Touchpoint 2: 3D-Tilting Business Card -->
               <div class="chameleon-view chameleon-view-card hidden" id="chameleon-view-card">
+                <!-- Live Business Card Founder Customizer -->
+                <div class="card-inline-editor-bar">
+                  <div class="card-editor-field">
+                    <label for="input-card-founder-name" class="card-editor-label">Founder / Owner Name</label>
+                    <input type="text" id="input-card-founder-name" class="card-editor-input" value="Aarav Sharma" placeholder="e.g. Aarav Sharma" />
+                  </div>
+                  <div class="card-editor-field">
+                    <label for="input-card-founder-role" class="card-editor-label">Role / Title</label>
+                    <input type="text" id="input-card-founder-role" class="card-editor-input" value="Founder &amp; Creative Director" placeholder="e.g. Founder &amp; Creative Director" />
+                  </div>
+                </div>
+
                 <div class="card-tilt-canvas-wrap" id="card-tilt-canvas-wrap">
                   <div class="tilt-business-card" id="tilt-business-card">
                     <div class="card-magnetic-stripe" id="card-magnetic-stripe"></div>
@@ -887,8 +899,8 @@
                       </div>
                       <div class="card-footer-row">
                         <div class="card-contact-meta">
-                          <span class="contact-name">Avery Vance</span>
-                          <span class="contact-role">Founder &amp; Creative Principal</span>
+                          <span class="contact-name" id="card-founder-name" contenteditable="true" spellcheck="false" title="Click to edit name live">Aarav Sharma</span>
+                          <span class="contact-role" id="card-founder-role" contenteditable="true" spellcheck="false" title="Click to edit role live">Founder &amp; Creative Director</span>
                           <span class="contact-handle" id="card-contact-handle">hello@komorebi.studio &bull; www.komorebi.studio</span>
                         </div>
                         <div class="card-mini-palette" id="card-mini-palette"></div>
@@ -897,7 +909,7 @@
                     <div class="card-specular-glare" id="card-specular-glare"></div>
                   </div>
                 </div>
-                <p class="card-tilt-hint">Hover and move your mouse across the card for realistic 3D tactile perspective tilt</p>
+                <p class="card-tilt-hint">Hover and move your mouse across the card for realistic 3D tactile perspective tilt &bull; Click fields to edit</p>
               </div>
 
               <!-- Touchpoint 3: Packaging Label -->
@@ -1189,6 +1201,16 @@
               </p>
             </div>
 
+            <!-- Independent Hero Tagline Regenerator -->
+            <div class="tagline-regen-action-row">
+              <button type="button" id="btn-regenerate-hero-tagline" class="btn-regenerate-tagline" title="Generate fresh headline tagline matching active tone (excludes vault taglines)">
+                <span class="btn-spinner hidden" id="regen-tagline-spinner"></span>
+                <span class="regen-tagline-icon" id="btn-regen-tagline-icon">↻</span>
+                <span id="btn-regen-tagline-text">Regenerate Tagline</span>
+              </button>
+              <span class="tagline-regen-hint">Tone-specific headline &bull; Excludes vault taglines</span>
+            </div>
+
             <!-- Brand Tone Adjectives Row -->
             <div class="brand-tone-section">
               <div class="section-micro-title-row" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
@@ -1269,7 +1291,7 @@
                   </button>
                 </div>
                 <p class="voice-transformed-text" id="voice-transformed-text">
-                  "Slow-roasted single-origin harvests honoring volcanic terroir, smallholder agroforestry, and morning stillness."
+                  "Crafted with architectural intention, distilled material poise, and uncompromised quiet authority."
                 </p>
               </div>
             </div>

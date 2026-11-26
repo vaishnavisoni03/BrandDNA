@@ -666,6 +666,18 @@
     regenerateLogosSpinner: document.getElementById('regenerate-logos-spinner'),
     btnRegenerateLogosText: document.getElementById('btn-regenerate-logos-text'),
 
+    // 3D Business Card Live Founder Customizer
+    inputCardFounderName: document.getElementById('input-card-founder-name'),
+    inputCardFounderRole: document.getElementById('input-card-founder-role'),
+    cardFounderName: document.getElementById('card-founder-name'),
+    cardFounderRole: document.getElementById('card-founder-role'),
+
+    // Independent Hero Tagline Regenerator
+    btnRegenerateHeroTagline: document.getElementById('btn-regenerate-hero-tagline'),
+    regenTaglineSpinner: document.getElementById('regen-tagline-spinner'),
+    btnRegenTaglineIcon: document.getElementById('btn-regen-tagline-icon'),
+    btnRegenTaglineText: document.getElementById('btn-regen-tagline-text'),
+
 // Tactile Brand Playground & Interactive Chameleon
     btnDownloadHtmlKit: document.getElementById('btn-download-html-kit'),
     demoChipPills: document.querySelectorAll('.demo-chip-pill'),
@@ -1686,7 +1698,7 @@
   }
 
   function renderThreeLogoStudio(brand, seed = 0) {
-    const logos = generateThreeLogoConcepts(brand, seed);
+    const logos = brand.generatedLogos || generateThreeLogoConcepts(brand, seed);
 
     if (elements.logoConcept1Stage) {
       if (brand.customLogoUrl) {
@@ -1771,9 +1783,67 @@
   // =========================================================================
   // Logo Studio: Global window.regenerateLogos & Action Dispatcher
   // =========================================================================
+  // Helper to wire SVG/PNG downloads & copy handlers on logo stages
+  function wireLogoStageActions(brand, logos) {
+    const brandSlug = sanitizeHandle(brand.name);
+
+    if (elements.btnDownloadLogo1) {
+      elements.btnDownloadLogo1.onclick = () => {
+        downloadFile(`${brandSlug}-logo-concept1.svg`, logos.concept1, 'image/svg+xml');
+        showToast('Downloaded Concept 1 SVG!', 'success');
+      };
+    }
+    if (elements.btnCopyLogo1) {
+      elements.btnCopyLogo1.onclick = () => {
+        copyToClipboard(logos.concept1, 'Concept 1 SVG code copied!');
+      };
+    }
+
+    if (elements.btnDownloadLogo2) {
+      elements.btnDownloadLogo2.onclick = () => {
+        downloadFile(`${brandSlug}-logo-concept2.svg`, logos.concept2, 'image/svg+xml');
+        showToast('Downloaded Concept 2 SVG!', 'success');
+      };
+    }
+    if (elements.btnCopyLogo2) {
+      elements.btnCopyLogo2.onclick = () => {
+        copyToClipboard(logos.concept2, 'Concept 2 SVG code copied!');
+      };
+    }
+
+    if (elements.btnDownloadLogo3) {
+      elements.btnDownloadLogo3.onclick = () => {
+        downloadFile(`${brandSlug}-logo-concept3.svg`, logos.concept3, 'image/svg+xml');
+        showToast('Downloaded Concept 3 SVG!', 'success');
+      };
+    }
+    if (elements.btnCopyLogo3) {
+      elements.btnCopyLogo3.onclick = () => {
+        copyToClipboard(logos.concept3, 'Concept 3 SVG code copied!');
+      };
+    }
+
+    if (elements.btnDownloadPng1) {
+      elements.btnDownloadPng1.onclick = () => {
+        downloadSvgAsPng(logos.concept1, `${brandSlug}-logo-concept1.png`);
+      };
+    }
+    if (elements.btnDownloadPng2) {
+      elements.btnDownloadPng2.onclick = () => {
+        downloadSvgAsPng(logos.concept2, `${brandSlug}-logo-concept2.png`);
+      };
+    }
+    if (elements.btnDownloadPng3) {
+      elements.btnDownloadPng3.onclick = () => {
+        downloadSvgAsPng(logos.concept3, `${brandSlug}-logo-concept3.png`);
+      };
+    }
+  }
+
+  // 1. True AI Vector Logo Generator (Regenerate Logos)
   async function regenerateLogos() {
     if (state.isRegeneratingLogos) return;
-    const brand = state.currentBrand || PRESET_BRANDS.komorebi || (typeof generateProceduralBrand === 'function' ? generateProceduralBrand("Komorebi Botanicals", "Skincare & Wellness", "Organic Minimalist") : null);
+    const brand = state.currentBrand || PRESET_BRANDS.matcha || PRESET_BRANDS.komorebi;
     if (!brand) return;
     state.currentBrand = brand;
 
@@ -1782,61 +1852,61 @@
     if (elements.regenerateLogosSpinner) elements.regenerateLogosSpinner.classList.remove('hidden');
     if (elements.btnRegenerateLogosText) elements.btnRegenerateLogosText.textContent = 'Generating...';
 
+    const customNiche = elements.inputCustomNiche ? elements.inputCustomNiche.value.trim() : '';
+    const selectedNiche = elements.industrySelect ? elements.industrySelect.value : '';
+    const niche = (selectedNiche === 'Other / Custom' && customNiche) ? customNiche : (customNiche || selectedNiche || brand.industry || 'Specialty Studio');
+    const sector = selectedNiche || niche;
+    const colors = (brand.palette || brand.colors || []).map(c => c.hex);
+
     try {
-      // Clear static overrides so new vector variations show immediately
       brand.customLogoUrl = null;
-      brand.customIllustration = null;
+      let logosData = null;
 
-      // Advance seed by a randomized step so every click produces visibly new icons & layouts
-      const randomOffset = Math.floor(Math.random() * 4) + 1;
-      state.logoVariationSeed = ((state.logoVariationSeed || 0) + randomOffset) % 60;
-
-      // Re-render logo cards with randomized niche icons and layouts
-      const newLogos = renderThreeLogoStudio(brand, state.logoVariationSeed);
-
-      // Optional AI enhancement if Gemini API key is configured
-      const rawKey = elements.apiKeyInput ? elements.apiKeyInput.value.trim() : '';
-      if (rawKey && rawKey.length > 5) {
-        try {
-          const colorsHex = (brand.palette || brand.colors || []).map(c => c.hex).join(', ');
-          const prompt = `You are an elite vector logo designer.
-Generate a rich, custom niche-specific illustrated vector logo SVG element in valid JSON for:
-- Brand Name: "${brand.name}"
-- Industry / Niche: "${brand.industry}"
-- Colors: "${colorsHex}"
-- Font: "${brand.headingFont}"
-
-Return strict JSON:
-{
-  "customIllustration": "<g class='niche-ai-illustration'>...valid SVG paths, shapes and strokes tailored to this niche...</g>"
-}
-NO conversational text, return ONLY JSON.`;
-
-          const payload = {
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.8, responseMimeType: "application/json" }
-          };
-
-          const data = await callGeminiEndpoint(payload);
-          const parsed = extractJsonFromGeminiResponse(data);
-          if (parsed?.customIllustration && typeof parsed.customIllustration === 'string' && parsed.customIllustration.includes('<')) {
-            brand.customIllustration = parsed.customIllustration;
-            renderThreeLogoStudio(brand, state.logoVariationSeed);
-          }
-        } catch (geminiErr) {
-          console.warn('Gemini logo regeneration fallback to offline procedural engine:', geminiErr);
-        }
+      try {
+        logosData = await callGeminiAction({
+          action: 'generateLogos',
+          brandName: brand.name,
+          niche: niche,
+          sector: sector,
+          colors: colors,
+          seed: Date.now()
+        });
+      } catch (apiErr) {
+        console.warn('Gemini generateLogos serverless call failed, falling back:', apiErr);
       }
 
-      showToast('✨ Generated 3 brand-new custom illustrated logo concepts!', 'success');
-      return newLogos;
+      let c1 = logosData?.concept1;
+      let c2 = logosData?.concept2;
+      let c3 = logosData?.concept3;
+
+      if (!c1 || !c1.includes('<svg')) {
+        const procedural = generateThreeLogoConcepts(brand, Math.floor(Math.random() * 50) + 1);
+        c1 = procedural.concept1;
+        c2 = procedural.concept2;
+        c3 = procedural.concept3;
+      }
+
+      brand.generatedLogos = { concept1: c1, concept2: c2, concept3: c3 };
+      brand.customIllustration = c2;
+
+      if (elements.logoConcept1Stage) elements.logoConcept1Stage.innerHTML = c1;
+      if (elements.logoConcept2Stage) elements.logoConcept2Stage.innerHTML = c2;
+      if (elements.logoConcept3Stage) elements.logoConcept3Stage.innerHTML = c3;
+
+      wireLogoStageActions(brand, { concept1: c1, concept2: c2, concept3: c3 });
+      updateChameleonPreviews(brand);
+
+      showToast('✨ Generated 3 brand-new AI vector marks tailored to ' + brand.name + '!', 'success');
+      return { concept1: c1, concept2: c2, concept3: c3 };
     } catch (err) {
       console.error('Error in regenerateLogos:', err);
-      const randomOffset = Math.floor(Math.random() * 3) + 1;
-      state.logoVariationSeed = ((state.logoVariationSeed || 0) + randomOffset) % 60;
-      const fallbackLogos = renderThreeLogoStudio(brand, state.logoVariationSeed);
-      showToast('✨ Generated 3 fresh illustrated logo concepts!', 'success');
-      return fallbackLogos;
+      const fallback = generateThreeLogoConcepts(brand, Math.floor(Math.random() * 50) + 1);
+      if (elements.logoConcept1Stage) elements.logoConcept1Stage.innerHTML = fallback.concept1;
+      if (elements.logoConcept2Stage) elements.logoConcept2Stage.innerHTML = fallback.concept2;
+      if (elements.logoConcept3Stage) elements.logoConcept3Stage.innerHTML = fallback.concept3;
+      wireLogoStageActions(brand, fallback);
+      showToast('✨ Generated 3 fresh vector marks!', 'info');
+      return fallback;
     } finally {
       state.isRegeneratingLogos = false;
       if (elements.btnRegenerateLogos) elements.btnRegenerateLogos.disabled = false;
@@ -1947,110 +2017,24 @@ NO conversational text, return ONLY JSON.`;
   // =========================================================================
   // 9. Brand Voice Rewriter Engine
   // =========================================================================
+  // 5. Dynamic Procedural Voice Rewrite (No hardcoded coffee responses)
   function proceduralVoiceRewrite(inputText, brand) {
     const text = (inputText || '').trim();
     if (!text) return "Please paste or type a sentence to transform.";
 
-    const vibe = brand?.vibe || 'eco-organic';
-    const tones = brand?.voiceTone || brand?.tones || ['Intentional', 'Aesthetic'];
-    const lower = text.toLowerCase();
+    const tone = state.brandTone || 'bold';
+    const name = brand?.name || "The Studio";
+    const niche = (brand?.industry || "Design & Craft").split('&')[0].trim();
+    const clean = text.replace(/^[“"']|[”"']$/g, '').replace(/\.$/, '');
 
-    if (lower.includes('coffee') && (lower.includes('good') || lower.includes('sell') || lower.includes('best') || lower.includes('our'))) {
-      if (vibe === 'eco-organic') {
-        return "Slow-roasted single-origin harvests honoring volcanic terroir, smallholder agroforestry, and morning stillness.";
-      } else if (vibe === 'minimalist-luxury') {
-        return "Artisanal single-origin extractions, meticulously calibrated for discerning palates and quiet morning contemplation.";
-      } else if (vibe === 'bold-genz') {
-        return "High-voltage caffeine drops engineered to overclock your creative dopamine. Zero bitter notes, pure speed.";
-      } else {
-        return "Sub-millisecond cognitive fuel, molecularly roasted for peak neural throughput and zero thermodynamic latency.";
-      }
+    if (tone === 'minimalist') {
+      return `“${clean}—distilled through ${name}’s architectural restraint and pure ${niche.toLowerCase()} discipline.”`;
+    } else if (tone === 'bold') {
+      return `“Uncompromising standard: ${clean}. ${name} commands modern ${niche.toLowerCase()} with absolute authority.”`;
+    } else if (tone === 'playful') {
+      return `“${clean}—reinvented by ${name} for delightfully chaotic, high-vibe ${niche.toLowerCase()} lovers!”`;
     }
-
-    if (lower.includes('app') || lower.includes('mobile') || lower.includes('download')) {
-      if (vibe === 'eco-organic') {
-        return "Step into a gentler digital sanctuary. Our mobile experience is curated for mindful presence and calm focus.";
-      } else if (vibe === 'minimalist-luxury') {
-        return "Enter the private digital salon. A minimalist interface curated exclusively for patrons of enduring craft.";
-      } else if (vibe === 'bold-genz') {
-        return "Your pocket portal to zero boredom. Tap in, turn up, and unlock exclusive community drops instantly.";
-      } else {
-        return "Initialize the neural telemetry client. Seamless edge compute and autonomous intelligence at your fingertips.";
-      }
-    }
-
-    if (lower.includes('clothes') || lower.includes('fashion') || lower.includes('sustainable') || lower.includes('wear')) {
-      if (vibe === 'eco-organic') {
-        return "Tactile natural fibers harvested in harmony with living soils, tailored with quiet architectural reverence.";
-      } else if (vibe === 'minimalist-luxury') {
-        return "Archival silhouettes sculpted from noble regenerative textiles. Created for generations, never for fleeting seasons.";
-      } else if (vibe === 'bold-genz') {
-        return "Main-character silhouettes with zero planetary guilt. Sustainable drip that hits different from every angle.";
-      } else {
-        return "Bio-synthetic vector garments engineered with quantum-weave durability and closed-loop thermal regulation.";
-      }
-    }
-
-    if (lower.includes('delivery') || lower.includes('door') || lower.includes('fast') || lower.includes('shipping')) {
-      if (vibe === 'eco-organic') {
-        return "Carefully enveloped in compostable plant fibers, journeying with quiet intention directly to your sanctuary.";
-      } else if (vibe === 'minimalist-luxury') {
-        return "Discreet white-glove arrival, preserved in archival tissue and delivered directly to your private residence.";
-      } else if (vibe === 'bold-genz') {
-        return "Hyper-speed logistics straight to your doorstep before the hype even cools down. Blink and it’s there.";
-      } else {
-        return "Autonomous low-latency dispatch routing your payload with sub-millisecond telemetry precision.";
-      }
-    }
-
-    const cleanText = text.replace(/^[“"']|[”"']$/g, '').replace(/\.$/, '');
-    if (vibe === 'minimalist-luxury') {
-      return `“${cleanText}—refined through the lens of ${tones[0]?.toLowerCase() || 'archival'} restraint and uncompromising material poise.”`;
-    } else if (vibe === 'bold-genz') {
-      return `“Why play it safe? ${cleanText}—hyper-amplified with pure ${tones[0]?.toLowerCase() || 'electric'} dopamine!”`;
-    } else if (vibe === 'tech-futuristic') {
-      return `“${cleanText}—optimized at the system layer for ${tones[0]?.toLowerCase() || 'frontier'} scale and quantum velocity.”`;
-    } else {
-      return `“Rooted in ${tones[0]?.toLowerCase() || 'restorative'} intention: ${cleanText}, cultivated with gentle care for everyday sanctuary.”`;
-    }
-  }
-
-  async function rewriteWithGemini(inputText, brand) {
-    const tones = (brand.voiceTone || brand.tones || ['Authentic', 'Creative']).join(', ');
-    const promptText = `
-You are the Executive Brand Director and Tone Guardrail Architect for "${brand.name}".
-Brand Archetype / Vibe: ${brand.vibe}
-Industry: ${brand.industry}
-Target Audience: ${brand.audience}
-Brand Tagline: "${brand.tagline}"
-Brand Tone: ${tones}
-
-Rewrite the following generic sentence into this brand's exact vocabulary, emotional resonance, and distinct style:
-"${inputText}"
-
-Guidelines:
-- Embody the brand's exact tone: ${tones}
-- Keep it punchy, evocative, and culturally fluent (1-2 sentences).
-- Output ONLY a JSON object with this format:
-{
-  "rewritten": "The rewritten sentence here."
-}
-`.trim();
-
-    const payload = {
-      contents: [{ parts: [{ text: promptText }] }],
-      generationConfig: {
-        temperature: 0.7,
-        responseMimeType: "application/json"
-      }
-    };
-
-    const data = await callGeminiEndpoint(payload);
-    const parsed = extractJsonFromGeminiResponse(data);
-    if (parsed && parsed.rewritten) {
-      return parsed.rewritten.trim().replace(/^["']|["']$/g, '');
-    }
-    throw new Error('Invalid response structure from Gemini Voice API');
+    return `“${clean}—crafted with ${name}’s signature ${niche.toLowerCase()} intention.”`;
   }
 
   async function handleVoiceRewrite() {
@@ -2068,27 +2052,39 @@ Guidelines:
     elements.rewriteSpinner.classList.remove('hidden');
     elements.btnRewriteText.textContent = "Rewriting...";
 
+    const customNiche = elements.inputCustomNiche ? elements.inputCustomNiche.value.trim() : '';
+    const selectedNiche = elements.industrySelect ? elements.industrySelect.value : '';
+    const niche = (selectedNiche === 'Other / Custom' && customNiche) ? customNiche : (customNiche || selectedNiche || state.currentBrand.industry || 'Lifestyle Studio');
+    const tone = state.brandTone || 'bold';
+    const toneName = tone.charAt(0).toUpperCase() + tone.slice(1);
+
     try {
       let rewrittenText = '';
 
       try {
-        rewrittenText = await rewriteWithGemini(inputSentence, state.currentBrand);
-        const topTone = (state.currentBrand.voiceTone || state.currentBrand.tones || ['Active'])[0];
-        elements.voiceOutputBadge.textContent = `Tone: ${topTone} (Gemini AI)`;
-        showToast('Rewritten in brand voice via Gemini AI!', 'success');
+        const res = await callGeminiAction({
+          action: 'rewriteVoice',
+          brandName: state.currentBrand.name,
+          niche: niche,
+          tone: toneName,
+          text: inputSentence
+        });
+        if (res && res.rewritten) {
+          rewrittenText = res.rewritten.trim().replace(/^[“"']|[”"']$/g, '');
+          elements.voiceOutputBadge.textContent = `Tone: ${toneName} (Gemini AI)`;
+          showToast(`Rewritten in ${toneName} brand voice via Gemini 2.5 Flash!`, 'success');
+        }
       } catch (apiErr) {
-        console.warn('Gemini voice rewrite failed, engaging procedural guardrail:', apiErr);
-        rewrittenText = proceduralVoiceRewrite(inputSentence, state.currentBrand);
-        const topTone = (state.currentBrand.voiceTone || state.currentBrand.tones || ['Active'])[0];
-        elements.voiceOutputBadge.textContent = `Tone: ${topTone} (Procedural Guardrail)`;
-        showToast('Rewritten with Smart Brand Voice Guardrail', 'info');
+        console.warn('Gemini voice rewrite failed, engaging dynamic guardrail:', apiErr);
       }
 
       if (!rewrittenText) {
         rewrittenText = proceduralVoiceRewrite(inputSentence, state.currentBrand);
+        elements.voiceOutputBadge.textContent = `Tone: ${toneName} (Tone Guardrail)`;
+        showToast(`Rewritten with ${toneName} Tone Guardrail`, 'info');
       }
 
-      elements.voiceTransformedText.textContent = rewrittenText;
+      elements.voiceTransformedText.textContent = `“${rewrittenText}”`;
       saveActiveProjectToStorage();
     } catch (err) {
       console.error('Voice rewrite error:', err);
@@ -6494,15 +6490,14 @@ Return a SINGLE valid JSON object matching this schema strictly:
     elements.nameSuggestionsTray.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
+  // 2. Niche-Aware Name Generator + Indian / Sanskrit Rooted Names
   async function handleSuggestNames() {
     if (state.isSuggestingNames) return;
 
-    let niche = elements.industrySelect ? elements.industrySelect.value : 'Specialty Coffee & Chai Cafe';
-    if (niche === 'Other / Custom') {
-      niche = (elements.inputCustomNiche && elements.inputCustomNiche.value.trim()) || 'Creative Studio';
-    }
-    const vibe = state.selectedVibe || 'eco-organic';
-    const audience = (elements.inputAudience && elements.inputAudience.value.trim()) || 'Modern design lovers';
+    const customNiche = elements.inputCustomNiche ? elements.inputCustomNiche.value.trim() : '';
+    const selectedNiche = elements.industrySelect ? elements.industrySelect.value : '';
+    const niche = (selectedNiche === 'Other / Custom' && customNiche) ? customNiche : (customNiche || selectedNiche || 'Specialty Coffee & Chai Cafe');
+    const sector = selectedNiche || niche;
 
     state.isSuggestingNames = true;
     if (elements.btnSuggestNames) elements.btnSuggestNames.disabled = true;
@@ -6514,16 +6509,37 @@ Return a SINGLE valid JSON object matching this schema strictly:
     try {
       let names = [];
       try {
-        names = await generateSuggestedNamesWithGemini(niche, vibe, audience);
-        showToast('Generated 8 brand names via Gemini AI!', 'success');
+        const res = await callGeminiAction({
+          action: 'suggestNames',
+          niche: niche,
+          sector: sector,
+          seed: Date.now()
+        });
+        if (res && Array.isArray(res.names) && res.names.length >= 4) {
+          names = res.names.slice(0, 6).map((item, idx) => ({
+            name: (item.name || '').trim().replace(/^["']|["']$/g, ''),
+            archetype: item.archetype || (idx < 2 ? 'Sanskrit Heritage' : 'Modern Coined'),
+            archetypeIcon: idx < 2 ? '🏛️' : '✨',
+            rationale: (item.rationale || 'Rooted • Distinct • Global').trim()
+          }));
+          showToast('Generated 6 niche-aware names via Gemini 2.5 Flash!', 'success');
+        }
       } catch (apiErr) {
-        console.warn('Gemini name generation failed, using smart procedural synthesizer:', apiErr);
-        names = generateProceduralSuggestedNames(niche, vibe, 8);
-        showToast('Generated 8 names (Smart Procedural Synthesizer)', 'info');
+        console.warn('Gemini name generation failed, using procedural synthesis:', apiErr);
       }
 
       if (!names || names.length === 0) {
-        names = generateProceduralSuggestedNames(niche, vibe, 8);
+        // Procedural fallback with Sanskrit modern brand roots tailored to niche
+        const cleanNicheWord = niche.split(' ')[0].replace(/[^a-zA-Z]/g, '');
+        names = [
+          { name: `Amaya ${cleanNicheWord}`, archetype: "Sanskrit Heritage", archetypeIcon: "🏛️", rationale: "Pure • Timeless • Sanctuary" },
+          { name: `Prana Craft`, archetype: "Sanskrit Heritage", archetypeIcon: "🏛️", rationale: "Vitality • Breath • Living Craft" },
+          { name: `Ojas Studio`, archetype: "Sanskrit Heritage", archetypeIcon: "🏛️", rationale: "Lustrous • Vigor • Essential" },
+          { name: `Aaroh Lab`, archetype: "Modern Coined", archetypeIcon: "⚡", rationale: "Ascent • Progressive • Sharp" },
+          { name: `Komorebi Goods`, archetype: "Sensory Metaphor", archetypeIcon: "🌿", rationale: "Tactile • Atmospheric • Poise" },
+          { name: `Sutra ${cleanNicheWord}`, archetype: "Sanskrit Heritage", archetypeIcon: "🏛️", rationale: "Connected • Woven • Resilient" }
+        ];
+        showToast('Generated 6 niche & Sanskrit brand names (Smart Engine)', 'info');
       }
 
       state.suggestedNames = names;
@@ -6531,9 +6547,16 @@ Return a SINGLE valid JSON object matching this schema strictly:
 
     } catch (err) {
       console.error('Failed to generate business names:', err);
-      const fallback = generateProceduralSuggestedNames(niche, vibe, 8);
+      const fallback = [
+        { name: "Amaya Living", archetype: "Sanskrit Heritage", archetypeIcon: "🏛️", rationale: "Pure • Grounded • Timeless" },
+        { name: "Prana Essentials", archetype: "Sanskrit Heritage", archetypeIcon: "🏛️", rationale: "Life • Breath • Vitality" },
+        { name: "Ojas Botanical", archetype: "Sanskrit Heritage", archetypeIcon: "🏛️", rationale: "Radiant • Essential • Pure" },
+        { name: "Veda Modern", archetype: "Sanskrit Heritage", archetypeIcon: "🏛️", rationale: "Wisdom • Deep • Authentic" },
+        { name: "Aarav Craft", archetype: "Modern Coined", archetypeIcon: "⚡", rationale: "Ascent • High-Impact • Precision" },
+        { name: "Sutra Lab", archetype: "Sanskrit Heritage", archetypeIcon: "🏛️", rationale: "Woven • Enduring • Connected" }
+      ];
       renderSuggestedNames(fallback);
-      showToast('Generated 8 business names (Offline Mode)', 'info');
+      showToast('Generated names (Offline Mode)', 'info');
     } finally {
       state.isSuggestingNames = false;
       if (elements.btnSuggestNames) elements.btnSuggestNames.disabled = false;
@@ -7156,6 +7179,27 @@ Return ONLY a valid JSON array of 3 objects matching this schema:
   // =========================================================================
   // 14. Unified Gemini AI Proxy & Serverless Dispatcher (gemini-2.5-flash)
   // =========================================================================
+
+  // Helper: Dispatch Action Directly to Netlify Gemini Serverless Endpoint
+  async function callGeminiAction(actionPayload) {
+    const rawKey = elements.apiKeyInput ? elements.apiKeyInput.value.trim() : '';
+    const headers = { 'Content-Type': 'application/json' };
+    if (rawKey && rawKey.length > 5) {
+      headers['x-goog-api-key'] = rawKey;
+      actionPayload.apiKey = rawKey;
+    }
+    const res = await fetch('/.netlify/functions/gemini', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(actionPayload)
+    });
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      throw new Error(errJson.error || ('Netlify Gemini error status ' + res.status));
+    }
+    return await res.json();
+  }
+
   async function callGeminiEndpoint(payload) {
     const rawKey = elements.apiKeyInput ? elements.apiKeyInput.value.trim() : '';
     const hasHeaderKey = Boolean(rawKey && rawKey.length > 5);
@@ -7411,7 +7455,9 @@ STRICT CONSTRAINTS:
         category: `${kit.socialCategories[0]} • Release 01`,
         caption: `${tagline} Designed for ${(audience || 'modern creators').toLowerCase()}. Discover the debut release and explore our complete visual ecosystem.`,
         hashtags: `#${(name || 'BrandDNA').replace(/[^a-zA-Z0-9]/g, '')} #${voiceTone[0]} #${vibe === 'bold-genz' ? 'DopamineDesign' : 'ModernIdentity'} #BrandDNA`
-      }
+      },
+      taglineVault: raw?.taglineVault || null,
+      campaignTemplates: raw?.campaignTemplates || null
     };
   }
 
@@ -7577,6 +7623,7 @@ STRICT CONSTRAINTS:
 
     renderCampaignTemplates(brand);
     renderTaglineVault(brand);
+    populateBrandExtrasWithAI(brand);
 
     saveActiveProjectToStorage();
   }
@@ -7681,16 +7728,55 @@ STRICT CONSTRAINTS:
         }
       },
       taglineVault: {
-        bold: `Command the room. Set the standard.`,
-        minimal: `Quiet precision. Pure form.`,
-        emotional: `Made for moments that linger forever.`,
-        playful: `Seriously good design for delightfully chaotic days.`,
-        benefit: `Engineered for effortless daily clarity and peak performance.`,
-        rebel: `Break the ordinary. Rewrite the category from scratch.`,
-        heritage: `Generational integrity. Built to outlive every passing trend.`,
-        poetic: `Where quiet stillness meets uncompromising craft.`
+        bold: `Command modern ${cleanNiche}. Set the absolute standard.`,
+        minimal: `Quiet precision. Pure ${cleanNiche} form.`,
+        emotional: `Made for daily rituals that linger forever with ${name}.`,
+        playful: `Seriously good ${cleanNiche} for delightfully chaotic days.`,
+        benefit: `Engineered for effortless clarity and peak ${cleanNiche} performance.`,
+        rebel: `Break the ordinary. Rewrite modern ${cleanNiche} from scratch.`,
+        heritage: `Generational integrity. Built to outlive passing trends.`,
+        poetic: `Where quiet stillness meets uncompromising ${cleanNiche} craft.`
       }
     };
+  }
+
+
+  // 6. Populate Brand-Specific Instagram Feed, Tagline Vault & Templates via Gemini
+  async function populateBrandExtrasWithAI(brand) {
+    if (!brand) return;
+    try {
+      const customNiche = elements.inputCustomNiche ? elements.inputCustomNiche.value.trim() : '';
+      const selectedNiche = elements.industrySelect ? elements.industrySelect.value : '';
+      const niche = (selectedNiche === 'Other / Custom' && customNiche) ? customNiche : (customNiche || selectedNiche || brand.industry || 'Studio');
+      const sector = selectedNiche || niche;
+
+      const extras = await callGeminiAction({
+        action: 'generateBrandExtras',
+        brandName: brand.name,
+        niche: niche,
+        sector: sector,
+        audience: brand.audience || 'Discerning design patrons',
+        vibe: brand.vibe || 'minimalist-luxury',
+        tone: state.brandTone || 'bold'
+      });
+
+      if (extras) {
+        if (extras.taglineVault) {
+          brand.taglineVault = extras.taglineVault;
+          renderTaglineVault(brand);
+        }
+        if (extras.campaignTemplates) {
+          brand.campaignTemplates = extras.campaignTemplates;
+          renderCampaignTemplates(brand);
+        }
+        if (Array.isArray(extras.instagramIdeas) && extras.instagramIdeas.length >= 3) {
+          brand.instagramIdeas = extras.instagramIdeas;
+          renderInstagramIdeas(extras.instagramIdeas);
+        }
+      }
+    } catch (err) {
+      console.warn('AI social kit & vault population error:', err);
+    }
   }
 
   function renderCampaignTemplates(brand) {
@@ -9476,33 +9562,42 @@ Return ONLY valid JSON with NO commentary.
   }
 
   // Brand Tone Slider & Dynamic Tagline/Hook Rewriter
+  // 5. Tone Switcher Synced Everywhere
   function applyBrandTone(tone) {
     const brand = state.currentBrand || PRESET_BRANDS.matcha || PRESET_BRANDS.komorebi;
     state.brandTone = tone;
+    const toneName = tone.charAt(0).toUpperCase() + tone.slice(1);
 
+    // 1. Update Voice Tone Persona card
     if (elements.toneBadgeVal) {
-      elements.toneBadgeVal.textContent = tone.charAt(0).toUpperCase() + tone.slice(1);
+      elements.toneBadgeVal.textContent = toneName;
     }
 
-    // Archetype tone voice rewrites
+    // 2. Update Voice Output Badge in Brand Voice Rewriter & Guardrail
+    if (elements.voiceOutputBadge) {
+      elements.voiceOutputBadge.textContent = `Tone: ${toneName} Guardrail Active`;
+    }
+
+    // Archetype tone voice rewrites tailored to brand & niche
+    const cleanNiche = (brand.industry || "Design").split('&')[0].trim();
     const toneVariants = {
       minimalist: {
         tagline: `Essential ${brand.name.split(' ')[0]}. Pure stillness.`,
-        headline: "Less, but elevated.",
-        body: `Distilled to the purest essence of ${brand.industry.toLowerCase()}. Zero noise, zero excess.`,
-        tones: ["Essential", "Understated", "Pure"]
+        headline: `Distilled to the purest essence of ${cleanNiche.toLowerCase()}.`,
+        body: `Zero noise, zero excess. Uncompromising architectural poise and quiet confidence.`,
+        tones: ["Distilled", "Architectural", "Essential", "Understated"]
       },
       bold: {
-        tagline: brand.tagline || "Command the future without compromise.",
-        headline: brand.sampleHeadline || "Built to lead.",
-        body: brand.sampleBody || `Uncompromising performance and presence in ${brand.industry.toLowerCase()}.`,
-        tones: brand.tones || ["Disruptive", "High-Impact", "Bold"]
+        tagline: brand.tagline || `Command modern ${cleanNiche.toLowerCase()} without compromise.`,
+        headline: `Built to set the standard in modern ${cleanNiche.toLowerCase()}.`,
+        body: `Uncompromising performance and presence for patrons of enduring distinction.`,
+        tones: ["Commanding", "Uncompromising", "High-Impact", "Audacious"]
       },
       playful: {
         tagline: `Meet ${brand.name}. Your new daily obsession.`,
-        headline: "Never boring. Always vibrant.",
-        body: `Bringing joy, color, and serious delight to ${brand.industry.toLowerCase()}.`,
-        tones: ["Irreverent", "Witty", "Delightful"]
+        headline: `Never boring. Always vibrant ${cleanNiche.toLowerCase()}.`,
+        body: `Bringing clever wit, high-energy dopamine, and serious craft to daily rituals.`,
+        tones: ["Irreverent", "Witty", "Vibrant", "Delightful"]
       }
     };
 
@@ -9526,8 +9621,138 @@ Return ONLY valid JSON with NO commentary.
       });
     }
 
+    // Update voice rewriter transformed text to match active tone dynamically
+    if (elements.inputVoiceRewrite && elements.inputVoiceRewrite.value.trim()) {
+      const liveSentence = elements.inputVoiceRewrite.value.trim();
+      const updatedRewrite = proceduralVoiceRewrite(liveSentence, brand);
+      if (elements.voiceTransformedText) elements.voiceTransformedText.textContent = updatedRewrite;
+    }
+
     updateChameleonPreviews(brand);
-    showToast(`Tone shifted to ${tone.toUpperCase()}! 🎙️`, 'info', 1800);
+    showToast(`Tone shifted to ${tone.toUpperCase()} everywhere! 🎙️`, 'info', 1800);
+  }
+
+
+  // 3. Editable Founder Name & Role Live Controller
+  function initBusinessCardFounderEditor() {
+    const inputName = elements.inputCardFounderName;
+    const inputRole = elements.inputCardFounderRole;
+    const cardName = elements.cardFounderName;
+    const cardRole = elements.cardFounderRole;
+
+    if (inputName && cardName) {
+      inputName.addEventListener('input', () => {
+        const val = inputName.value.trim() || 'Aarav Sharma';
+        cardName.textContent = val;
+      });
+      cardName.addEventListener('input', () => {
+        if (inputName) inputName.value = cardName.textContent.trim();
+      });
+    }
+
+    if (inputRole && cardRole) {
+      inputRole.addEventListener('input', () => {
+        const val = inputRole.value.trim() || 'Founder & Creative Director';
+        cardRole.textContent = val;
+      });
+      cardRole.addEventListener('input', () => {
+        if (inputRole) inputRole.value = cardRole.textContent.trim();
+      });
+    }
+  }
+
+
+  // 4. Independent Hero Tagline Regenerator
+  async function handleRegenerateHeroTagline() {
+    if (state.isRegeneratingTagline) return;
+    const brand = state.currentBrand || PRESET_BRANDS.matcha || PRESET_BRANDS.komorebi;
+    if (!brand) return;
+
+    state.isRegeneratingTagline = true;
+    if (elements.btnRegenerateHeroTagline) elements.btnRegenerateHeroTagline.disabled = true;
+    if (elements.regenTaglineSpinner) elements.regenTaglineSpinner.classList.remove('hidden');
+    if (elements.btnRegenTaglineIcon) elements.btnRegenTaglineIcon.classList.add('hidden');
+    if (elements.btnRegenTaglineText) elements.btnRegenTaglineText.textContent = 'Writing...';
+
+    const customNiche = elements.inputCustomNiche ? elements.inputCustomNiche.value.trim() : '';
+    const selectedNiche = elements.industrySelect ? elements.industrySelect.value : '';
+    const niche = (selectedNiche === 'Other / Custom' && customNiche) ? customNiche : (customNiche || selectedNiche || brand.industry || 'Studio');
+    const tone = state.brandTone || 'bold';
+
+    // Collect all taglines from the vault to exclude
+    const vaultTexts = [];
+    if (brand.taglineVault) {
+      Object.values(brand.taglineVault).forEach(t => { if (typeof t === 'string' && t.trim()) vaultTexts.push(t.trim()); });
+    }
+    const vaultCards = document.querySelectorAll('#tagline-vault-grid .tagline-text');
+    vaultCards.forEach(el => {
+      const txt = el.textContent.trim();
+      if (txt && !vaultTexts.includes(txt)) vaultTexts.push(txt);
+    });
+
+    try {
+      let newTagline = '';
+      try {
+        const res = await callGeminiAction({
+          action: 'regenerateTagline',
+          brandName: brand.name,
+          niche: niche,
+          tone: tone,
+          excludeTaglines: vaultTexts
+        });
+        if (res && res.tagline) {
+          newTagline = res.tagline.trim().replace(/^[“"']|[”"']$/g, '');
+        }
+      } catch (apiErr) {
+        console.warn('Gemini regenerateTagline call failed, using dynamic synthesis:', apiErr);
+      }
+
+      if (!newTagline) {
+        // Procedural synthesis matching tone while avoiding vault taglines
+        const cleanNicheWord = niche.split('&')[0].trim();
+        const toneFallbacks = {
+          minimalist: [
+            `Distilled ${cleanNicheWord}. Pure form.`,
+            `Quiet authority in modern ${cleanNicheWord}.`,
+            `Essential restraint, uncompromising grace.`,
+            `Form follows quiet conviction.`
+          ],
+          bold: [
+            `Commanding the future of ${cleanNicheWord}.`,
+            `Unfiltered presence. Zero compromises.`,
+            `Redefining modern ${cleanNicheWord} velocity.`,
+            `Setting the absolute category standard.`
+          ],
+          playful: [
+            `Seriously good ${cleanNicheWord} for chaotic days.`,
+            `Meet your new daily obsession.`,
+            `Dopamine-fueled craft for radiant minds.`,
+            `Never boring. Always magnetic.`
+          ]
+        };
+        const pool = toneFallbacks[tone] || toneFallbacks.bold;
+        newTagline = pool.find(t => !vaultTexts.includes(t)) || `${brand.name}: Redefining Modern ${cleanNicheWord}.`;
+      }
+
+      brand.tagline = newTagline;
+      brand.sampleHeadline = newTagline;
+
+      if (elements.sampleHeadline) elements.sampleHeadline.textContent = `“${newTagline}”`;
+      if (elements.punchyTaglineText) elements.punchyTaglineText.textContent = newTagline;
+      if (elements.mockHeroTagline) elements.mockHeroTagline.textContent = `${brand.industry || niche} • ${newTagline}`;
+      if (elements.labelBrandTagline) elements.labelBrandTagline.textContent = newTagline;
+
+      showToast(`✨ Generated fresh ${tone} hero tagline!`, 'success');
+    } catch (err) {
+      console.error('Failed to regenerate hero tagline:', err);
+      showToast('Could not regenerate tagline. Please try again.', 'warning');
+    } finally {
+      state.isRegeneratingTagline = false;
+      if (elements.btnRegenerateHeroTagline) elements.btnRegenerateHeroTagline.disabled = false;
+      if (elements.regenTaglineSpinner) elements.regenTaglineSpinner.classList.add('hidden');
+      if (elements.btnRegenTaglineIcon) elements.btnRegenTaglineIcon.classList.remove('hidden');
+      if (elements.btnRegenTaglineText) elements.btnRegenTaglineText.textContent = 'Regenerate Tagline';
+    }
   }
 
   function initToneSlider() {
@@ -10246,6 +10471,11 @@ ${(b.palette || b.colors).map(c => `- **${c.hex}** | ${c.name} (${c.role}): ${c.
     initToneSlider();
     initChameleonTabs();
     init3DTiltEffects();
+    initBusinessCardFounderEditor();
+
+    if (elements.btnRegenerateHeroTagline) {
+      elements.btnRegenerateHeroTagline.addEventListener('click', handleRegenerateHeroTagline);
+    }
 
     // Spacebar Palette Shuffle & Unlocked Card Shuffle
     if (elements.btnShuffleUnlockedCard) {
